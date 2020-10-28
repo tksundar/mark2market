@@ -85,7 +85,8 @@ class PnLScreen(Screen):
         sort("nav", pf_data)
         data = pf_data
         box = BoxLayout(orientation='vertical')
-        button = Button(text='NAV is ' + str(pf_nav), size_hint_y=None)
+        button: Button = Button(text='Portfolio NAV is ' + str(pf_nav), size_hint_y=None, size=(1000, 50))
+        button.background_color = (.2, .2, .2, 1)
         button.bind(on_press=go_home)
         box.add_widget(button)
         # ---------------- lambda x: self.go_home not working. Need more investigation!
