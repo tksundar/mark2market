@@ -1,6 +1,6 @@
 This project attempts to build a UI app to display net asset value of individual stocks in a portfolio and the total 
 nav of the portfolio. Portfolio information can be entered by browsing to the path of a CSV file or PDF
-file of specified format. While pdf file support is currently available for a specfic format that is
+file of specified format. While pdf file support is currently available for a specific format that is
 provided by M/S Integrated Enterprises (India) Private Limited - Depository Division, CSV file format is
 generic as follows
 
