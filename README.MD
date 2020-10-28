@@ -17,3 +17,5 @@ This is still very rudimentary. I have not been able to package this for windows
 pyinstaller doesnt package kivyMD dependency and buildozer has gotchas when it comes to packaging
 pandas(actually it fails when applying some numpy patch while build). It is quite possible that these are problems due to 
 my lack of understanding of the packaging process. I will update this page as and when there is progress.
+
+The application has two screens. Sample screenshots page1.png and page2.png are available for viewing
