@@ -1,0 +1,47 @@
+<MainScreen>:
+  BoxLayout:
+    orientation:'vertical'
+    MDToolbar:
+      title: 'Portfolio App'
+      left_action_items: [ [ 'menu', lambda x: app.go_home() ] ]
+      md_bg_color: .2, .2, .2, 1
+    MDSpinner:
+      id: spinner
+      size_hint: None, None
+      size: dp(46), dp(46)
+      pos_hint: { 'center_x': .5, 'center_y': .5 }
+      active: True if app.processing else False
+    FloatLayout:
+      MDTextField:
+        id: input
+        hint_text: 'Document Password'
+        helper_text_mode: "on_error"
+        max_text_length: 10
+        min_text_length: 10
+        size_hint: None,None
+        size: 300,50
+        pos: 200,400
+        on_text: app.on_text()
+      TooltipMDIconButton:
+        id: file_chooser
+        text: "Chose Transaction File"
+        icon: "folder"
+        size_hint: None,None
+        size: 400,50
+        pos: 200,325
+        on_release: app.file_manager_open()
+
+      MDFillRoundFlatButton:
+        text: 'Show NAV'
+        size_hint: None,None
+        size: 200,50
+        pos: 200,250
+        on_release: app.process_file()
+
+
+<PnLScreen>:
+
+
+
+
+

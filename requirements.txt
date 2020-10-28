@@ -1,0 +1,45 @@
+altgraph==0.17
+auto-py-to-exe==2.7.8
+bottle==0.12.18
+bottle-websocket==0.2.9
+certifi==2020.6.20
+cffi==1.14.3
+chardet==3.0.4
+distro==1.5.0
+docutils @ file:///D:/bld/docutils_1602628360491/work
+Eel==0.12.4
+future==0.18.2
+gevent==20.9.0
+gevent-websocket==0.10.1
+greenlet==0.4.17
+idna==2.10
+Kivy @ file:///D:/bld/kivy_1602787747398/work
+kivy-deps.angle==0.3.0
+kivy-deps.glew==0.3.0
+kivy-deps.sdl2==0.3.1
+Kivy-Garden==0.1.4
+kivymd==0.104.1
+numpy==1.19.2
+olefile @ file:///home/conda/feedstock_root/build_artifacts/olefile_1602866521163/work
+pandas==1.1.3
+pefile==2019.4.18
+Pillow @ file:///D:/bld/pillow_1603406849807/work
+plyer==1.4.3
+pycparser==2.20
+Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1600347314331/work
+pyinstaller==4.0
+pyinstaller-hooks-contrib==2020.9
+pypiwin32==223
+python-dateutil==2.8.1
+pytz==2020.1
+pywin32==228
+pywin32-ctypes==0.2.0
+requests==2.24.0
+six==1.15.0
+urllib3==1.25.10
+whichcraft==0.6.1
+wincertstore==0.2
+zope.event==4.5.0
+zope.interface==5.1.2
+
+kivy~=2.0.0rc4
