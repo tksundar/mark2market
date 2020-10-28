@@ -57,15 +57,14 @@ class Mark2MarketApp(MDApp):
         self.processing = False
         self.characters = []
         self.screen_manager = buildScreenManager()
-        self.pnl = PnLScreen(name="NAV")
-        self.screen_manager.add_widget(self.pnl)
         if len(tryout.product_dict) > 0:
+            pnl = PnLScreen(name="NAV")
+            print(pnl)
+            self.screen_manager.add_widget(pnl)
             self.screen_manager.current = "NAV"
         else:
             self.screen_manager.current = "Main"
 
-    def go_home(self):
-        print('called from xxxx')
 
     def on_text(self):
         name = self.screen_manager.current
@@ -80,7 +79,7 @@ class Mark2MarketApp(MDApp):
             self.root.get_screen("Main").ids.input.text = self.characters.pop()
 
     def process_file(self):
-        if not hasattr(self, 'pnl'):
+        if not hasattr(self, 'filePath'):
             toast('You must select a transaction file')
             return
         extn = self.filePath[self.filePath.index('.') + 1:len(self.filePath)].upper()
@@ -94,9 +93,7 @@ class Mark2MarketApp(MDApp):
                 tryout.read_pdf(self.filePath, password)
             else:
                 tryout.make_product_dict_from_csv(csv_file=self.filePath, password=password)
-            nav_screen: Screen = self.screen_manager.get_screen("NAV")
-            widget = self.pnl.make_widget()
-            nav_screen.add_widget(widget)
+            self.screen_manager.add_widget(PnLScreen(name="NAV"))
             self.screen_manager.current = "NAV"
         else:
             toast('Document Password is required')

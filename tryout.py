@@ -263,10 +263,6 @@ def get_bse_prices():
     r = urllib.request.Request(bse_url, None, headers=headers)
     try:
         response = urllib.request.urlopen(r)
-        # if os.path.exists(bse_csv_file):
-        #     os.remove(bse_csv_file)
-        # if os.path.exists(os.path.basename(bse_url)):
-        #     os.remove(os.path.basename(bse_url))
         with open('bse.zip', "wb") as f:
             f.write(response.read())
         with ZipFile('bse.zip', 'r') as bse_zip:
