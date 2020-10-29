@@ -1,17 +1,20 @@
+import os
+from time import time
+
+import openpyxl
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty
-from kivy.uix.button import Button
-from kivy.uix.dropdown import DropDown
-from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy.uix.screenmanager import Screen, ScreenManager, FadeTransition
 from kivymd.app import MDApp
 from kivymd.toast import toast
-from kivymd.uix.button import MDRectangleFlatIconButton
+from kivymd.uix.button import MDRectangleFlatIconButton,MDIconButton
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.tooltip import MDTooltip
-from PandLScreen import PnLScreen
+
 import tryout
-import os
+from PandLScreen import PnLScreen
+from gainloss import GainLossScreen
 
 
 class MainScreen(Screen):
@@ -25,15 +28,52 @@ def buildScreenManager():
     return sm
 
 
-class TooltipMDIconButton(MDRectangleFlatIconButton, MDTooltip):
-    tooltip_text = 'Choose a PDF or CSV file. CSV file should have\n' \
-                   'the following columns\n\n' \
-                   'isin,                           quantity,         price,          side\n' \
-                   'INE021A01026,            100,          2100,          BUY'
+class TooltipMDIconButton(MDIconButton, MDTooltip):
+    tooltip_text = 'Choose a CSV file.Press for more info'
 
 
 def on_processing(instance, value):
     print('instance, value', instance, value)
+
+
+def spruce_val(val):
+    if val.__contains__('LTD'):
+        val = val.replace("LTD", "LIMITED")
+    if val.__contains__('Ltd'):
+        val = val.replace("Ltd", "LIMITED")
+        print('replaced->', val)
+    if val.__contains__("Limited"):
+        val = val.replace("Limited", "LIMITED")
+    return val
+
+
+def convert_to_csv(filePath):
+    # opening the xlsx file
+    xlsx = openpyxl.load_workbook(filePath)
+    # opening the active sheet
+    sheet = xlsx.active
+    # getting the data from the sheet
+    data = sheet.rows
+    # creating a csv file
+    csv = open("data.csv", "w+")
+    count = 0
+    for row in data:
+        items = list(row)
+        if (len(items)) < 4:
+            continue
+        count += 1
+        for item in items:
+            val = str(item.value)
+            if not (val is None or val == 'None'):
+                val = spruce_val(val)
+                if count == 1:  # header row
+                    csv.write(val.lower() + ',')
+                else:
+                    csv.write(val.upper() + ',')
+        csv.write('\n')
+    # close the csv file
+    csv.close()
+    return csv
 
 
 class Mark2MarketApp(MDApp):
@@ -53,50 +93,59 @@ class Mark2MarketApp(MDApp):
             exit_manager=self.exit_manager,
             select_path=self.select_path,
         )
-        self.file_manager.ext = ['.csv', '.CSV', '.pdf', '.PDF']
+        self.file_manager.ext = ['.csv', '.CSV', '.xlsx', '.XLSX']
         self.processing = False
-        self.characters = []
-        self.screen_manager = buildScreenManager()
+        # self.characters = []
+        Builder.load_file("RootWidget.kv")
+        self.screen_manager = ScreenManager(transition=FadeTransition())
         if len(tryout.product_dict) > 0:
-            pnl = PnLScreen(name="NAV")
+            pnl = PnLScreen(self.screen_manager, name="NAV")
             print(pnl)
             self.screen_manager.add_widget(pnl)
             self.screen_manager.current = "NAV"
+            self.current = "NAV"
+            self.screen_manager.add_widget(MainScreen(name="Main"))
+            self.screen_manager.add_widget(GainLossScreen(self.screen_manager,name="GainLoss"))
         else:
+            self.screen_manager.add_widget(MainScreen(name="Main"))
             self.screen_manager.current = "Main"
 
+    def go_nav(self):
+        self.screen_manager.current = self.current
 
-    def on_text(self):
-        name = self.screen_manager.current
-        val = self.root.get_screen(name).ids.input.text
-        print(val)
-        self.characters.append(val.upper())
+    # def on_text(self):
+    #     name = self.screen_manager.current
+    #     val = self.root.get_screen(name).ids.input.text
+    #     print(val)
+    #     self.characters.append(val.upper())
 
     def file_manager_open(self):
         self.file_manager.show('/')  # output manager to the screen
         self.manager_open = True
-        if len(self.characters) > 0:
-            self.root.get_screen("Main").ids.input.text = self.characters.pop()
+        # if len(self.characters) > 0:
+        #     self.root.get_screen("Main").ids.input.text = self.characters.pop()
 
     def process_file(self):
         if not hasattr(self, 'filePath'):
             toast('You must select a transaction file')
             return
         extn = self.filePath[self.filePath.index('.') + 1:len(self.filePath)].upper()
-        if not (extn == 'PDF' or extn == 'CSV'):
+        if not (extn == 'XLSX' or extn == 'CSV'):
             msg = extn + " not supported"
             toast(msg)
             return
-        if len(self.characters) > 0:
-            password = self.characters.pop()
-            if extn == 'PDF':
-                tryout.read_pdf(self.filePath, password)
-            else:
-                tryout.make_product_dict_from_csv(csv_file=self.filePath, password=password)
-            self.screen_manager.add_widget(PnLScreen(name="NAV"))
-            self.screen_manager.current = "NAV"
-        else:
-            toast('Document Password is required')
+        csvFile = self.filePath
+        if extn == 'XLSX':
+            convert_to_csv(self.filePath)
+            csvFile = "data.csv"
+        tryout.make_product_dict_from_csv(csv_file=csvFile)
+        for item in list(tryout.product_dict.values()):
+            print(item)
+        screen_name = "UPDATE" + str(time())
+        self.screen_manager.add_widget(PnLScreen(self.screen_manager, name=screen_name))
+        self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name="GainLoss"))
+        self.screen_manager.current = screen_name
+        self.current = screen_name
 
     def select_path(self, path):
         """It will be called when you click on the file name
@@ -105,8 +154,6 @@ class Mark2MarketApp(MDApp):
         :param path: path to the selected directory or file;
         """
         self.exit_manager()
-        print(len(path))
-        print(str(path))
         self.root.get_screen(self.root.current).ids.file_chooser.text = path
         self.filePath = path
 
@@ -125,7 +172,6 @@ class Mark2MarketApp(MDApp):
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
-        self.characters.append(str(text).upper())
         if keyboard in (1001, 27):
             if self.manager_open:
                 self.file_manager.back()

@@ -7,8 +7,10 @@ from kivy.properties import ListProperty, BooleanProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.screenmanager import Screen
+from kivy.uix.screenmanager import Screen, ScreenManager
+from kivymd.app import MDApp
 from kivymd.uix.datatables import MDDataTable
+from kivymd.uix.button import *
 
 import tryout
 
@@ -36,10 +38,6 @@ def sort(param, pf_data):
         print(pf)
 
 
-def go_home(instance):
-    print('called')
-
-
 def get_table(data):
     row_data = []
     for item in data:
@@ -49,7 +47,7 @@ def get_table(data):
         row_data.append(row)
 
     table = MDDataTable(
-        size_hint=(0.9, 0.9),
+        size_hint=(0.9, 0.8),
         pos_hint={'center_x': 0.5, 'center_y': 0.5},
         use_pagination=True,
         rows_num=10,
@@ -70,33 +68,72 @@ class PnLScreen(Screen):
     data = ListProperty(defaultvalue=[])
     processing = BooleanProperty(defaultvalue=False)
 
-    def __init__(self, **kwargs):
+    def __init__(self, screen_manager, **kwargs):
         super().__init__(**kwargs)
-        self.add_widget(self.make_widget())
+        self.screen_manager: ScreenManager = screen_manager
+        self.pf_data = list(tryout.product_dict.values())
+        app = MDApp.get_running_app().name
+        if app == 'UPDATE':
+            tryout.get_nse_prices()
+            tryout.get_bse_prices()
+            tryout.get_isin_to_symbol_map()
+            tryout.make_product_dict_from_csv(csv_file='pandb.csv')
+            self.pf_data = list(tryout.product_dict.values())
 
-    def make_widget(self):
-        self.processing = True
-        pf_data = list(tryout.product_dict.values())
         pf_nav = 0
-        for pi in pf_data:
-            print(pi)
+        for pi in self.pf_data:
             pf_nav += pi.nav
-        pf_nav = round(pf_nav, 2)
-        sort("nav", pf_data)
-        data = pf_data
-        box = BoxLayout(orientation='vertical')
-        button: Button = Button(text='Portfolio NAV is ' + str(pf_nav), size_hint_y=None, size=(1000, 50))
-        button.background_color = (.2, .2, .2, 1)
-        button.bind(on_press=go_home)
-        box.add_widget(button)
-        # ---------------- lambda x: self.go_home not working. Need more investigation!
-        # toolbar = MDToolbar(title='Net Asset Value : INR ' + str(pf_nav))
-        # toolbar.md_bg_color = (.2, .2, .2, 1)
-        # #print(MDApp.get_running_app().go_home())
-        # toolbar.left_action_items = [["home", lambda x: MDApp.get_running_app().go_home]]
-        # box.add_widget(toolbar)
+        self.pf_nav = round(pf_nav, 2)
+        sort("nav", self.pf_data)
+
+        print("Running app is " + MDApp.get_running_app().name)
+        self.add_widgets()
+
+
+    def go_home(self, instance):
+        self.screen_manager.current = "Main"
+
+    def gain_loss(self, instance):
+        print("gain loss")
+        self.screen_manager.current= "GainLoss"
+
+    def analysis(self, instance):
+        print("analysis")
+
+    def add_widgets(self):
+        self.processing = True
         floatLayout = FloatLayout()
-        table = get_table(data)
+        button: Button = Button(text="Portfolio NAV is " + str(self.pf_nav),
+                                pos_hint=({'center_x': .5, 'center_y': .95}),
+                                size_hint=(1, .08), )
+        button.background_color = (.2, .2, .2, 1)
+        button.bind(on_press=self.go_home)
+        floatLayout.add_widget(button)
+        table = get_table(self.pf_data)
         floatLayout.add_widget(table)
-        box.add_widget(floatLayout)
-        return box
+        input_btn = MDRaisedButton(text="Add Transactions", size_hint=(None, None), size=(100, 50),
+                                   pos_hint={'center_x': 0.1, 'center_y': 0.05}, elevation=10)
+        input_btn.md_bg_color = (.2, .2, .2, 1)
+        input_btn.bind(on_press=self.go_home)
+        floatLayout.add_widget(input_btn)
+        gain_btn = MDRaisedButton(text="View Performance", size_hint=(None, None), size=(100, 50),
+                                  pos_hint={'center_x': 0.5, 'center_y': 0.05}, elevation=10)
+        gain_btn.md_bg_color = (.2, .2, .2, 1)
+        gain_btn.bind(on_press=self.gain_loss)
+        floatLayout.add_widget(gain_btn)
+
+        analysis_btn = MDRaisedButton(text="Sectoral Analysis", size_hint=(None, None), size=(100, 50),
+                                      pos_hint={'center_x': 0.9, 'center_y': 0.05}, elevation=10)
+        analysis_btn.md_bg_color = (.2, .2, .2, 1)
+        analysis_btn.bind(on_press=self.analysis)
+        floatLayout.add_widget(analysis_btn)
+        self.add_widget(floatLayout)
+    #
+    # def build(self):
+    #     button: Button = Button(text="Portfolio NAV is " + str(self.pf_nav),
+    #                             pos_hint=({'center_x': .5, 'center_y': .95}),
+    #                             size_hint=(1, .08), )
+    #     button.background_color = (.2, .2, .2, 1)
+    #     button.bind(on_press=self.go_home)
+    #     self.add_widget(button)
+    #     return self

@@ -1,12 +1,11 @@
+import csv
 import os
 import urllib
+from datetime import datetime
+from shutil import copyfile
 from urllib.error import HTTPError
 from urllib.request import Request
-from datetime import datetime
-import csv
 from zipfile import ZipFile
-import tabula
-from shutil import copyfile
 
 d = datetime.now()
 dd = str(int(d.strftime('%d')))
@@ -28,6 +27,7 @@ nse_isin_to_symbol_map: dict = {}
 bse_isin_to_symbol_map: dict = {}
 symbol_to_exchange_map: dict = {}
 isin_to_name_map: dict = {}
+name_to_isin_map: dict = {}
 nse_price_data: dict = {}
 bse_price_data: dict = {}
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
@@ -58,6 +58,7 @@ def convert_to_csv():
     csv_data = product_dict.values()
     a_dict = []
     for pf in csv_data:
+        print("-----", pf.__dict__)
         a_dict.append(pf.__dict__)
 
     with open('pandb.csv', 'w', encoding='utf8', newline='') as output_file:
@@ -66,19 +67,22 @@ def convert_to_csv():
         fc.writerows(a_dict)
 
 
-def make_product_dict(product_array):
-    for pi in product_array:
-        product_dict.update({pi.isin: pi})
+def get_pf_nav():
+    pf_nav = 0
+    for pi in list(product_dict.values()):
+        pf_nav += pi.nav
+    return pf_nav
 
 
-def create_portfolio_item_dict(df):
+def create_portfolio_item_dict(df, isin):
     for row in df:
         pi = PortfolioItem()
-        pi.isin = row["isin"]
+        pi.isin = isin
         sym = nse_isin_to_symbol_map.get(pi.isin)
         pi.symbol = sym if sym else bse_isin_to_symbol_map.get(pi.isin)
         pi.name = isin_to_name_map.get(pi.isin)
-        pi.quantity = float(row["quantity"])
+        q = row['quantity']
+        pi.quantity = float(q)
         px = nse_price_data.get(pi.symbol)
         if px:
             pi.price = float(px)
@@ -91,72 +95,28 @@ def create_portfolio_item_dict(df):
         pi.gain = gain
         pi.percent = percent
         product_dict.update({pi.isin: pi})
-        convert_to_csv()
-
-
-def read_pdf(input_file, password):
-    product_array = []
-    dfs = tabula.read_pdf(input_file, output_format='json', password=password, pages='all')
-    for item in dfs:
-        array_of_array = []
-        list_items = item['data']
-        for data in list_items:
-            data_array = []
-            for map_item in data:
-                if len(map_item['text']) > 0:
-                    data_array.append(map_item['text'])
-            array_of_array.append(data_array)
-        for prod in array_of_array:
-            product = PortfolioItem()
-            if prod[0].__contains__('ISINI'):
-                product.isin = prod[0][4:]
-                product.name = prod[1]
-                product_array.append(product)
-            elif len(prod) > 1 and prod[0].__contains__('Closing Balance'):
-                product = product_array.pop()
-                product.quantity = prod[1]
-                product_array.append(product)
-            elif len(prod) > 2 and prod[1].__contains__('Closing Balance'):
-                product = product_array.pop()
-                product.quantity = prod[2]
-                product_array.append(product)
-
-    for pi in product_array:
-        symbol = nse_isin_to_symbol_map.get(pi.isin)
-        if not symbol:
-            symbol = bse_isin_to_symbol_map.get(pi.isin)
-            pi.exchange = 'BSE'
-        pi.symbol = symbol
-        # price and nav
-        if pi.exchange == 'NSE':
-            price = float(nse_price_data.get(pi.symbol))
-        else:
-            print(pi.symbol)
-            pr = bse_price_data.get(pi.isin)
-            print(pi.symbol, pr, pi.isin)
-            price = float(bse_price_data.get(pi.isin))
-
-        nav = price * float(pi.quantity)
-        pi.price = price
-        pi.nav = round(nav, 2)
-    make_product_dict(product_array)
-    convert_to_csv()
+        pass
 
 
 def make_product_dict_from_csv(**kwargs):
     csvFile = kwargs['csv_file']
-    usecols = ["isin", "quantity", "side", "price", "name"]
+    usecols = ["isin", "quantity", "side", "cost", "price", "name"]
     df = read_csv(csvFile, usecols=usecols)
     for row in df:
-        isin = row["isin"]
-        if product_dict:
-            pitem = product_dict[isin]
-            if pitem:
-                update_portfolio_item(row, pitem)
-            else:
-                make_new_portfolio_item(row)
+        isin = ""
+        if "isin" in row:
+            isin = row["isin"]
+        elif "name" in row:
+            isin = name_to_isin_map.get(row['name'])
+        if not isin:
+            raise AttributeError("Could not find isin for %s", row["name"])
+        if isin in product_dict:
+            p_item = product_dict[isin]
+            update_portfolio_item(row, p_item)
         else:
-            create_portfolio_item_dict(df)
+            make_new_portfolio_item(row, isin)
+
+    convert_to_csv()
 
 
 def update_portfolio_item(row, pi):
@@ -176,31 +136,43 @@ def update_portfolio_item(row, pi):
                 pi.quantity = 0.0
     else:
         pi.quantity = qty
-    pi.cost = float(row["price"])
+    pi.cost = float(row["cost"])
+    update_price(pi)
     net, gain, percent = calculate_gain(pi.quantity, pi.cost, pi.price)
     pi.nav = net
     pi.gain = gain
     pi.percent = percent
-    convert_to_csv()
 
 
-def make_new_portfolio_item(row):
-    isin = row["isin"]
+def update_price(pi: PortfolioItem):
+    px = nse_price_data.get(pi.symbol)
+    if not (px is None):
+        pi.price = float(px)
+    else:
+        isn = pi.isin
+        pi.price = float(bse_price_data.get(isn))
+        pass
+
+
+
+def make_new_portfolio_item(row, isin):
     pi = PortfolioItem()
     pi.isin = isin
+    name = isin_to_name_map.get(isin)
+    pi.name = name
     sym = nse_isin_to_symbol_map.get(isin)
-    pi.symbol = sym if sym else bse_isin_to_symbol_map.get(isin)
-    pi.symbol = isin_to_name_map.get(isin)
+    if not (sym is None):
+        pi.symbol = sym
+    else:
+        pi.symbol = bse_isin_to_symbol_map.get(isin)
     pi.quantity = float(row["quantity"])
-    pi.cost = float(row["price"])
-    px = nse_price_data.get(pi.symbol)
-    pi.price = float(px) if px else float(bse_price_data.get(pi.symbol))
+    pi.cost = float(row["cost"])
+    update_price(pi)
     net, gain, percent = calculate_gain(pi.quantity, pi.cost, pi.price)
     pi.nav = net
     pi.gain = gain
     pi.percent = percent
     product_dict.update({isin: pi})
-    convert_to_csv()
 
 
 def calculate_gain(qty, cost, px):
@@ -215,9 +187,17 @@ def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_
     for row in df:
         isin = row[isin_header]
         symbol = row[symbol_header]
+        name = row[name_header].upper().replace('LTD', 'LIMITED')
+        if name.__contains__('.-$'):
+            ind = name.index('.-$')
+            name = name[0:ind].strip()
+        # print("%s : %s %s" % (name, isin, name_header))
         isin_symbol_map.update({isin: symbol})
         if not (isin in isin_to_name_map):
-            isin_to_name_map.update({isin: row[name_header]})
+            isin_to_name_map.update({isin: name})
+        name_to_isin_map.update({name: isin})
+    # for k, v in name_to_isin_map.items():
+    #     print('name:%s , isin:%s' % (k, v))
 
 
 def get_isin_to_symbol_map():
@@ -234,10 +214,10 @@ def get_isin_to_symbol_map():
     if not os.path.exists('Equity.csv'):
         pass
         # get this dynamically
-    df = read_csv('Equity.csv', usecols=['Security Id', 'ISIN No', 'Issuer Name'])
+    df = read_csv('Equity.csv', usecols=['Security Id', 'ISIN No', 'Security Name'])
     symbol_header = 'Security Id'
     isin_header = 'ISIN No'
-    name_header = 'Issuer Name'
+    name_header = 'Security Name'
     create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, bse_isin_to_symbol_map)
 
 
@@ -287,14 +267,16 @@ def read_csv(fileName, **kwargs):
     """return a list of dictionaries  keyed by the header """
     df = []
     usecols = kwargs["usecols"]
-
+    print(fileName)
     with open(fileName, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
             data = {}
+
             for header in usecols:
                 if header in row:
-                    data[header] = row[header]
+                    val = row[header]
+                    data[header] = val
             df.append(data)
 
     return df
