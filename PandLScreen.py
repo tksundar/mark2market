@@ -76,7 +76,7 @@ class PnLScreen(Screen):
             tryout.get_nse_prices()
             tryout.get_bse_prices()
             tryout.get_isin_to_symbol_map()
-            tryout.make_product_dict_from_csv(csv_file='pandb.csv')
+            tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
             self.pf_data = list(tryout.product_dict.values())
 
         pf_nav = 0

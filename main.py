@@ -84,8 +84,8 @@ class Mark2MarketApp(MDApp):
         tryout.get_nse_prices()
         tryout.get_bse_prices()
         tryout.get_isin_to_symbol_map()
-        if os.path.exists('pandb.csv'):
-            tryout.make_product_dict_from_csv(csv_file='pandb.csv')
+        if os.path.exists('csv/pandb.csv'):
+            tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
         self.filePath = ""
         Window.bind(on_keyboard=self.events)
         self.manager_open = False

@@ -62,7 +62,7 @@ def convert_to_csv():
         print("-----", pf.__dict__)
         a_dict.append(pf.__dict__)
 
-    with open('pandb.csv', 'w', encoding='utf8', newline='') as output_file:
+    with open('csv/pandb.csv', 'w', encoding='utf8', newline='') as output_file:
         fc = csv.DictWriter(output_file, fieldnames=a_dict[0].keys(), )
         fc.writeheader()
         fc.writerows(a_dict)
@@ -203,20 +203,20 @@ def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_
 
 def get_isin_to_symbol_map():
     context = ssl.SSLContext()
-    if not os.path.exists('EQUITY_L.csv'):
+    if not os.path.exists('csv/EQUITY_L.csv'):
         r = Request(nse_equities_list_url, None, headers)
         response = urllib.request.urlopen(r,context=context)
-        with open('EQUITY_L.csv', "wb") as f:
+        with open('csv/EQUITY_L.csv', "wb") as f:
             f.write(response.read())
     isin_header = ' ISIN NUMBER'
     symbol_header = 'SYMBOL'
     name_header = 'NAME OF COMPANY'
-    df = read_csv('EQUITY_L.csv', usecols=['SYMBOL', ' ISIN NUMBER', 'NAME OF COMPANY'])
+    df = read_csv('csv/EQUITY_L.csv', usecols=['SYMBOL', ' ISIN NUMBER', 'NAME OF COMPANY'])
     create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, nse_isin_to_symbol_map)
-    if not os.path.exists('Equity.csv'):
+    if not os.path.exists('csv/Equity.csv'):
         pass
         # get this dynamically
-    df = read_csv('Equity.csv', usecols=['Security Id', 'ISIN No', 'Security Name'])
+    df = read_csv('csv/Equity.csv', usecols=['Security Id', 'ISIN No', 'Security Name'])
     symbol_header = 'Security Id'
     isin_header = 'ISIN No'
     name_header = 'Security Name'
