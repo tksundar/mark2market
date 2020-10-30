@@ -1,17 +1,17 @@
 import os
-import sys
 from time import time
 
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty
-from kivy.uix.screenmanager import Screen, ScreenManager, FadeTransition
+from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.app import MDApp
 from kivymd.toast import toast
 from kivymd.uix.filemanager import MDFileManager
 
 import tryout
 from PandLScreen import PnLScreen
+from analysis import Analysis
 from gainloss import GainLossScreen
 from help import HelpScreen
 
@@ -82,7 +82,9 @@ class Mark2MarketApp(MDApp):
         if os.path.exists('csv/pandb.csv'):
             tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
         self.filePath = ""
+        Window.clearcolor = (.5, .5, .5, 1)
         Window.bind(on_keyboard=self.events)
+
         self.manager_open = False
         self.file_manager = MDFileManager(
             exit_manager=self.exit_manager,
@@ -92,7 +94,7 @@ class Mark2MarketApp(MDApp):
         self.processing = False
         # self.characters = []
         Builder.load_file("RootWidget.kv")
-        self.screen_manager = ScreenManager(transition=FadeTransition())
+        self.screen_manager = ScreenManager()
         if len(tryout.product_dict) > 0:
             pnl = PnLScreen(self.screen_manager, name="NAV")
             print(pnl)
@@ -101,6 +103,8 @@ class Mark2MarketApp(MDApp):
             self.current = "NAV"
             self.screen_manager.add_widget(MainScreen(name="Main"))
             self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name="GainLoss"))
+            analysis = Analysis(self.screen_manager, name="Charts")
+            self.screen_manager.add_widget(analysis)
         else:
             self.screen_manager.add_widget(MainScreen(name="Main"))
             self.screen_manager.current = "Main"
@@ -139,8 +143,11 @@ class Mark2MarketApp(MDApp):
         screen_name = "UPDATE" + str(time())
         self.screen_manager.add_widget(PnLScreen(self.screen_manager, name=screen_name))
         self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name="GainLoss"))
+        analysis = Analysis(self.screen_manager, name="Charts")
+        self.screen_manager.add_widget(analysis)
         self.screen_manager.current = screen_name
         self.current = screen_name
+        tryout.nav_name = screen_name
 
     def select_path(self, path):
         """It will be called when you click on the file name

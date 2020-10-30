@@ -1,7 +1,7 @@
 import csv
 import os
-import urllib
 import ssl
+import urllib
 from datetime import datetime
 from shutil import copyfile
 from urllib.error import HTTPError
@@ -34,6 +34,8 @@ bse_price_data: dict = {}
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 headers = {'User-Agent': user_agent, }
 
+nav_name = 'NAV'
+
 product_dict = {}
 
 
@@ -59,7 +61,6 @@ def convert_to_csv():
     csv_data = product_dict.values()
     a_dict = []
     for pf in csv_data:
-        print("-----", pf.__dict__)
         a_dict.append(pf.__dict__)
 
     with open('csv/pandb.csv', 'w', encoding='utf8', newline='') as output_file:

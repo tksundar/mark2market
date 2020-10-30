@@ -71,6 +71,7 @@ class PnLScreen(Screen):
         super().__init__(**kwargs)
         self.screen_manager: ScreenManager = screen_manager
         self.pf_data = list(tryout.product_dict.values())
+        self.name = kwargs['name']
         app = MDApp.get_running_app().name
         if app == 'UPDATE':
             tryout.get_nse_prices()

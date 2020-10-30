@@ -27,28 +27,28 @@
         text: "Chose Transaction File"
         icon: "folder"
         size_hint: None,None
-        size_hint: 0.5, 0.1
-        pos_hint: {'center_x': 0.4,'center_y':0.8}
+        size_hint: 0.8, 0.1
+        pos_hint: {'center_x': 0.5,'center_y':0.8}
         md_bg_color: .7,.7,.7, 1
         on_release: app.file_manager_open()
 
       MDFillRoundFlatButton:
-        text: 'Calculate'
+        text: 'Calculate NAV'
         size_hint: None,None
-        size_hint: 0.4,0.1
-        pos_hint: {'center_x': 0.4,'center_y':0.6}
+        size_hint: 0.5,0.1
+        pos_hint: {'center_x': 0.5,'center_y':0.6}
         elevation: 10
         on_release: app.process_file()
 
-      MDTextButton:
-        text: 'View NAV'
+      MDIconButton:
+        icon: 'forward'
         on_press: app.go_nav()
-        pos_hint: { 'center_x': .9, 'center_y': .6}
+        pos_hint: { 'center_x': .96, 'center_y': .6}
 
       MDIconButton:
         icon: 'help'
         on_press: app.help()
-        pos_hint: { 'center_x': .7, 'center_y': .8 }
+        pos_hint: { 'center_x': .96, 'center_y': .8 }
 
       MDIconButton:
         icon: 'close'
