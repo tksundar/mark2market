@@ -12,17 +12,34 @@ from kivymd.uix.datatables import MDDataTable
 import tryout
 
 
+def get_gain_loss(pf_data):
+    pf_cost = 0
+    pf_nav = round(tryout.get_pf_nav(), 2)
+    for pf in pf_data:
+        pf_cost += pf.cost * pf.quantity
+    gain_loss = round(pf_nav - round(pf_cost, 2), 2)
+    gain_loss_pct = round((gain_loss / pf_cost) * 100 , 2)
+    return pf_nav, gain_loss, gain_loss_pct
+
+
 class GainLossScreen(Screen):
 
     def __init__(self, screen_manager: ScreenManager, **kwargs):
         super().__init__(**kwargs)
         self.screen_manager = screen_manager
         self.pf_data = list(tryout.product_dict.values())
+        self.pf_nav, self.gain_loss, self.gain_loss_percent = get_gain_loss(self.pf_data)
         self.add_widgets()
 
     def add_widgets(self):
         floatLayout = FloatLayout()
-        button: Button = Button(text="Portfolio NAV is " + str(round(tryout.get_pf_nav(), 2)),
+        n = str(self.pf_nav)
+        g = str(self.gain_loss)
+        gp = str(self.gain_loss_percent)
+
+        text_string = "Nav = " + n + "    Gain = " + g + "( " + gp + "% )"
+
+        button: Button = Button(text=text_string,
                                 pos_hint=({'center_x': .5, 'center_y': .95}),
                                 size_hint=(1, .08), )
         button.background_color = (.2, .2, .2, 1)

@@ -202,9 +202,10 @@ def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_
 
 
 def get_isin_to_symbol_map():
+    context = ssl.SSLContext()
     if not os.path.exists('EQUITY_L.csv'):
         r = Request(nse_equities_list_url, None, headers)
-        response = urllib.request.urlopen(r)
+        response = urllib.request.urlopen(r,context=context)
         with open('EQUITY_L.csv', "wb") as f:
             f.write(response.read())
     isin_header = ' ISIN NUMBER'

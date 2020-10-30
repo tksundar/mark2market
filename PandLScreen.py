@@ -57,7 +57,7 @@ def get_table(data):
             ("Price", dp(30)),
             ("NAV", dp(30)),
         ],
-        row_data=row_data
+        row_data=row_data,
     )
 
     return table
@@ -88,13 +88,12 @@ class PnLScreen(Screen):
         print("Running app is " + MDApp.get_running_app().name)
         self.add_widgets()
 
-
     def go_home(self, instance):
         self.screen_manager.current = "Main"
 
     def gain_loss(self, instance):
         print("gain loss")
-        self.screen_manager.current= "GainLoss"
+        self.screen_manager.current = "GainLoss"
 
     def analysis(self, instance):
         print("analysis")
