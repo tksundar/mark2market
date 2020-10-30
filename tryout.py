@@ -1,6 +1,7 @@
 import csv
 import os
 import urllib
+import ssl
 from datetime import datetime
 from shutil import copyfile
 from urllib.error import HTTPError
@@ -97,7 +98,6 @@ def create_portfolio_item_dict(df, isin):
         product_dict.update({pi.isin: pi})
 
 
-
 def make_product_dict_from_csv(**kwargs):
     csvFile = kwargs['csv_file']
     usecols = ["isin", "quantity", "side", "cost", "price", "name"]
@@ -154,7 +154,6 @@ def update_price(pi: PortfolioItem):
         isn = pi.isin
         pi.price = float(bse_price_data.get(isn))
         pass
-
 
 
 def make_new_portfolio_item(row, isin):
@@ -228,8 +227,10 @@ def get_nse_prices():
     # Fetch the csv file from NSE
     if os.path.exists('nse.csv'):
         os.remove('nse.csv')
+    context = ssl.SSLContext()
+
     r = urllib.request.Request(nse_url, None, headers)
-    response = urllib.request.urlopen(r)
+    response = urllib.request.urlopen(r, context=context)
     with open('nse.csv', "wb") as f:
         f.write(response.read())
     df = read_csv('nse.csv', usecols=['SYMBOL', ' CLOSE_PRICE'])
@@ -240,11 +241,12 @@ def get_nse_prices():
 
 
 def get_bse_prices():
+    context = ssl.SSLContext()
     print(bse_url)
     msg = ''
     r = urllib.request.Request(bse_url, None, headers=headers)
     try:
-        response = urllib.request.urlopen(r)
+        response = urllib.request.urlopen(r, context=context)
         with open('bse.zip', "wb") as f:
             f.write(response.read())
         with ZipFile('bse.zip', 'r') as bse_zip:

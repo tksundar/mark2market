@@ -22,7 +22,7 @@ class GainLossScreen(Screen):
 
     def add_widgets(self):
         floatLayout = FloatLayout()
-        button: Button = Button(text="Portfolio NAV is " + str(tryout.get_pf_nav()),
+        button: Button = Button(text="Portfolio NAV is " + str(round(tryout.get_pf_nav(), 2)),
                                 pos_hint=({'center_x': .5, 'center_y': .95}),
                                 size_hint=(1, .08), )
         button.background_color = (.2, .2, .2, 1)
