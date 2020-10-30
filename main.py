@@ -1,4 +1,5 @@
 import os
+import sys
 from time import time
 
 from kivy.core.window import Window
@@ -110,6 +111,9 @@ class Mark2MarketApp(MDApp):
 
     def help(self):
         HelpScreen().open()
+
+    def exit(self):
+        sys.exit()
 
     # def on_text(self):
     #     name = self.screen_manager.current

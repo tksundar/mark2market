@@ -43,12 +43,17 @@
       MDTextButton:
         text: 'View NAV'
         on_press: app.go_nav()
-        pos_hint: { 'center_x': .9, 'center_y': .95}
+        pos_hint: { 'center_x': .9, 'center_y': .6}
 
       MDIconButton:
         icon: 'help'
         on_press: app.help()
         pos_hint: { 'center_x': .7, 'center_y': .8 }
+
+      MDIconButton:
+        icon: 'close'
+        on_press: app.exit()
+        pos_hint: { 'center_x': .96, 'center_y': 1}
 
 
 <PnLScreen>:
