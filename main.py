@@ -113,7 +113,8 @@ class Mark2MarketApp(MDApp):
         HelpScreen().open()
 
     def exit(self):
-        sys.exit()
+        Window.close()
+
 
     # def on_text(self):
     #     name = self.screen_manager.current

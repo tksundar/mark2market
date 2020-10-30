@@ -7,24 +7,24 @@ from kivy.uix.popup import Popup
 
 def get_content():
     text = '''
-          file format:
-       
-          name,quantity,cost,side,
-          ------------------------------------------------------------------------
-          GRANULES INDIA LIMITED,4720,96.4095,BUY,
-          IN9155A01020,3663,212.33,SELL,
+      file format:
+   
+      name,quantity,cost,side,
+      ------------------------------------------------------------------------
+      Granules India Limited,4720,96.4095,Buy,
+      IN9155A01020,3663,212.33,Sell,
 
-          Or like this . This is preferred
+      Or like this . This is preferred
+      
+      isin,quantity,cost,side,
+      --------------------------------------------------------------------
+      IN9155A01020,3663,212.33,Sell,
           
-          isin,quantity,cost,side,
-          --------------------------------------------------------------------
-          IN9155A01020,3663,212.33,SELL,
-          
-          Short sell is not supported 
+      Short sell is not supported 
          
           
           
-          *press anywhere outside this screen to dismiss.
+    press anywhere outside this screen to dismiss.
           '''
     label = Label(text=text)
     return label
