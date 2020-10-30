@@ -40,6 +40,6 @@ class HelpScreen(Popup):
         super().__init__(**kwargs)
         self.title = 'Instructions on Transaction file'
         self.content = get_content()
-        self.size_hint = (None, None)
-        self.size = (600, 600)
+        self.size_hint = (.6,.8)
+
 
