@@ -7,9 +7,7 @@ from kivy.properties import BooleanProperty
 from kivy.uix.screenmanager import Screen, ScreenManager, FadeTransition
 from kivymd.app import MDApp
 from kivymd.toast import toast
-from kivymd.uix.button import MDIconButton
 from kivymd.uix.filemanager import MDFileManager
-from kivymd.uix.tooltip import MDTooltip
 
 import tryout
 from PandLScreen import PnLScreen
@@ -26,10 +24,6 @@ def buildScreenManager():
     sm = ScreenManager()
     sm.add_widget(MainScreen(name="Main"))
     return sm
-
-
-class TooltipMDIconButton(MDIconButton, MDTooltip):
-    tooltip_text = 'Choose a CSV file.Press for more info'
 
 
 def on_processing(instance, value):
@@ -93,7 +87,7 @@ class Mark2MarketApp(MDApp):
             exit_manager=self.exit_manager,
             select_path=self.select_path,
         )
-        self.file_manager.ext = ['.csv', '.CSV']
+        self.file_manager.ext = ['.csv', '.CSV', '.pdf', '.PDF']
         self.processing = False
         # self.characters = []
         Builder.load_file("RootWidget.kv")
@@ -116,7 +110,6 @@ class Mark2MarketApp(MDApp):
 
     def help(self):
         HelpScreen().open()
-
 
     # def on_text(self):
     #     name = self.screen_manager.current

@@ -7,7 +7,7 @@ from kivy.uix.popup import Popup
 
 def get_content():
     text = '''
-          Upload only csv files.Use the following format for csv files.
+          file format:
        
           name,quantity,cost,side,
           ------------------------------------------------------------------------
@@ -20,9 +20,8 @@ def get_content():
           --------------------------------------------------------------------
           IN9155A01020,3663,212.33,SELL,
           
-          Short sell is not supported and  will reduce quantity to zero
-
-          cost is the price at which the stock is bought or sold.
+          Short sell is not supported 
+         
           
           
           *press anywhere outside this screen to dismiss.
@@ -40,6 +39,6 @@ class HelpScreen(Popup):
         super().__init__(**kwargs)
         self.title = 'Instructions on Transaction file'
         self.content = get_content()
-        self.size_hint = (.6,.8)
+        self.size_hint = (.9,.8)
 
 
