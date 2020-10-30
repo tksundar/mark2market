@@ -4,13 +4,12 @@ Created by Sundar on 19-10-2020.email tksrajan@gmail.com
 
 from kivy.metrics import dp
 from kivy.properties import ListProperty, BooleanProperty
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.app import MDApp
-from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.button import *
+from kivymd.uix.datatables import MDDataTable
 
 import tryout
 

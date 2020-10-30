@@ -7,7 +7,7 @@ from kivy.properties import BooleanProperty
 from kivy.uix.screenmanager import Screen, ScreenManager, FadeTransition
 from kivymd.app import MDApp
 from kivymd.toast import toast
-from kivymd.uix.button import MDRectangleFlatIconButton, MDIconButton
+from kivymd.uix.button import MDIconButton
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.tooltip import MDTooltip
 

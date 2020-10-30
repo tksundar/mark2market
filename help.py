@@ -1,11 +1,8 @@
 """
 Created by Sundar on 30-10-2020.email tksrajan@gmail.com
 """
-from kivy.lang import Builder
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
-from kivy.uix.screenmanager import Screen, ScreenManager
-from kivymd.uix.label import MDLabel
 
 
 def get_content():
