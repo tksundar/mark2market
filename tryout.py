@@ -17,9 +17,9 @@ if 0 < hrs < 17:
     dd = str(int(d.strftime('%d')) - 1)
 date = dd + mm + yyyy
 
-nse_equities_list_url = 'https://www1.nseindia.com/content/equities/EQUITY_L.csv'
-nse_url = 'https://www1.nseindia.com/products/content/sec_bhavdata_full.csv'
-bse_url = 'https://www.bseindia.com/download/BhavCopy/Equity/EQ_ISINCODE_' + date + '.zip'
+nse_equities_list_url = 'http://www1.nseindia.com/content/equities/EQUITY_L.csv'
+nse_url = 'http://www1.nseindia.com/products/content/sec_bhavdata_full.csv'
+bse_url = 'http://www.bseindia.com/download/BhavCopy/Equity/EQ_ISINCODE_' + date + '.zip'
 bse_csv_file = 'EQ_ISINCODE_' + date + '.CSV'
 bse_canonical_file = "bse.csv"
 bse_zip_file = 'bse.zip'
@@ -95,7 +95,7 @@ def create_portfolio_item_dict(df, isin):
         pi.gain = gain
         pi.percent = percent
         product_dict.update({pi.isin: pi})
-        pass
+
 
 
 def make_product_dict_from_csv(**kwargs):
@@ -108,6 +108,8 @@ def make_product_dict_from_csv(**kwargs):
             isin = row["isin"]
         elif "name" in row:
             isin = name_to_isin_map.get(row['name'])
+            if row['name'] in nse_isin_to_symbol_map or row['name'] in bse_isin_to_symbol_map:
+                isin = row['name']
         if not isin:
             raise AttributeError("Could not find isin for %s", row["name"])
         if isin in product_dict:

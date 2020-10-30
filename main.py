@@ -1,20 +1,20 @@
 import os
 from time import time
 
-import openpyxl
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty
 from kivy.uix.screenmanager import Screen, ScreenManager, FadeTransition
 from kivymd.app import MDApp
 from kivymd.toast import toast
-from kivymd.uix.button import MDRectangleFlatIconButton,MDIconButton
+from kivymd.uix.button import MDRectangleFlatIconButton, MDIconButton
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.tooltip import MDTooltip
 
 import tryout
 from PandLScreen import PnLScreen
 from gainloss import GainLossScreen
+from help import HelpScreen
 
 
 class MainScreen(Screen):
@@ -47,33 +47,33 @@ def spruce_val(val):
     return val
 
 
-def convert_to_csv(filePath):
-    # opening the xlsx file
-    xlsx = openpyxl.load_workbook(filePath)
-    # opening the active sheet
-    sheet = xlsx.active
-    # getting the data from the sheet
-    data = sheet.rows
-    # creating a csv file
-    csv = open("data.csv", "w+")
-    count = 0
-    for row in data:
-        items = list(row)
-        if (len(items)) < 4:
-            continue
-        count += 1
-        for item in items:
-            val = str(item.value)
-            if not (val is None or val == 'None'):
-                val = spruce_val(val)
-                if count == 1:  # header row
-                    csv.write(val.lower() + ',')
-                else:
-                    csv.write(val.upper() + ',')
-        csv.write('\n')
-    # close the csv file
-    csv.close()
-    return csv
+# def convert_to_csv(filePath):
+#     # opening the xlsx file
+#     xlsx = openpyxl.load_workbook(filePath)
+#     # opening the active sheet
+#     sheet = xlsx.active
+#     # getting the data from the sheet
+#     data = sheet.rows
+#     # creating a csv file
+#     csv = open("data.csv", "w+")
+#     count = 0
+#     for row in data:
+#         items = list(row)
+#         if (len(items)) < 4:
+#             continue
+#         count += 1
+#         for item in items:
+#             val = str(item.value)
+#             if not (val is None or val == 'None'):
+#                 val = spruce_val(val)
+#                 if count == 1:  # header row
+#                     csv.write(val.lower() + ',')
+#                 else:
+#                     csv.write(val.upper() + ',')
+#         csv.write('\n')
+#     # close the csv file
+#     csv.close()
+#     return csv
 
 
 class Mark2MarketApp(MDApp):
@@ -93,7 +93,7 @@ class Mark2MarketApp(MDApp):
             exit_manager=self.exit_manager,
             select_path=self.select_path,
         )
-        self.file_manager.ext = ['.csv', '.CSV', '.xlsx', '.XLSX']
+        self.file_manager.ext = ['.csv', '.CSV']
         self.processing = False
         # self.characters = []
         Builder.load_file("RootWidget.kv")
@@ -105,13 +105,18 @@ class Mark2MarketApp(MDApp):
             self.screen_manager.current = "NAV"
             self.current = "NAV"
             self.screen_manager.add_widget(MainScreen(name="Main"))
-            self.screen_manager.add_widget(GainLossScreen(self.screen_manager,name="GainLoss"))
+            self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name="GainLoss"))
         else:
             self.screen_manager.add_widget(MainScreen(name="Main"))
             self.screen_manager.current = "Main"
+            self.current = "Main"
 
     def go_nav(self):
         self.screen_manager.current = self.current
+
+    def help(self):
+        HelpScreen().open()
+
 
     # def on_text(self):
     #     name = self.screen_manager.current
@@ -129,15 +134,7 @@ class Mark2MarketApp(MDApp):
         if not hasattr(self, 'filePath'):
             toast('You must select a transaction file')
             return
-        extn = self.filePath[self.filePath.index('.') + 1:len(self.filePath)].upper()
-        if not (extn == 'XLSX' or extn == 'CSV'):
-            msg = extn + " not supported"
-            toast(msg)
-            return
         csvFile = self.filePath
-        if extn == 'XLSX':
-            convert_to_csv(self.filePath)
-            csvFile = "data.csv"
         tryout.make_product_dict_from_csv(csv_file=csvFile)
         for item in list(tryout.product_dict.values()):
             print(item)

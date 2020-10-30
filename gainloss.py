@@ -49,7 +49,6 @@ class GainLossScreen(Screen):
             cost = round(item.cost * item.quantity, 2)
             gain_loss = item.gain
             current_nav = item.nav
-            print('symbol,cost,price,qty,avg.cost,nav,gain_loss',item.symbol,item.cost,item.price,item.quantity,cost,item.nav,gain_loss)
             if gain_loss < 0:
                 gain_loss = '(' + str(round(gain_loss, 2))[1:] + ')'
             else:
