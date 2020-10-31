@@ -265,7 +265,8 @@ def get_bse_prices():
         isin = row["ISIN_CODE"]
         price = row["LAST"]
         bse_price_data.update({isin: price})
-    os.remove('bse.zip')
+    if os.path.exists('bse.zip'):
+        os.remove('bse.zip')
     return msg
 
 
