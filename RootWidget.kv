@@ -1,9 +1,11 @@
 <MainScreen>:
   BoxLayout:
     orientation:'vertical'
+    size_hint: 0.8,0.8
+    pos_hint: { 'center_x': .5, 'center_y': .5 }
     MDToolbar:
       title: 'Portfolio App'
-      left_action_items: [ [ '', lambda x: None ] ]
+      right_action_items: [ [ 'close', lambda x: app.exit() ] ]
       md_bg_color: .2, .2, .2, 1
     MDSpinner:
       id: spinner
@@ -29,31 +31,28 @@
         size_hint: None,None
         size_hint: 0.8, 0.1
         pos_hint: {'center_x': 0.5,'center_y':0.8}
-        md_bg_color: .7,.7,.7, 1
         on_release: app.file_manager_open()
 
       MDFillRoundFlatButton:
         text: 'Calculate NAV'
         size_hint: None,None
         size_hint: 0.5,0.1
-        pos_hint: {'center_x': 0.5,'center_y':0.6}
+        md_bg_color: .2, .2, .2, 1
+        pos_hint: {'center_x': 0.5,'center_y':0.4}
         elevation: 10
         on_release: app.process_file()
 
       MDIconButton:
         icon: 'forward'
         on_press: app.go_nav()
-        pos_hint: { 'center_x': .96, 'center_y': .6}
+        pos_hint: { 'center_x': .96, 'center_y': .4}
 
       MDIconButton:
         icon: 'help'
         on_press: app.help()
         pos_hint: { 'center_x': .96, 'center_y': .8 }
 
-      MDIconButton:
-        icon: 'close'
-        on_press: app.exit()
-        pos_hint: { 'center_x': .96, 'center_y': 1}
+
 
 
 <PnLScreen>:
