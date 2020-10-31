@@ -12,6 +12,7 @@ from kivymd.uix.filemanager import MDFileManager
 import tryout
 from PandLScreen import PnLScreen
 # from analysis import Analysis
+from analysis import Analysis
 from gainloss import GainLossScreen
 from help import HelpScreen
 
@@ -103,8 +104,8 @@ class Mark2MarketApp(MDApp):
             self.current = "NAV"
             self.screen_manager.add_widget(MainScreen(name="Main"))
             self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name="GainLoss"))
-            # analysis = Analysis(self.screen_manager, name="Charts")
-            # self.screen_manager.add_widget(analysis)
+            analysis = Analysis(self.screen_manager, name="Charts")
+            self.screen_manager.add_widget(analysis)
         else:
             self.screen_manager.add_widget(MainScreen(name="Main"))
             self.screen_manager.current = "Main"
@@ -143,8 +144,8 @@ class Mark2MarketApp(MDApp):
         screen_name = "UPDATE" + str(time())
         self.screen_manager.add_widget(PnLScreen(self.screen_manager, name=screen_name))
         self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name="GainLoss"))
-        # analysis = Analysis(self.screen_manager, name="Charts")
-        # self.screen_manager.add_widget(analysis)
+        analysis = Analysis(self.screen_manager, name="Charts")
+        self.screen_manager.add_widget(analysis)
         self.screen_manager.current = screen_name
         self.current = screen_name
         tryout.nav_name = screen_name
