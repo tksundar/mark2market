@@ -50,7 +50,7 @@ requirements = python3,kivy==2.0.0rc4,git+https://github.com/tksundar/KivyMD.git
 #icon.filename = %(source.dir)s/assets/kivymd.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
-orientation = portrait
+orientation = all
 
 # (list) List of service to declare
 #services = NAME:ENTRYPOINT_TO_PY,NAME2:ENTRYPOINT2_TO_PY
