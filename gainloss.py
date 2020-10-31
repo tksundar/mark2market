@@ -97,8 +97,8 @@ class GainLossScreen(Screen):
         self.screen_manager.current = tryout.nav_name
 
     def charts(self, instance):
-        self.popup.open()
-        # self.screen_manager.current = 'Charts'
+        #self.popup.open()
+        self.screen_manager.current = 'Charts'
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
