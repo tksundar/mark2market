@@ -293,6 +293,7 @@ def get_bse_prices():
     else:
         p = Popup()
         p.content(get_content())
+        p.size_hint = (.8,.8)
         p.open()
     if os.path.exists('bse.zip'):
         os.remove('bse.zip')
