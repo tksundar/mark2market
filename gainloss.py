@@ -1,7 +1,7 @@
 """
 Created by Sundar on 29-10-2020.email tksrajan@gmail.com
 """
-
+from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
@@ -44,6 +44,7 @@ class GainLossScreen(Screen):
     def __init__(self, screen_manager: ScreenManager, **kwargs):
         super().__init__(**kwargs)
         self.screen_manager = screen_manager
+        Window.bind(on_keyboard=self.events)
         self.pf_data = list(tryout.product_dict.values())
         self.pf_nav, self.gain_loss, self.gain_loss_percent = get_gain_loss(self.pf_data)
         self.popup = Popup()
@@ -97,6 +98,12 @@ class GainLossScreen(Screen):
         self.popup.open()
         # self.screen_manager.current = 'Charts'
 
+    def events(self, instance, keyboard, keycode, text, modifiers):
+        """Called when buttons are pressed on the mobile device."""
+        if keyboard in (1001, 27):
+            self.screen_manager.current = 'Main'
+        return True
+
     def get_table(self, data):
         row_data = []
         for item in data:
@@ -115,7 +122,7 @@ class GainLossScreen(Screen):
             row_data.append(row)
 
         table = MDDataTable(
-            size_hint=(.95, 0.8),
+            size_hint=(1, 0.8),
             pos_hint={'center_x': 0.5, 'center_y': 0.5},
             use_pagination=True,
             rows_num=7,

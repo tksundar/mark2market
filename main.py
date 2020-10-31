@@ -83,7 +83,6 @@ class Mark2MarketApp(MDApp):
         if os.path.exists('csv/pandb.csv'):
             tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
         self.filePath = ""
-        Window.clearcolor = (.5, .5, .5, 1)
         Window.bind(on_keyboard=self.events)
 
         self.manager_open = False
@@ -134,7 +133,7 @@ class Mark2MarketApp(MDApp):
         #     self.root.get_screen("Main").ids.input.text = self.characters.pop()
 
     def process_file(self):
-        if not hasattr(self, 'filePath'):
+        if len(self.filePath) == 0:
             toast('You must select a transaction file')
             return
         csvFile = self.filePath

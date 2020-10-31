@@ -1,7 +1,7 @@
 """
 Created by Sundar on 19-10-2020.email tksrajan@gmail.com
 """
-
+from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.properties import ListProperty, BooleanProperty
 from kivy.uix.button import Button
@@ -46,7 +46,7 @@ def get_table(data):
         row_data.append(row)
 
     table = MDDataTable(
-        size_hint=(0.95, 0.8),
+        size_hint=(1, 0.8),
         pos_hint={'center_x': 0.5, 'center_y': 0.5},
         use_pagination=True,
         pagination_menu_pos='center',
@@ -80,7 +80,7 @@ class PnLScreen(Screen):
             # tryout.get_isin_to_symbol_map()
             tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
             self.pf_data = list(tryout.product_dict.values())
-
+        Window.bind(on_keyboard=self.events)
         pf_nav = 0
         for pi in self.pf_data:
             pf_nav += pi.nav
@@ -89,6 +89,12 @@ class PnLScreen(Screen):
 
         print("Running app is " + MDApp.get_running_app().name)
         self.add_widgets()
+
+    def events(self, instance, keyboard, keycode, text, modifiers):
+        """Called when buttons are pressed on the mobile device."""
+        if keyboard in (1001, 27):
+            self.screen_manager.current = 'Main'
+        return True
 
     def go_home(self, instance):
         self.screen_manager.current = "Main"
