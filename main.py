@@ -177,6 +177,8 @@ class Mark2MarketApp(MDApp):
         if keyboard in (1001, 27):
             if self.manager_open:
                 self.file_manager.back()
+            else:
+                self.exit()
         return True
 
     def build(self):
