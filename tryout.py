@@ -8,6 +8,9 @@ from urllib.error import HTTPError
 from urllib.request import Request
 from zipfile import ZipFile
 
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+
 d = datetime.now()
 dd = str(int(d.strftime('%d')))
 mm = d.strftime('%m')
@@ -242,6 +245,27 @@ def get_nse_prices():
         nse_price_data.update({symbol: price})
 
 
+def get_content():
+    label = Label()
+    text = '''
+            BSE prices are not available now.
+            Possibly b/c it is a holiday.
+            
+            Or may beb/c you are running 
+            this app for the first time on 
+            a market holiday
+            
+            If your holdings have BSE only 
+            stocks, the NAV will be off. 
+            
+            This will resolve itself after
+            17:00 hrs on the next trading
+            day
+    '''
+    label.text = text
+    return label
+
+
 def get_bse_prices():
     context = ssl.SSLContext()
     print(bse_url)
@@ -259,12 +283,17 @@ def get_bse_prices():
     except HTTPError:
         msg = 'BSE price file not available now. Using last available price file'
         print(msg)
-    df = read_csv(bse_canonical_file, usecols=['ISIN_CODE', 'LAST'])
-    print("Getting prices for symbols")
-    for row in df:
-        isin = row["ISIN_CODE"]
-        price = row["LAST"]
-        bse_price_data.update({isin: price})
+    if os.path.exists(bse_canonical_file):
+        df = read_csv(bse_canonical_file, usecols=['ISIN_CODE', 'LAST'])
+        print("Getting prices for symbols")
+        for row in df:
+            isin = row["ISIN_CODE"]
+            price = row["LAST"]
+            bse_price_data.update({isin: price})
+    else:
+        p = Popup()
+        p.content(get_content())
+        p.open()
     if os.path.exists('bse.zip'):
         os.remove('bse.zip')
     return msg
