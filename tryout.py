@@ -37,6 +37,8 @@ bse_price_data: dict = {}
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 headers = {'User-Agent': user_agent, }
 
+popup = None
+
 nav_name = 'NAV'
 
 product_dict = {}
@@ -156,8 +158,9 @@ def update_price(pi: PortfolioItem):
         pi.price = float(px)
     else:
         isn = pi.isin
-        pi.price = float(bse_price_data.get(isn))
-        pass
+        px = bse_price_data.get(isn)
+        if px:
+            pi.price = float(bse_price_data.get(isn))
 
 
 def make_new_portfolio_item(row, isin):
@@ -209,7 +212,7 @@ def get_isin_to_symbol_map():
     context = ssl.SSLContext()
     if not os.path.exists('csv/EQUITY_L.csv'):
         r = Request(nse_equities_list_url, None, headers)
-        response = urllib.request.urlopen(r,context=context)
+        response = urllib.request.urlopen(r, context=context)
         with open('csv/EQUITY_L.csv', "wb") as f:
             f.write(response.read())
     isin_header = ' ISIN NUMBER'
@@ -246,6 +249,8 @@ def get_nse_prices():
 
 
 def get_content():
+    global popup
+    p = Popup()
     label = Label()
     text = '''
             BSE prices are not available now.
@@ -263,7 +268,9 @@ def get_content():
             day
     '''
     label.text = text
-    return label
+    p.content = label
+    p.size_hint = (0.8, 0.8)
+    popup = p
 
 
 def get_bse_prices():
@@ -291,10 +298,7 @@ def get_bse_prices():
             price = row["LAST"]
             bse_price_data.update({isin: price})
     else:
-        p = Popup()
-        p.content(get_content())
-        p.size_hint = (.8,.8)
-        p.open()
+        get_content()
     if os.path.exists('bse.zip'):
         os.remove('bse.zip')
     return msg

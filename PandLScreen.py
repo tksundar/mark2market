@@ -89,6 +89,8 @@ class PnLScreen(Screen):
 
         print("Running app is " + MDApp.get_running_app().name)
         self.add_widgets()
+        if tryout.popup:
+            tryout.popup.open()
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
