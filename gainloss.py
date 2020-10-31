@@ -31,6 +31,7 @@ def get_content():
            
            1. Exposure pie chart. Will show which stocks 
               are exposed to what level
+              
            2. Gain loss chart. Bar chart showing gains 
               and losses of individual stocks
           '''
@@ -48,7 +49,7 @@ class GainLossScreen(Screen):
         self.popup = Popup()
         self.popup.title = 'Performance Charts'
         self.popup.content = get_content()
-        self.popup.size_hint = (.5, .6)
+        self.popup.size_hint = (.9, .7)
         self.add_widgets()
 
     def add_widgets(self):
@@ -62,7 +63,7 @@ class GainLossScreen(Screen):
         button: Button = Button(text=text_string,
                                 pos_hint=({'center_x': .5, 'center_y': .95}),
                                 size_hint=(1, .08), )
-        button.background_color = (.2, .2, .2, 1)
+        button.background_color =  (0, 0, 0, 1)
         button.bind(on_press=self.go_home)
         floatLayout.add_widget(button)
 
@@ -70,21 +71,21 @@ class GainLossScreen(Screen):
         floatLayout.add_widget(table)
 
         input_btn = MDRaisedButton(text="Add/Delete", size_hint=(None, None), size=(100, 50),
-                                   pos_hint={'center_x': 0.15, 'center_y': 0.05}, elevation=10)
-        input_btn.md_bg_color = (.2, .2, .2, 1)
+                                   pos_hint={'center_x': 0.3, 'center_y': 0.05}, elevation=10)
+        input_btn.md_bg_color =  (0, 0, 0, 1)
         input_btn.bind(on_press=self.go_home)
         floatLayout.add_widget(input_btn)
 
         nav_btn = MDRaisedButton(text="PF data", size_hint=(None, None), size=(100, 50),
-                                   pos_hint={'center_x': 0.3, 'center_y': 0.05}, elevation=10)
-        nav_btn.md_bg_color = (.2, .2, .2, 1)
+                                   pos_hint={'center_x': 0.5, 'center_y': 0.05}, elevation=10)
+        nav_btn.md_bg_color =  (0, 0, 0, 1)
         nav_btn.bind(on_press=self.go_nav)
         floatLayout.add_widget(nav_btn)
 
 
         chart_btn = MDRaisedButton(text="Charts", size_hint=(None, None), size=(100, 50),
-                                   pos_hint={'center_x': 0.45, 'center_y': 0.05}, elevation=10)
-        chart_btn.md_bg_color = (.2, .2, .2, 1)
+                                   pos_hint={'center_x': 0.7, 'center_y': 0.05}, elevation=10)
+        chart_btn.md_bg_color =  (0, 0, 0, 1)
         chart_btn.bind(on_press=self.charts)
         floatLayout.add_widget(chart_btn)
 
@@ -116,15 +117,15 @@ class GainLossScreen(Screen):
             row_data.append(row)
 
         table = MDDataTable(
-            size_hint=(0.9, 0.8),
+            size_hint=(.95, 0.8),
             pos_hint={'center_x': 0.5, 'center_y': 0.5},
             rows_num=50,
             check=False,
             column_data=[
-                ("Symbol", dp(20)),
-                ("Avg.Cost", dp(20)),
-                ("Curr.NAV", dp(20)),
-                ("Gain/Loss", dp(20)),
+                ("Symbol", dp(15)),
+                ("Cost", dp(15)),
+                ("NAV", dp(15)),
+                ("Gain", dp(15)),
             ],
             row_data=row_data
         )

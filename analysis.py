@@ -3,7 +3,7 @@ Created by Sundar on 30-10-2020.email tksrajan@gmail.com
 """
 import os
 
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen, ScreenManager
@@ -44,15 +44,15 @@ class Analysis(Screen):
         self.screen_manager = screen_manager
         self.labels, self.data = get_plot_data()
 
-        # #fig, ax = plt.subplots()
-        # ax.pie(self.data, labels=self.labels, autopct='%1.1f%%',
-        #        shadow=True, startangle=90)
-        # ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-        #
-        # plt.savefig('nav.png')
-        # layout = FloatLayout()
-        # img = Image(source='nav.png')
-        # layout.add_widget(img)
+        fig, ax = plt.subplots()
+        ax.pie(self.data, labels=self.labels, autopct='%1.1f%%',
+               shadow=True, startangle=90)
+        ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+        plt.savefig('nav.png')
+        layout = FloatLayout()
+        img = Image(source='nav.png')
+        layout.add_widget(img)
 
 
         # back_btn = MDRaisedButton(text="Back", size_hint=(None, None), size=(100, 50),

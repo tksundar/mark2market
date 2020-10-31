@@ -42,20 +42,20 @@ def get_table(data):
     for item in data:
         if item.nav == 0:
             continue
-        row = [item.name[:40], item.quantity, item.price, item.nav]
+        row = [item.symbol, item.quantity, item.price, item.nav]
         row_data.append(row)
 
     table = MDDataTable(
-        size_hint=(0.9, 0.8),
+        size_hint=(0.95, 0.8),
         pos_hint={'center_x': 0.5, 'center_y': 0.5},
         #use_pagination=True,
         rows_num=50,
         check=False,
         column_data=[
-            ("Name", dp(20)),
-            ("Quantity", dp(20)),
-            ("Price", dp(20)),
-            ("NAV", dp(20)),
+            ("Symbol", dp(15)),
+            ("Quantity", dp(15)),
+            ("Price", dp(15)),
+            ("NAV", dp(15)),
         ],
         row_data=row_data,
     )
@@ -105,19 +105,19 @@ class PnLScreen(Screen):
         button: Button = Button(text="Portfolio NAV is " + str(self.pf_nav),
                                 pos_hint=({'center_x': .5, 'center_y': .95}),
                                 size_hint=(1, .08), )
-        button.background_color = (.2, .2, .2, 1)
+        button.background_color = (0, 0, 0, 1)
         button.bind(on_press=self.go_home)
         floatLayout.add_widget(button)
         table = get_table(self.pf_data)
         floatLayout.add_widget(table)
         input_btn = MDRaisedButton(text="Add/Delete", size_hint=(None, None), size=(100, 50),
-                                   pos_hint={'center_x': 0.2, 'center_y': 0.05}, elevation=10)
-        input_btn.md_bg_color = (.2, .2, .2, 1)
+                                   pos_hint={'center_x': 0.3, 'center_y': 0.05}, elevation=10)
+        input_btn.md_bg_color =  (0, 0, 0, 1)
         input_btn.bind(on_press=self.go_home)
         floatLayout.add_widget(input_btn)
         gain_btn = MDRaisedButton(text="Performance", size_hint=(None, None), size=(100, 50),
-                                  pos_hint={'center_x': 0.5, 'center_y': 0.05}, elevation=10)
-        gain_btn.md_bg_color = (.2, .2, .2, 1)
+                                  pos_hint={'center_x': 0.6, 'center_y': 0.05}, elevation=10)
+        gain_btn.md_bg_color =  (0, 0, 0, 1)
         gain_btn.bind(on_press=self.gain_loss)
         floatLayout.add_widget(gain_btn)
 

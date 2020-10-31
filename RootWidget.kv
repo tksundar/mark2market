@@ -1,4 +1,10 @@
 <MainScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
   BoxLayout:
     orientation:'vertical'
     size_hint: 0.8,0.8
@@ -6,7 +12,7 @@
     MDToolbar:
       title: 'Portfolio App'
       right_action_items: [ [ 'close', lambda x: app.exit() ] ]
-      md_bg_color: .2, .2, .2, 1
+      md_bg_color: 0, 0, 0, 1
     MDSpinner:
       id: spinner
       size_hint: None, None
@@ -37,7 +43,7 @@
         text: 'Calculate NAV'
         size_hint: None,None
         size_hint: 0.5,0.1
-        md_bg_color: .2, .2, .2, 1
+        md_bg_color: 0, 0, 0, 1
         pos_hint: {'center_x': 0.5,'center_y':0.4}
         elevation: 10
         on_release: app.process_file()
@@ -56,6 +62,21 @@
 
 
 <PnLScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+
+<GainLossScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+
 
 
 
