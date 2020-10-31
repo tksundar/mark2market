@@ -48,8 +48,9 @@ def get_table(data):
     table = MDDataTable(
         size_hint=(0.95, 0.8),
         pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        #use_pagination=True,
-        rows_num=50,
+        use_pagination=True,
+        pagination_menu_pos='center',
+        rows_num=7,
         check=False,
         column_data=[
             ("Symbol", dp(15)),
@@ -74,9 +75,9 @@ class PnLScreen(Screen):
         self.name = kwargs['name']
         app = MDApp.get_running_app().name
         if app == 'UPDATE':
-            tryout.get_nse_prices()
-            tryout.get_bse_prices()
-            tryout.get_isin_to_symbol_map()
+            # tryout.get_nse_prices()
+            # tryout.get_bse_prices()
+            # tryout.get_isin_to_symbol_map()
             tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
             self.pf_data = list(tryout.product_dict.values())
 

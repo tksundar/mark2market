@@ -94,8 +94,8 @@ class GainLossScreen(Screen):
         self.screen_manager.current = tryout.nav_name
 
     def charts(self, instance):
-        # self.popup.open()
-        self.screen_manager.current = 'Charts'
+        self.popup.open()
+        # self.screen_manager.current = 'Charts'
 
     def get_table(self, data):
         row_data = []
@@ -117,7 +117,9 @@ class GainLossScreen(Screen):
         table = MDDataTable(
             size_hint=(.95, 0.8),
             pos_hint={'center_x': 0.5, 'center_y': 0.5},
-            rows_num=50,
+            use_pagination=True,
+            rows_num=7,
+            pagination_menu_pos='auto',
             check=False,
             column_data=[
                 ("Symbol", dp(15)),
