@@ -74,7 +74,7 @@ class PnLScreen(Screen):
         app = MDApp.get_running_app().name
         if app == 'UPDATE':
             tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
-            self.pf_data = list(tryout.product_dict.values())
+        self.pf_data = list(tryout.product_dict.values())
         Window.bind(on_keyboard=self.events)
         pf_nav = 0
         for pi in self.pf_data:

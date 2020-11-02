@@ -11,6 +11,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager, ScreenManagerException
 from kivymd.app import MDApp
 from kivymd.toast import toast
+from kivymd.uix.button import MDIconButton
 from kivymd.uix.filemanager import MDFileManager
 
 import tryout
@@ -34,6 +35,7 @@ class TransactionEntryScreen(Screen):
 
 class TradingScreen(Screen):
     pass
+
 
 class SpinnerScreen(Screen):
     pass
@@ -89,7 +91,6 @@ class Mark2MarketApp(MDApp):
     processing = BooleanProperty(defaultValue=False)
     state = StringProperty(defaultvalue='stop')
 
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         start = time()
@@ -99,7 +100,6 @@ class Mark2MarketApp(MDApp):
 
         if os.path.exists('csv/pandb.csv'):
             tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
-
 
         self.manager_open = False
         self.filePath = ""
@@ -114,40 +114,44 @@ class Mark2MarketApp(MDApp):
         )
         self.file_manager.ext = ['.csv', '.CSV', '.xlsx', '.XLSX']
         # self.characters = []
+        self.popup = self.get_popup()
         Builder.load_file("RootWidget.kv")
         self.screen_manager = ScreenManager()
         addMainScreen(self.screen_manager)
         if len(tryout.product_dict) > 0:
-            print('have products.Opening nav screen')
+            # print('have products.Opening nav screen')
             add_dep_screens(self.screen_manager)
-            self.screen_manager.current = "NAV"
-            self.current = "NAV"
-        else:
-            print('No products yet. Opening main screen')
-            self.screen_manager.current = "Main"
-            self.current = "Main"
+            # self.screen_manager.current = "NAV"
+            # self.current = "NAV"
+
+            # print('No products yet. Opening main screen')
+        self.screen_manager.current = "Main"
+        self.current = "Main"
 
         end = time()
         print('elapsed time for startup is %d seconds ' % (end - start))
 
-    def on_state(self,instance,value):
+    def on_state(self, instance, value):
         print(value)
         print(instance)
         # {
         #     "start": self.root.ids.progress.start,
         #     "stop": self.root.ids.progress.stop,
         # }.get(value)()
-        #self.screen_manager.ids.progress.start()
+        # self.screen_manager.ids.progress.start()
 
     def get_popup(self):
-        pop = Popup(auto_dismiss=False)
+        pop = Popup(title='Transaction status',auto_dismiss=False)
         lbl = Label()
-        lbl.text = 'Transaction updated successfully'
-        btn = Button()
-        btn.text = 'Home'
+        lbl.text = 'Update successful'
+        btn = MDIconButton()
+        lbl.pos_hint = {'center_x': .5, 'center_y': .5}
+        btn.icon = 'home'
         btn.bind(on_press=self.go_home)
-        from kivy.uix.gridlayout import GridLayout
-        layout = GridLayout(rows=2)
+        btn.md_bg_color = (1, 1, 1, 1)
+        btn.pos_hint = {'center_x': .5, 'center_y': 0.1}
+        from kivy.uix.floatlayout import FloatLayout
+        layout = FloatLayout()
         layout.add_widget(lbl)
         layout.add_widget(btn)
         pop.content = layout
@@ -155,7 +159,7 @@ class Mark2MarketApp(MDApp):
         return pop
 
     def go_nav(self):
-        self.screen_manager.current = self.current
+        self.screen_manager.current = "NAV"
 
     def upload_screen(self):
         self.screen_manager.current = 'Upload'
@@ -245,7 +249,6 @@ class Mark2MarketApp(MDApp):
         self.current = screen_name
         tryout.nav_name = screen_name
 
-
     def select_path(self, path):
         """It will be called when you click on the file name
         or the catalog selection button.
@@ -255,7 +258,7 @@ class Mark2MarketApp(MDApp):
         self.exit_manager()
         self.root.get_screen(self.root.current).ids.file_chooser.text = path
         self.filePath = path
-        #self.process_file()
+        # self.process_file()
 
     def set_error_message(self, instance_textfield):
         name = self.screen_manager.current

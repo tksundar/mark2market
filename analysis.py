@@ -169,7 +169,7 @@ class Analysis(Screen):
         make_sectoral_plot('sectors.png')
         make_day_gain_loss('day_gain_loss.png')
 
-        layout = GridLayout(cols=2, size_hint=(.9, .9), pos_hint={'center_x': .5, 'center_y': 0.5})
+        layout = GridLayout(cols=2, size_hint=(.9, .8), pos_hint={'center_x': .5, 'center_y': 0.5})
 
 
         img = Image(source='nav.png')
