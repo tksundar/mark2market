@@ -18,10 +18,14 @@ d = datetime.now()
 dd = str(int(d.strftime('%d')))
 mm = d.strftime('%m')
 yyyy = d.strftime('%y')
-
+if d.day < 10:
+    dd = '0' + dd
 hrs = d.hour
 if 0 < hrs < 17:
     dd = str(int(d.strftime('%d')) - 1)
+    if d.day < 10:
+        dd = '0' + dd
+
 date = dd + mm + yyyy
 
 nse_equities_list_url = 'http://www1.nseindia.com/content/equities/EQUITY_L.csv'
@@ -120,6 +124,7 @@ def make_product_dict_from_csv(**kwargs):
             if row['name'] in nse_isin_to_symbol_map or row['name'] in bse_isin_to_symbol_map:
                 isin = row['name']
         if not isin:
+            print(row)
             raise AttributeError("Could not find isin for %s", row["name"])
         if isin in product_dict:
             p_item = product_dict[isin]
@@ -198,7 +203,7 @@ def update_or_create_portfolio_item(**kwargs):
         update_gain(pi)
         product_dict.update({pi.isin: pi})
         symbol_product_dict.update({pi.symbol: pi})
-        print(symbol_product_dict)
+        print('processed %d symbols ' % len(symbol_product_dict))
 
 
 def make_new_portfolio_item(row, isin, **kwargs):
@@ -248,6 +253,7 @@ def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_
 
 
 def get_isin_to_symbol_map():
+    print('getting isin to symbol map...')
     context = ssl.SSLContext()
     if not os.path.exists('csv/EQUITY_L.csv'):
         r = Request(nse_equities_list_url, None, headers)
@@ -270,10 +276,13 @@ def get_isin_to_symbol_map():
     create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, bse_isin_to_symbol_map,
                               bse_symbol_to_isin_map)
 
+    print('finished getting isin to symbol map')
+
 
 def get_nse_prices():
     """Return a dict of Symbol to Close_Price"""
     # Fetch the csv file from NSE
+    print('getting nse price data')
     if os.path.exists('nse.csv'):
         os.remove('nse.csv')
     context = ssl.SSLContext()
@@ -287,6 +296,7 @@ def get_nse_prices():
         symbol = row["SYMBOL"]
         price = row[" CLOSE_PRICE"]
         nse_price_data.update({symbol: price})
+    print('finished getting nse price data')
 
 
 def get_content():
@@ -315,6 +325,7 @@ def get_content():
 
 
 def get_bse_prices():
+    print('getting bse prices')
     context = ssl.SSLContext()
     print(bse_url)
     msg = ''
@@ -342,7 +353,8 @@ def get_bse_prices():
         get_content()
     if os.path.exists('bse.zip'):
         os.remove('bse.zip')
-    return msg
+    print('finished getting bse price data')
+
 
 
 def read_csv(fileName, **kwargs):
@@ -382,5 +394,3 @@ def open_url(broker):
     elif broker == 'ICICI Direct':
         url = 'https://secure.icicidirect.com/IDirectTrading/customer/login.aspx'
     webbrowser.open(url)
-
-

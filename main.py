@@ -1,9 +1,10 @@
+import asyncio
 import os
 from time import time
 
 from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.properties import BooleanProperty
+from kivy.properties import BooleanProperty, StringProperty
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -34,12 +35,16 @@ class TransactionEntryScreen(Screen):
 class TradingScreen(Screen):
     pass
 
+class SpinnerScreen(Screen):
+    pass
+
 
 def addMainScreen(sm):
     sm.add_widget(MainScreen(name="Main"))
     sm.add_widget(TransactionUploadScreen(name="Upload"))
     sm.add_widget(TransactionEntryScreen(name="Entry"))
     sm.add_widget(TradingScreen(name="Trade"))
+    sm.add_widget(SpinnerScreen(name="Spinner"))
 
 
 def add_dep_screens(sm):
@@ -80,27 +85,22 @@ def exit():
     Window.close()
 
 
-# name = self.screen_manager.current
-# val = self.root.get_screen(name).ids.input.text
-# print(val)
-# self.characters.append(val.upper())
-def get_spinner_popup():
-    pop = Popup(title='Loading...', content=Label(text='loading'), auto_dismiss=False)
-    pop.size_hint=0.3, 0.3
-    return pop
-
-
 class Mark2MarketApp(MDApp):
     processing = BooleanProperty(defaultValue=False)
+    state = StringProperty(defaultvalue='stop')
+
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.processing = True
+        start = time()
         tryout.get_nse_prices()
         tryout.get_bse_prices()
         tryout.get_isin_to_symbol_map()
+
         if os.path.exists('csv/pandb.csv'):
             tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
+
+
         self.manager_open = False
         self.filePath = ""
         self.symbol = []
@@ -113,20 +113,31 @@ class Mark2MarketApp(MDApp):
             select_path=self.select_path,
         )
         self.file_manager.ext = ['.csv', '.CSV', '.xlsx', '.XLSX']
-        self.processing = False
         # self.characters = []
         Builder.load_file("RootWidget.kv")
         self.screen_manager = ScreenManager()
         addMainScreen(self.screen_manager)
         if len(tryout.product_dict) > 0:
+            print('have products.Opening nav screen')
             add_dep_screens(self.screen_manager)
             self.screen_manager.current = "NAV"
             self.current = "NAV"
         else:
+            print('No products yet. Opening main screen')
             self.screen_manager.current = "Main"
             self.current = "Main"
 
-        self.popup = self.get_popup()
+        end = time()
+        print('elapsed time for startup is %d seconds ' % (end - start))
+
+    def on_state(self,instance,value):
+        print(value)
+        print(instance)
+        # {
+        #     "start": self.root.ids.progress.start,
+        #     "stop": self.root.ids.progress.stop,
+        # }.get(value)()
+        #self.screen_manager.ids.progress.start()
 
     def get_popup(self):
         pop = Popup(auto_dismiss=False)
@@ -212,8 +223,7 @@ class Mark2MarketApp(MDApp):
         #     self.root.get_screen("Main").ids.input.text = self.characters.pop()
 
     def process_file(self):
-        pop: Popup = get_spinner_popup()
-        pop.open()
+        self.screen_manager.current = 'Spinner'
         if len(self.filePath) == 0:
             toast('You must select a transaction file')
             return
@@ -222,10 +232,8 @@ class Mark2MarketApp(MDApp):
         extn = self.filePath[-4:].upper()
         if extn.__contains__('XLS'):
             csvFile = convert_to_csv(self.filePath)
-        self.processing = True
         tryout.make_product_dict_from_csv(csv_file=csvFile)
-        self.processing = False
-        pop.dismiss()
+        self.state = 'stop'
         # for item in list(tryout.product_dict.values()):
         #     print(item)
         screen_name = "UPDATE" + str(time())
@@ -247,7 +255,7 @@ class Mark2MarketApp(MDApp):
         self.exit_manager()
         self.root.get_screen(self.root.current).ids.file_chooser.text = path
         self.filePath = path
-        self.process_file()
+        #self.process_file()
 
     def set_error_message(self, instance_textfield):
         name = self.screen_manager.current

@@ -6,6 +6,7 @@ import os
 import matplotlib.pyplot as plt
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
+from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.uix.button import MDTextButton, MDIconButton
 import pandas as pd
@@ -150,9 +151,6 @@ def make_day_gain_loss(name):
             colors.append('red')
         else:
             colors.append('green')
-    print(labels)
-    print(data)
-    print(colors)
     plt.clf()
     fig, axes = plt.subplots()
     ticks = np.arange(0, len(labels))
@@ -170,7 +168,10 @@ class Analysis(Screen):
         make_gains_plot('gains.png')
         make_sectoral_plot('sectors.png')
         make_day_gain_loss('day_gain_loss.png')
-        layout = GridLayout(cols=2, size_hint=(0.8, 0.8), pos_hint={'center_x': .5, 'center_y': 0.5})
+
+        layout = GridLayout(cols=2, size_hint=(.9, .9), pos_hint={'center_x': .5, 'center_y': 0.5})
+
+
         img = Image(source='nav.png')
         layout.add_widget(img)  # 1
 
@@ -185,7 +186,7 @@ class Analysis(Screen):
 
         self.add_widget(layout)
 
-        home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.05})
+        home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.02})
         home_btn.md_bg_color = (1, 1, 1, 1)
         home_btn.bind(on_press=self.go_home)
         self.add_widget(home_btn)

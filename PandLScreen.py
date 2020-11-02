@@ -33,8 +33,6 @@ def sort(param, pf_data):
     global sort_param
     sort_param = param
     pf_data.sort(key=get_sort_key, reverse=True if param == 'quantity' or param == 'price' or param == 'nav' else False)
-    for pf in pf_data:
-        print(pf)
 
 
 def get_table(data):
