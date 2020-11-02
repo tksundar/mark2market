@@ -14,7 +14,7 @@ source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
 #source.include_exts = assets/*,py,png,jpg,kv,atlas
-source.include_exts = py,png,jpg,jpeg,ttf,md,kv,json,csv
+source.include_exts = py,png,jpg,jpeg,ttf,md,kv,json,csv,xlsx
 
 # (list) List of inclusions using pattern matching
 source.include_patterns = assets/*
