@@ -7,7 +7,10 @@ from shutil import copyfile
 from urllib.error import HTTPError
 from urllib.request import Request
 from zipfile import ZipFile
+import webbrowser
 
+from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
@@ -29,6 +32,8 @@ bse_canonical_file = "bse.csv"
 bse_zip_file = 'bse.zip'
 nse_isin_to_symbol_map: dict = {}
 bse_isin_to_symbol_map: dict = {}
+bse_symbol_to_isin_map: dict = {}
+nse_symbol_to_isin_map: dict = {}
 symbol_to_exchange_map: dict = {}
 isin_to_name_map: dict = {}
 name_to_isin_map: dict = {}
@@ -42,6 +47,7 @@ popup = None
 nav_name = 'NAV'
 
 product_dict = {}
+symbol_product_dict = {}
 
 
 class PortfolioItem:
@@ -90,17 +96,14 @@ def create_portfolio_item_dict(df, isin):
         pi.name = isin_to_name_map.get(pi.isin)
         q = row['quantity']
         pi.quantity = float(q)
-        px = nse_price_data.get(pi.symbol)
-        if px:
-            pi.price = float(px)
+        price = nse_price_data.get(pi.symbol)
+        if not (price is None):
+            pi.price = float(price)
         else:
             pi.price = float(bse_price_data.get(pi.isin))
             pi.exchange = "BSE"
-        pi.cost = float(row["price"])
-        nav, gain, percent = calculate_gain(pi.quantity, pi.cost, pi.price)
-        pi.nav = nav
-        pi.gain = gain
-        pi.percent = percent
+        pi.cost = float(row["cost"])
+        update_gain(pi)
         product_dict.update({pi.isin: pi})
 
 
@@ -127,29 +130,29 @@ def make_product_dict_from_csv(**kwargs):
     convert_to_csv()
 
 
-def update_portfolio_item(row, pi):
-    if 'name' in row:
-        pi.name = row['name']
-    else:
-        pi.name = isin_to_name_map.get(row['isin'])
-    qty = float(row["quantity"])
-    if "side" in row:
-        side = row["side"]
-        if side == 'BUY':
-            pi.quantity += qty
+def update_portfolio_item(row, pi, **kwargs):
+    if not (row is None):
+        if 'name' in row:
+            pi.name = row['name']
         else:
-            if pi.quantity >= qty:
-                pi.quantity -= qty
+            pi.name = isin_to_name_map.get(row['isin'])
+        qty = float(row["quantity"])
+        if "side" in row:
+            side = row["side"]
+            if side == 'BUY':
+                pi.quantity += qty
             else:
-                pi.quantity = 0.0
+                if pi.quantity >= qty:
+                    pi.quantity -= qty
+                else:
+                    pi.quantity = 0.0
+        else:
+            pi.quantity = qty
+        pi.cost = float(row["cost"])
+        update_price(pi)
+        update_gain(pi)
     else:
-        pi.quantity = qty
-    pi.cost = float(row["cost"])
-    update_price(pi)
-    net, gain, percent = calculate_gain(pi.quantity, pi.cost, pi.price)
-    pi.nav = net
-    pi.gain = gain
-    pi.percent = percent
+        update_or_create_portfolio_item(**kwargs)
 
 
 def update_price(pi: PortfolioItem):
@@ -163,35 +166,73 @@ def update_price(pi: PortfolioItem):
             pi.price = float(bse_price_data.get(isn))
 
 
-def make_new_portfolio_item(row, isin):
-    pi = PortfolioItem()
-    pi.isin = isin
-    name = isin_to_name_map.get(isin)
-    pi.name = name
-    sym = nse_isin_to_symbol_map.get(isin)
-    if not (sym is None):
-        pi.symbol = sym
+def update_or_create_portfolio_item(**kwargs):
+    symbol = kwargs['symbol']
+    if symbol in symbol_product_dict:
+        pi = symbol_product_dict.get(symbol)
+        side = kwargs['side']
+        quantity = float(kwargs['quantity'])
+        cost = float(kwargs['cost'])
+        if side == 'BUY':
+            pi.cost = (pi.quantity * pi.cost + quantity * cost) / (pi.quantity + quantity)
+            pi.quantity += quantity
+        else:
+            pi.cost = (pi.quantity * pi.cost - quantity * cost) / (pi.quantity + quantity)
+            pi.quantity -= quantity
     else:
-        pi.symbol = bse_isin_to_symbol_map.get(isin)
-    pi.quantity = float(row["quantity"])
-    pi.cost = float(row["cost"])
-    update_price(pi)
-    net, gain, percent = calculate_gain(pi.quantity, pi.cost, pi.price)
-    pi.nav = net
-    pi.gain = gain
-    pi.percent = percent
-    product_dict.update({isin: pi})
+        pi = PortfolioItem()
+        pi.symbol = symbol
+        pi.quantity = float(kwargs['quantity'])
+        pi.cost = float(kwargs['cost'])
+        isin = nse_symbol_to_isin_map.get(pi.symbol)
+        if isin is None:
+            isin = bse_symbol_to_isin_map.get(pi.symbol)
+        pi.isin = isin
+        price = nse_price_data.get(pi.symbol)
+        if price is None:
+            price = bse_price_data.get(bse_symbol_to_isin_map.get(pi.symbol))
+            if not (price is None):
+                pi.price = float(price)
+        else:
+            pi.price = float(price)
+        update_gain(pi)
+        product_dict.update({pi.isin: pi})
+        symbol_product_dict.update({pi.symbol: pi})
+        print(symbol_product_dict)
 
 
-def calculate_gain(qty, cost, px):
-    nav1 = cost * qty
-    nav2 = px * qty
+def make_new_portfolio_item(row, isin, **kwargs):
+    pi = PortfolioItem()
+    if not (row is None):
+        pi.isin = isin
+        name = isin_to_name_map.get(isin)
+        pi.name = name
+        sym = nse_isin_to_symbol_map.get(isin)
+        if not (sym is None):
+            pi.symbol = sym
+        else:
+            pi.symbol = bse_isin_to_symbol_map.get(isin)
+        pi.quantity = float(row["quantity"])
+        pi.cost = float(row["cost"])
+        update_price(pi)
+        update_gain(pi)
+        product_dict.update({isin: pi})
+        symbol_product_dict.update({pi.symbol: pi})
+    else:
+        update_or_create_portfolio_item(**kwargs)
+
+
+def update_gain(pi):
+    nav1 = pi.cost * pi.quantity
+    nav2 = pi.price * pi.quantity
     gain = nav2 - nav1 if nav1 > 0 else 0
     percent = gain / nav1 if nav1 > 0 else 0
-    return round(nav2, 2), gain, percent
+    pi.nav = round(nav2, 2)
+    pi.gain = round(gain, 2)
+    pi.percent = round(percent, 2)
 
 
-def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_symbol_map):
+def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_symbol_map, symbol_isin_map):
     for row in df:
         isin = row[isin_header]
         symbol = row[symbol_header]
@@ -199,13 +240,11 @@ def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_
         if name.__contains__('.-$'):
             ind = name.index('.-$')
             name = name[0:ind].strip()
-        # print("%s : %s %s" % (name, isin, name_header))
         isin_symbol_map.update({isin: symbol})
+        symbol_isin_map.update({symbol: isin})
         if not (isin in isin_to_name_map):
             isin_to_name_map.update({isin: name})
         name_to_isin_map.update({name: isin})
-    # for k, v in name_to_isin_map.items():
-    #     print('name:%s , isin:%s' % (k, v))
 
 
 def get_isin_to_symbol_map():
@@ -219,7 +258,8 @@ def get_isin_to_symbol_map():
     symbol_header = 'SYMBOL'
     name_header = 'NAME OF COMPANY'
     df = read_csv('csv/EQUITY_L.csv', usecols=['SYMBOL', ' ISIN NUMBER', 'NAME OF COMPANY'])
-    create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, nse_isin_to_symbol_map)
+    create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, nse_isin_to_symbol_map,
+                              nse_symbol_to_isin_map)
     if not os.path.exists('csv/Equity.csv'):
         pass
         # get this dynamically
@@ -227,7 +267,8 @@ def get_isin_to_symbol_map():
     symbol_header = 'Security Id'
     isin_header = 'ISIN No'
     name_header = 'Security Name'
-    create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, bse_isin_to_symbol_map)
+    create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, bse_isin_to_symbol_map,
+                              bse_symbol_to_isin_map)
 
 
 def get_nse_prices():
@@ -321,3 +362,25 @@ def read_csv(fileName, **kwargs):
             df.append(data)
 
     return df
+
+
+def update_portfolio(symbol, qty, cost, side):
+    if symbol in symbol_product_dict:
+        update_portfolio_item(None, None, symbol=symbol, quantity=qty, cost=cost, side=side)
+    else:
+        # new symbol
+        make_new_portfolio_item(None, None, symbol=symbol, quantity=qty, cost=cost, side=side)
+    convert_to_csv()
+
+    return True
+
+
+def open_url(broker):
+    url = ''
+    if broker == 'HDFC Securities':
+        url = 'https://ntrade.hdfcsec.com/?utm_source=netcore&utm_medium=emailer&utm_campaign=birthday&utm_content=manage'
+    elif broker == 'ICICI Direct':
+        url = 'https://secure.icicidirect.com/IDirectTrading/customer/login.aspx'
+    webbrowser.open(url)
+
+

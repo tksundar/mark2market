@@ -72,33 +72,11 @@ class GainLossScreen(Screen):
 
         table = self.get_table(self.pf_data)
         floatLayout.add_widget(table)
-
-        input_btn = MDTextButton(text="Add/Delete", size_hint=(None, None), size=(100, 50),
-                                   pos_hint={'center_x': 0.2, 'center_y': 0.05})
-
-        input_btn.bind(on_press=self.go_home)
-        floatLayout.add_widget(input_btn)
-
-        nav_btn = MDTextButton(text="PF data", size_hint=(None, None), size=(100, 50),
-                                 pos_hint={'center_x': 0.5, 'center_y': 0.05})
-
-        nav_btn.bind(on_press=self.go_nav)
-        floatLayout.add_widget(nav_btn)
-
-        chart_btn = MDTextButton(text="Charts", size_hint=(None, None), size=(100, 50),
-                                   pos_hint={'center_x': 0.8, 'center_y': 0.05})
-
-        chart_btn.bind(on_press=self.charts)
-        floatLayout.add_widget(chart_btn)
-
+        home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.05})
+        home_btn.md_bg_color = (1, 1, 1, 1)
+        home_btn.bind(on_press=self.go_home)
+        floatLayout.add_widget(home_btn)
         self.add_widget(floatLayout)
-
-    def go_nav(self, instance):
-        self.screen_manager.current = tryout.nav_name
-
-    def charts(self, instance):
-        #self.popup.open()
-        self.screen_manager.current = 'Charts'
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""

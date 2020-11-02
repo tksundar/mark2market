@@ -75,9 +75,6 @@ class PnLScreen(Screen):
         self.name = kwargs['name']
         app = MDApp.get_running_app().name
         if app == 'UPDATE':
-            # tryout.get_nse_prices()
-            # tryout.get_bse_prices()
-            # tryout.get_isin_to_symbol_map()
             tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
             self.pf_data = list(tryout.product_dict.values())
         Window.bind(on_keyboard=self.events)
@@ -86,11 +83,7 @@ class PnLScreen(Screen):
             pf_nav += pi.nav
         self.pf_nav = round(pf_nav, 2)
         sort("nav", self.pf_data)
-
-        print("Running app is " + MDApp.get_running_app().name)
         self.add_widgets()
-        if tryout.popup:
-            tryout.popup.open()
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
@@ -100,13 +93,6 @@ class PnLScreen(Screen):
 
     def go_home(self, instance):
         self.screen_manager.current = "Main"
-
-    def gain_loss(self, instance):
-        print("gain loss")
-        self.screen_manager.current = "GainLoss"
-
-    def analysis(self, instance):
-        print("analysis")
 
     def add_widgets(self):
         self.processing = True
@@ -120,16 +106,14 @@ class PnLScreen(Screen):
         table = get_table(self.pf_data)
         floatLayout.add_widget(table)
 
-        input_btn = MDTextButton(text="Add/Delete", size_hint=(None, None), size=(100, 50),
-                                   pos_hint={'center_x': 0.3, 'center_y': 0.05})
-        input_btn.md_bg_color = (0, 0, 0, 1)
-        input_btn.bind(on_press=self.go_home)
-        floatLayout.add_widget(input_btn)
-        gain_btn = MDTextButton(text="Performance", size_hint=(None, None), size=(100, 50),
-                                  pos_hint={'center_x': 0.6, 'center_y': 0.05})
-        gain_btn.md_bg_color = (0, 0, 0, 1)
-        gain_btn.bind(on_press=self.gain_loss)
-        floatLayout.add_widget(gain_btn)
+        # input_btn = MDIconButton(icon='home',text="Home", size_hint=(None, None), size=(100, 50),
+        #                            pos_hint={'center_x': 0.5, 'center_y': 0.05})
+
+        home_btn = MDIconButton(icon='home',pos_hint={'center_x': 0.5, 'center_y': 0.05})
+        home_btn.md_bg_color = (1, 1, 1, 1)
+        home_btn.bind(on_press=self.go_home)
+        floatLayout.add_widget(home_btn)
+
 
         # analysis_btn = MDRaisedButton(text="Sectoral Analysis", size_hint=(None, None), size=(100, 50),
         #                               pos_hint={'center_x': 0.9, 'center_y': 0.05}, elevation=10)
