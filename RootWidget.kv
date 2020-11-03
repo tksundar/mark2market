@@ -228,6 +228,47 @@
       size: self.size
 
 <Analysis>:
+  BoxLayout:
+    orientation: 'vertical'
+    size_hint: 0.85,0.85
+    pos_hint: { 'center_x': .5, 'center_y': .5 }
+    MDToolbar:
+      title: 'Mark 2 Market - Analysis'
+      right_action_items: [ [ 'close', lambda x: app.exit() ] ]
+      md_bg_color: 0, 0, 0, 1
+    FloatLayout:
+      canvas.before:
+        Color:
+          rgba: .9, .9, .9, 1
+        Rectangle:
+          pos: self.pos
+          size: self.size
+
+<NavScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+
+<GLScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+
+<SectorScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+
+<TrendScreen>:
   canvas.before:
     Color:
       rgba: .2, .2, .2, 1

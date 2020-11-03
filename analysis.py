@@ -5,10 +5,12 @@ Created by Sundar on 30-10-2020.email tksrajan@gmail.com
 import matplotlib.pyplot as plt
 import pandas as pd
 from kivy.core.window import Window
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
-from kivy.uix.screenmanager import Screen, ScreenManager
-from kivymd.uix.button import MDIconButton
+from kivy.uix.label import Label
+from kivy.uix.screenmanager import Screen, ScreenManager,ScreenManagerException
+from kivymd.uix.button import MDIconButton, MDTextButton
 
 import tryout
 
@@ -124,7 +126,7 @@ def make_day_gain_loss(name):
     import numpy as np
     date = tryout.get_date_string()
 
-    df = pd.read_csv(date+'_nse.csv', usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
+    df = pd.read_csv(date + '_nse.csv', usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
     _, _, symbols = get_nav_data()
     up_down = {}
 
@@ -135,7 +137,7 @@ def make_day_gain_loss(name):
             close = float(row[' CLOSE_PRICE'])
             up_down.update({symbol: close - prev})
 
-    df = pd.read_csv(date+'_bse.csv', usecols=['ISIN_CODE', 'PREVCLOSE', 'CLOSE'])
+    df = pd.read_csv(date + '_bse.csv', usecols=['ISIN_CODE', 'PREVCLOSE', 'CLOSE'])
     for index, row in df.iterrows():
         isin = row['ISIN_CODE']
         symbol = tryout.bse_isin_to_symbol_map.get(isin)
@@ -161,11 +163,80 @@ def make_day_gain_loss(name):
     plt.savefig(name)
 
 
-class Analysis(Screen):
+def add_home_btn(widget):
+    home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.02})
+    home_btn.md_bg_color = (1, 1, 1, 1)
+    home_btn.bind(on_press=widget.go_home)
+    widget.add_widget(home_btn)
+
+
+class NavScreen(Screen):
+
     def __init__(self, screen_manager, **kwargs):
         super().__init__(**kwargs)
         self.screen_manager = screen_manager
+
+    def add_widgets(self):
+        make_nav_plot('nav.png')
+        img = Image(source='nav.png')
+        self.add_widget(img)
+        add_home_btn(self)
+
+    def go_home(self, instance):
+        self.screen_manager.current = 'Charts'
+
+
+class GLScreen(Screen):
+    def __init__(self, screen_manager, **kwargs):
+        super().__init__(**kwargs)
+        self.screen_manager = screen_manager
+
+    def add_widgets(self):
+        make_gains_plot('gains.png')
+        img = Image(source='gains.png')
+        self.add_widget(img)
+        add_home_btn(self)
+
+    def go_home(self, instance):
+        self.screen_manager.current = 'Charts'
+
+
+class SectorScreen(Screen):
+    def __init__(self, screen_manager, **kwargs):
+        super().__init__(**kwargs)
+        self.screen_manager = screen_manager
+
+    def add_widgets(self):
+        make_sectoral_plot('sectors.png')
+        img = Image(source='sectors.png')
+        self.add_widget(img)
+        add_home_btn(self)
+
+    def go_home(self, instance):
+        self.screen_manager.current = 'Charts'
+
+
+class TrendScreen(Screen):
+    def __init__(self, screen_manager, **kwargs):
+        super().__init__(**kwargs)
+        self.screen_manager = screen_manager
+
+    def add_widgets(self):
+        make_day_gain_loss('day_gain_loss.png')
+        img = Image(source='day_gain_loss.png')
+        self.add_widget(img)
+        add_home_btn(self)
+
+    def go_home(self, instance):
+        self.screen_manager.current = 'Charts'
+
+
+class Analysis(Screen):
+    def __init__(self, screen_manager, **kwargs):
+        super().__init__(**kwargs)
+        self.screen_manager:ScreenManager = screen_manager
         Window.bind(on_keyboard=self.events)
+        self.widgets_not_added = True
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
@@ -173,29 +244,72 @@ class Analysis(Screen):
             self.screen_manager.current = 'Main'
         return True
 
-
-
     def add_widgets(self):
         tryout.init()
-        if len(list(tryout.product_dict)) > 0:
-            make_nav_plot('nav.png')
-            make_gains_plot('gains.png')
-            make_sectoral_plot('sectors.png')
-            make_day_gain_loss('day_gain_loss.png')
-            layout = GridLayout(cols=2, size_hint=(.9, .8), pos_hint={'center_x': .5, 'center_y': 0.5})
-            img = Image(source='nav.png')
-            layout.add_widget(img)  # 1
-            img = Image(source='gains.png')
-            layout.add_widget(img)  # 2
-            img = Image(source='sectors.png')
-            layout.add_widget(img)  # 3
-            img = Image(source='day_gain_loss.png')
-            layout.add_widget(img)
-            self.add_widget(layout)
-            home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.02})
-            home_btn.md_bg_color = (1, 1, 1, 1)
-            home_btn.bind(on_press=self.go_home)
-            self.add_widget(home_btn)
+        if len(tryout.product_dict) > 0 and self.widgets_not_added:
+            try:
+                self.screen_manager.get_screen('NAV_PLOT')
+            except ScreenManagerException:
+                nav_plot = NavScreen(self.screen_manager, name='NAV_PLOT')
+                nav_plot.add_widgets()
+                self.screen_manager.add_widget(nav_plot)
+            #2
+            try:
+                self.screen_manager.get_screen('GL_PLOT')
+            except ScreenManagerException:
+                gl_plot = GLScreen(self.screen_manager,name='GL_PLOT')
+                gl_plot.add_widgets()
+                self.screen_manager.add_widget(gl_plot)
+            #3
+            try:
+                self.screen_manager.get_screen('SEC_PLOT')
+            except ScreenManagerException:
+                sec_plot = SectorScreen(self.screen_manager,name='SEC_PLOT')
+                sec_plot.add_widgets()
+                self.screen_manager.add_widget(sec_plot)
+            #4
+            try:
+                self.screen_manager.get_screen('TREND_PLOT')
+            except ScreenManagerException:
+                trend_plot = TrendScreen(self.screen_manager,name='TREND_PLOT')
+                trend_plot.add_widgets()
+                self.screen_manager.add_widget(trend_plot)
+
+            floatLayout = FloatLayout(size_hint=(.9, .9))
+            nav_btn = MDTextButton(text='NAV Plot',pos_hint = {'center_x':0.5,'center_y':0.7})
+            nav_btn.bind(on_press=self.go_nav_plot)
+            floatLayout.add_widget(nav_btn)
+
+            gl_btn = MDTextButton(text='Gain Loss Plot', pos_hint={'center_x': 0.5, 'center_y': 0.6})
+            gl_btn.bind(on_press=self.go_gl_plot)
+            floatLayout.add_widget(gl_btn)
+
+            sec_btn = MDTextButton(text='Sectoral Exposure Plot', pos_hint={'center_x': 0.5, 'center_y': 0.5})
+            sec_btn.bind(on_press=self.go_sec_plot)
+            floatLayout.add_widget(sec_btn)
+
+            trend_btn = MDTextButton(text='Stock Movement plot', pos_hint={'center_x': 0.5, 'center_y': 0.4})
+            trend_btn.bind(on_press=self.go_trend_plot)
+            floatLayout.add_widget(trend_btn)
+            self.add_widget(floatLayout)
+            add_home_btn(self)
+            self.widgets_not_added = False
+
+
+    def go_nav_plot(self,instance):
+        self.screen_manager.current = 'NAV_PLOT'
+
+    def go_gl_plot(self,instance):
+        self.screen_manager.current = 'GL_PLOT'
+
+    def go_sec_plot(self,instance):
+        self.screen_manager.current = 'SEC_PLOT'
+
+    def go_trend_plot(self,instance):
+        self.screen_manager.current = 'TREND_PLOT'
+
+
+
 
 
     def go_home(self, instance):
