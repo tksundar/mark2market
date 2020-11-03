@@ -4,6 +4,7 @@ Created by Sundar on 30-10-2020.email tksrajan@gmail.com
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from kivy.core.window import Window
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen, ScreenManager
@@ -164,6 +165,14 @@ class Analysis(Screen):
     def __init__(self, screen_manager, **kwargs):
         super().__init__(**kwargs)
         self.screen_manager = screen_manager
+        Window.bind(on_keyboard=self.events)
+
+    def events(self, instance, keyboard, keycode, text, modifiers):
+        """Called when buttons are pressed on the mobile device."""
+        if keyboard in (1001, 27):
+            self.screen_manager.current = 'Main'
+        return True
+
 
 
     def add_widgets(self):
