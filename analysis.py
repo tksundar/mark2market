@@ -121,7 +121,9 @@ def make_sectoral_plot(name):
 
 def make_day_gain_loss(name):
     import numpy as np
-    df = pd.read_csv('nse.csv', usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
+    date = tryout.get_date_string()
+
+    df = pd.read_csv(date+'_nse.csv', usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
     _, _, symbols = get_nav_data()
     up_down = {}
 
@@ -132,7 +134,7 @@ def make_day_gain_loss(name):
             close = float(row[' CLOSE_PRICE'])
             up_down.update({symbol: close - prev})
 
-    df = pd.read_csv('bse.csv', usecols=['ISIN_CODE', 'PREVCLOSE', 'CLOSE'])
+    df = pd.read_csv(date+'_bse.csv', usecols=['ISIN_CODE', 'PREVCLOSE', 'CLOSE'])
     for index, row in df.iterrows():
         isin = row['ISIN_CODE']
         symbol = tryout.bse_isin_to_symbol_map.get(isin)
