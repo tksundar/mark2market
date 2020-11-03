@@ -1,11 +1,9 @@
-import asyncio
 import os
 from time import time
 
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty, StringProperty
-from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager, ScreenManagerException
@@ -50,11 +48,9 @@ def addMainScreen(sm):
 
 
 def add_dep_screens(sm):
-    pnl = PnLScreen(sm, name="NAV")
-    sm.add_widget(pnl)
+    sm.add_widget( PnLScreen(sm, name="NAV"))
     sm.add_widget(GainLossScreen(sm, name="GainLoss"))
-    analysis = Analysis(sm, name="Charts")
-    sm.add_widget(analysis)
+    sm.add_widget(Analysis(sm, name="Charts"))
 
 
 def on_processing(instance, value):
@@ -66,7 +62,6 @@ def spruce_val(val):
         val = val.replace("LTD", "LIMITED")
     if val.__contains__('Ltd'):
         val = val.replace("Ltd", "LIMITED")
-        print('replaced->', val)
     if val.__contains__("Limited"):
         val = val.replace("Limited", "LIMITED")
     return val
@@ -79,12 +74,13 @@ def convert_to_csv(filePath):
     return 'holdings.csv'
 
 
-def help():
-    HelpScreen().open()
+def init():
+    tryout.get_nse_prices()
+    tryout.get_bse_prices()
+    tryout.get_isin_to_symbol_map()
 
-
-def exit():
-    Window.close()
+    if os.path.exists('csv/pandb.csv'):
+        tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
 
 
 class Mark2MarketApp(MDApp):
@@ -94,13 +90,7 @@ class Mark2MarketApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         start = time()
-        tryout.get_nse_prices()
-        tryout.get_bse_prices()
-        tryout.get_isin_to_symbol_map()
-
-        if os.path.exists('csv/pandb.csv'):
-            tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
-
+        init()
         self.manager_open = False
         self.filePath = ""
         self.symbol = []
@@ -125,23 +115,24 @@ class Mark2MarketApp(MDApp):
             # self.current = "NAV"
 
             # print('No products yet. Opening main screen')
-        self.screen_manager.current = "Main"
-        self.current = "Main"
+            self.screen_manager.current = "Main"
+            self.current = "Main"
 
         end = time()
         print('elapsed time for startup is %d seconds ' % (end - start))
 
+    def help(self):
+        HelpScreen().open()
+
+    def exit(self):
+        Window.close()
+
     def on_state(self, instance, value):
         print(value)
         print(instance)
-        # {
-        #     "start": self.root.ids.progress.start,
-        #     "stop": self.root.ids.progress.stop,
-        # }.get(value)()
-        # self.screen_manager.ids.progress.start()
 
     def get_popup(self):
-        pop = Popup(title='Transaction status',auto_dismiss=False)
+        pop = Popup(title='Transaction status', auto_dismiss=False)
         lbl = Label()
         lbl.text = 'Update successful'
         btn = MDIconButton()

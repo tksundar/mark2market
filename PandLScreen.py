@@ -69,18 +69,8 @@ class PnLScreen(Screen):
     def __init__(self, screen_manager, **kwargs):
         super().__init__(**kwargs)
         self.screen_manager: ScreenManager = screen_manager
-        self.pf_data = list(tryout.product_dict.values())
         self.name = kwargs['name']
-        app = MDApp.get_running_app().name
-        if app == 'UPDATE':
-            tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
-        self.pf_data = list(tryout.product_dict.values())
         Window.bind(on_keyboard=self.events)
-        pf_nav = 0
-        for pi in self.pf_data:
-            pf_nav += pi.nav
-        self.pf_nav = round(pf_nav, 2)
-        sort("nav", self.pf_data)
         self.add_widgets()
 
     def events(self, instance, keyboard, keycode, text, modifiers):
@@ -94,6 +84,14 @@ class PnLScreen(Screen):
 
     def add_widgets(self):
         self.processing = True
+        self.pf_data = list(tryout.product_dict.values())
+        app = MDApp.get_running_app().name
+        if app == 'UPDATE':
+            tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
+        pf_nav = 0
+        for pi in self.pf_data:
+            pf_nav += pi.nav
+        self.pf_nav = round(pf_nav, 2)
         floatLayout = FloatLayout()
         button: Button = Button(text="Portfolio NAV is " + str(self.pf_nav),
                                 pos_hint=({'center_x': .5, 'center_y': .95}),
@@ -103,28 +101,8 @@ class PnLScreen(Screen):
         floatLayout.add_widget(button)
         table = get_table(self.pf_data)
         floatLayout.add_widget(table)
-
-        # input_btn = MDIconButton(icon='home',text="Home", size_hint=(None, None), size=(100, 50),
-        #                            pos_hint={'center_x': 0.5, 'center_y': 0.05})
-
-        home_btn = MDIconButton(icon='home',pos_hint={'center_x': 0.5, 'center_y': 0.05})
+        home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.05})
         home_btn.md_bg_color = (1, 1, 1, 1)
         home_btn.bind(on_press=self.go_home)
         floatLayout.add_widget(home_btn)
-
-
-        # analysis_btn = MDRaisedButton(text="Sectoral Analysis", size_hint=(None, None), size=(100, 50),
-        #                               pos_hint={'center_x': 0.9, 'center_y': 0.05}, elevation=10)
-        # analysis_btn.md_bg_color = (.2, .2, .2, 1)
-        # analysis_btn.bind(on_press=self.analysis)
-        # floatLayout.add_widget(analysis_btn)
         self.add_widget(floatLayout)
-    #
-    # def build(self):
-    #     button: Button = Button(text="Portfolio NAV is " + str(self.pf_nav),
-    #                             pos_hint=({'center_x': .5, 'center_y': .95}),
-    #                             size_hint=(1, .08), )
-    #     button.background_color = (.2, .2, .2, 1)
-    #     button.bind(on_press=self.go_home)
-    #     self.add_widget(button)
-    #     return self

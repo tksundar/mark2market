@@ -2,31 +2,34 @@ import csv
 import os
 import ssl
 import urllib
+import webbrowser
 from datetime import datetime
 from shutil import copyfile
 from urllib.error import HTTPError
 from urllib.request import Request
 from zipfile import ZipFile
-import webbrowser
 
-from kivy.uix.button import Button
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
-d = datetime.now()
-dd = str(int(d.strftime('%d')))
-mm = d.strftime('%m')
-yyyy = d.strftime('%y')
-if d.day < 10:
-    dd = '0' + dd
-hrs = d.hour
-if 0 < hrs < 17:
-    dd = str(int(d.strftime('%d')) - 1)
+
+def get_date_string():
+    d = datetime.now()
+    dd = str(int(d.strftime('%d')))
+    mm = d.strftime('%m')
+    yyyy = d.strftime('%y')
     if d.day < 10:
         dd = '0' + dd
+    hrs = d.hour
 
-date = dd + mm + yyyy
+    if 0 < hrs < 17:
+        dd = str(int(d.strftime('%d')) - 1)
+        if d.day < 10:
+            dd = '0' + dd
+    return dd + mm + yyyy
+
+
+date = get_date_string()
 
 nse_equities_list_url = 'http://www1.nseindia.com/content/equities/EQUITY_L.csv'
 nse_url = 'http://www1.nseindia.com/products/content/sec_bhavdata_full.csv'
@@ -43,15 +46,12 @@ isin_to_name_map: dict = {}
 name_to_isin_map: dict = {}
 nse_price_data: dict = {}
 bse_price_data: dict = {}
-user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
-headers = {'User-Agent': user_agent, }
-
-popup = None
-
-nav_name = 'NAV'
-
 product_dict = {}
 symbol_product_dict = {}
+user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+headers = {'User-Agent': user_agent, }
+popup = None
+nav_name = 'NAV'
 
 
 class PortfolioItem:
@@ -279,19 +279,45 @@ def get_isin_to_symbol_map():
     print('finished getting isin to symbol map')
 
 
+def get_delete_file(date_str,file_name):
+    _30_day_months = {4: 4, 6: 5, 9: 9, 11: 11}
+    _28_day_month = {2: 2}
+    day = int(date_str[:2])
+    month = int(date_str[2:4])
+    year = date[-2:]
+    dd = day - 1
+    mm = month - 1
+    if dd == 0:
+        dd = 31
+        if mm == 0:
+            mm = 12
+        if mm in _30_day_months:
+            dd = 30
+        elif mm in _28_day_month:
+            dd = 28  # good for 4 years
+    pre_date = str(dd) + str(mm) + year
+    print(pre_date)
+    return pre_date + '_'+file_name
+
+
 def get_nse_prices():
     """Return a dict of Symbol to Close_Price"""
     # Fetch the csv file from NSE
-    print('getting nse price data')
-    if os.path.exists('nse.csv'):
-        os.remove('nse.csv')
-    context = ssl.SSLContext()
-
-    r = urllib.request.Request(nse_url, None, headers)
-    response = urllib.request.urlopen(r, context=context)
-    with open('nse.csv', "wb") as f:
-        f.write(response.read())
-    df = read_csv('nse.csv', usecols=['SYMBOL', ' CLOSE_PRICE'])
+    print('getting fresh nse price data')
+    day = get_date_string()
+    nse_path = day + "_nse.csv"
+    file_date = nse_path[:6]
+    if day != file_date or not(os.path.exists(nse_path)):
+        print('date changed. getting fresh nse price data')
+        delete_file = get_delete_file(day, 'nse.csv')
+        if os.path.exists(delete_file):
+            os.remove(delete_file)
+        context = ssl.SSLContext()
+        r = urllib.request.Request(nse_url, None, headers)
+        response = urllib.request.urlopen(r, context=context)
+        with open(nse_path, "wb") as f:
+            f.write(response.read())
+    df = read_csv(nse_path, usecols=['SYMBOL', ' CLOSE_PRICE'])
     for row in df:
         symbol = row["SYMBOL"]
         price = row[" CLOSE_PRICE"]
@@ -326,35 +352,40 @@ def get_content():
 
 def get_bse_prices():
     print('getting bse prices')
-    context = ssl.SSLContext()
-    print(bse_url)
-    msg = ''
-    r = urllib.request.Request(bse_url, None, headers=headers)
-    try:
-        response = urllib.request.urlopen(r, context=context)
-        with open('bse.zip', "wb") as f:
-            f.write(response.read())
-        with ZipFile('bse.zip', 'r') as bse_zip:
-            bse_zip.printdir()
-            bse_zip.extractall()
-            copyfile(bse_csv_file, bse_canonical_file)
-            os.remove(bse_csv_file)
-    except HTTPError:
-        msg = 'BSE price file not available now. Using last available price file'
-        print(msg)
-    if os.path.exists(bse_canonical_file):
-        df = read_csv(bse_canonical_file, usecols=['ISIN_CODE', 'LAST'])
-        print("Getting prices for symbols")
-        for row in df:
-            isin = row["ISIN_CODE"]
-            price = row["LAST"]
-            bse_price_data.update({isin: price})
-    else:
-        get_content()
+    day = get_date_string()
+    bse_file = day + "_bse.csv"
+    file_date = bse_file[:6]
+    if day != file_date or not (os.path.exists(bse_file)):
+        print(' date changed. getting fresh bse prices')
+        context = ssl.SSLContext()
+        print(bse_url)
+        r = urllib.request.Request(bse_url, None, headers=headers)
+        try:
+            response = urllib.request.urlopen(r, context=context)
+            with open('bse.zip', "wb") as f:
+                f.write(response.read())
+            with ZipFile('bse.zip', 'r') as bse_zip:
+                bse_zip.printdir()
+                bse_zip.extractall()
+                copyfile(bse_csv_file, bse_file)
+                os.remove(bse_csv_file)
+            delete_file = get_delete_file(day, 'bse_csv')
+            if os.path.exists(delete_file):
+                os.remove(delete_file)
+        except HTTPError:
+            msg = 'BSE price file not available now. Using last available price file'
+            print(msg)
+
+    df = read_csv(bse_file, usecols=['ISIN_CODE', 'LAST'])
+    print("Getting prices for symbols")
+    for row in df:
+        isin = row["ISIN_CODE"]
+        price = row["LAST"]
+        bse_price_data.update({isin: price})
+
     if os.path.exists('bse.zip'):
         os.remove('bse.zip')
     print('finished getting bse price data')
-
 
 
 def read_csv(fileName, **kwargs):

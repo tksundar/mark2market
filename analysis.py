@@ -1,15 +1,13 @@
 """
 Created by Sundar on 30-10-2020.email tksrajan@gmail.com
 """
-import os
 
 import matplotlib.pyplot as plt
+import pandas as pd
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
-from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen, ScreenManager
-from kivymd.uix.button import MDTextButton, MDIconButton
-import pandas as pd
+from kivymd.uix.button import MDIconButton
 
 import tryout
 

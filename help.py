@@ -11,14 +11,14 @@ def get_content():
    
       name,quantity,cost,side,
       ------------------------------------------------------------------------
-      Granules India Limited,4720,96.4095,Buy,
-      IN9155A01020,3663,212.33,Sell,
+      Granules India Limited,100,380,Buy,
+      IN9155A01020,100,212.33,Sell,
 
       Or like this . This is preferred
       
       isin,quantity,cost,side,
       --------------------------------------------------------------------
-      IN9155A01020,3663,212.33,Sell,
+      IN9155A01020,100,212.33,Sell,
           
       Short sell is not supported 
          
@@ -39,6 +39,6 @@ class HelpScreen(Popup):
         super().__init__(**kwargs)
         self.title = 'Instructions on Transaction file'
         self.content = get_content()
-        self.size_hint = (.9,.8)
+        self.size_hint = (.7,.7)
 
 
