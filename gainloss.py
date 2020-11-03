@@ -5,8 +5,6 @@ from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.label import Label
-from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.uix.button import *
 from kivymd.uix.datatables import MDDataTable
@@ -23,58 +21,37 @@ def get_gain_loss(pf_data):
     gain_loss_pct = round((gain_loss / pf_cost) * 100, 2)
     return pf_nav, gain_loss, gain_loss_pct
 
-
-def get_content():
-    text = '''
-           Coming soon...
-           
-           1. Exposure pie chart. Will show 
-              which stocks are exposed to 
-              what level
-              
-           2. Gain loss chart. Bar chart 
-              showing gains and losses of 
-              individual stocks
-          '''
-    label = Label(text=text)
-    return label
-
-
 class GainLossScreen(Screen):
 
     def __init__(self, screen_manager: ScreenManager, **kwargs):
         super().__init__(**kwargs)
         self.screen_manager = screen_manager
         Window.bind(on_keyboard=self.events)
-        self.pf_data = list(tryout.product_dict.values())
-        self.pf_nav, self.gain_loss, self.gain_loss_percent = get_gain_loss(self.pf_data)
-        self.popup = Popup()
-        self.popup.title = 'Performance Charts'
-        self.popup.content = get_content()
-        self.popup.size_hint = (.9, .7)
-        self.add_widgets()
+
 
     def add_widgets(self):
-        floatLayout = FloatLayout()
-        n = str(self.pf_nav)
-        g = str(self.gain_loss)
-        gp = str(self.gain_loss_percent)
+        tryout.init()
+        pf_data = list(tryout.product_dict.values())
+        if len(pf_data) > 0:
+            pf_nav, gain_loss, gain_loss_percent = get_gain_loss(pf_data)
+            floatLayout = FloatLayout()
+            n = str(pf_nav)
+            g = str(gain_loss)
+            gp = str(gain_loss_percent)
+            text_string = "Nav = " + n + "    Gain = " + g + "( " + gp + "% )"
+            button: Button = Button(text=text_string,
+                                    pos_hint=({'center_x': .5, 'center_y': .95}),
+                                    size_hint=(1, .08), )
+            button.background_color = (0, 0, 0, 1)
+            button.bind(on_press=self.go_home)
+            floatLayout.add_widget(button)
 
-        text_string = "Nav = " + n + "    Gain = " + g + "( " + gp + "% )"
-
-        button: Button = Button(text=text_string,
-                                pos_hint=({'center_x': .5, 'center_y': .95}),
-                                size_hint=(1, .08), )
-        button.background_color = (0, 0, 0, 1)
-        button.bind(on_press=self.go_home)
-        floatLayout.add_widget(button)
-
-        table = self.get_table(self.pf_data)
-        floatLayout.add_widget(table)
-        home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.05})
-        home_btn.bind(on_press=self.go_home)
-        floatLayout.add_widget(home_btn)
-        self.add_widget(floatLayout)
+            table = self.get_table(pf_data)
+            floatLayout.add_widget(table)
+            home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.05})
+            home_btn.bind(on_press=self.go_home)
+            floatLayout.add_widget(home_btn)
+            self.add_widget(floatLayout)
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""

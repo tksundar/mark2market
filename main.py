@@ -1,9 +1,8 @@
-import os
-from time import time
+import time
 
 from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.properties import BooleanProperty, StringProperty
+from kivy.properties import BooleanProperty
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager, ScreenManagerException
@@ -44,17 +43,6 @@ def addMainScreen(sm):
     sm.add_widget(TransactionUploadScreen(name="Upload"))
     sm.add_widget(TransactionEntryScreen(name="Entry"))
     sm.add_widget(TradingScreen(name="Trade"))
-    sm.add_widget(SpinnerScreen(name="Spinner"))
-
-
-def add_dep_screens(sm):
-    sm.add_widget(PnLScreen(sm, name="NAV"))
-    sm.add_widget(GainLossScreen(sm, name="GainLoss"))
-    sm.add_widget(Analysis(sm, name="Charts"))
-
-
-def on_processing(instance, value):
-    print('instance, value', instance, value)
 
 
 def spruce_val(val):
@@ -74,23 +62,13 @@ def convert_to_csv(filePath):
     return 'holdings.csv'
 
 
-def init():
-    tryout.get_nse_prices()
-    tryout.get_bse_prices()
-    tryout.get_isin_to_symbol_map()
-
-    if os.path.exists('csv/pandb.csv'):
-        tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
-
-
 class Mark2MarketApp(MDApp):
     processing = BooleanProperty(defaultValue=False)
-    state = StringProperty(defaultvalue='stop')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        start = time()
-        init()
+        start = time.time()
+        self.processing = False
         self.manager_open = False
         self.filePath = ""
         self.symbol = []
@@ -109,18 +87,13 @@ class Mark2MarketApp(MDApp):
         Builder.load_file("RootWidget.kv")
         self.screen_manager = ScreenManager()
         addMainScreen(self.screen_manager)
-        if len(tryout.product_dict) > 0:
-            # print('have products.Opening nav screen')
-            add_dep_screens(self.screen_manager)
-            # self.screen_manager.current = "NAV"
-            # self.current = "NAV"
-
-            # print('No products yet. Opening main screen')
-            self.screen_manager.current = "Main"
-            self.current = "Main"
-
-        end = time()
+        self.screen_manager.current = "Main"
+        self.current = "Main"
+        end = time.time()
         print('elapsed time for startup is %d seconds ' % (end - start))
+
+    def on_processing(self, instance, value):
+        print('instance, value', instance, value)
 
     def help(self):
         HelpScreen().open()
@@ -168,12 +141,20 @@ class Mark2MarketApp(MDApp):
         pop.size_hint = .4, .6
         return pop
 
-
     def go_nav(self):
-        if len(tryout.product_dict) > 0:
-            self.screen_manager.current = "NAV"
-        else:
+        self.processing = True
+        try:
+            pnl = self.screen_manager.get_screen('NAV')
+            pnl.add_widgets()
+        except ScreenManagerException:
+            pnl = PnLScreen(self.screen_manager, name='NAV')
+            self.screen_manager.add_widget(pnl)
+            pnl.add_widgets()
+        self.processing = False
+        if len(tryout.product_dict) == 0:
             self.no_data_popup.open()
+        else:
+            self.screen_manager.current = "NAV"
 
     def upload_screen(self):
         self.screen_manager.current = 'Upload'
@@ -185,16 +166,34 @@ class Mark2MarketApp(MDApp):
         self.screen_manager.current = 'Trade'
 
     def gain_loss(self):
-        if len(tryout.product_dict) > 0:
-            self.screen_manager.current = 'GainLoss'
-        else:
+        self.processing = True
+        try:
+            gl = self.screen_manager.get_screen('GainLoss')
+            gl.add_widgets()
+        except ScreenManagerException:
+            gl = GainLossScreen(self.screen_manager, name='GainLoss')
+            self.screen_manager.add_widget(gl)
+            gl.add_widgets()
+        if len(tryout.product_dict) == 0:
             self.no_data_popup.open()
+        else:
+            self.screen_manager.current = 'GainLoss'
+        self.processing = False
 
     def charts(self):
+        self.processing = True
+        try:
+            analysis = self.screen_manager.get_screen('Charts')
+            analysis.add_widgets()
+        except ScreenManagerException:
+            analysis = Analysis(self.screen_manager, name='Charts')
+            analysis.add_widgets()
+            self.screen_manager.add_widget(analysis)
         if len(tryout.product_dict) > 0:
             self.screen_manager.current = 'Charts'
         else:
             self.no_data_popup.open()
+        self.processing = False
 
     def on_text(self):
         symbol = self.root.get_screen("Entry").ids.symbol.text
@@ -248,7 +247,7 @@ class Mark2MarketApp(MDApp):
         #     self.root.get_screen("Main").ids.input.text = self.characters.pop()
 
     def process_file(self):
-        self.screen_manager.current = 'Spinner'
+        self.processing = True
         if len(self.filePath) == 0:
             toast('You must select a transaction file')
             return
@@ -258,17 +257,25 @@ class Mark2MarketApp(MDApp):
         if extn.__contains__('XLS'):
             csvFile = convert_to_csv(self.filePath)
         tryout.make_product_dict_from_csv(csv_file=csvFile)
-        self.state = 'stop'
+        self.go_nav()
         # for item in list(tryout.product_dict.values()):
         #     print(item)
-        screen_name = "UPDATE" + str(time())
-        self.screen_manager.add_widget(PnLScreen(self.screen_manager, name=screen_name))
-        self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name="GainLoss"))
-        analysis = Analysis(self.screen_manager, name="Charts")
-        self.screen_manager.add_widget(analysis)
-        self.screen_manager.current = screen_name
-        self.current = screen_name
-        tryout.nav_name = screen_name
+        # screen_name = "UPDATE" + str(time())
+        # pnl = PnLScreen(self.screen_manager, name='NAV')
+        # pnl.add_widgets()
+        # try:
+        #     self.screen_manager.get_screen('NAV')
+        #     self.screen_manager.remove_widget('NAV')
+        #     self.screen_manager.add_widget(pnl)
+        # except ScreenManagerException:
+        #     self.screen_manager.add_widget(pnl)
+        #
+        # # self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name="GainLoss"))
+        # # analysis = Analysis(self.screen_manager, name="Charts")
+        # #self.screen_manager.add_widget(analysis)
+        # self.screen_manager.current = "NAV"
+        # self.current = 'NAV'
+        tryout.nav_name = 'NAV'
 
     def select_path(self, path):
         """It will be called when you click on the file name

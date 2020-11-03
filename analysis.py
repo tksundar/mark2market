@@ -164,32 +164,30 @@ class Analysis(Screen):
     def __init__(self, screen_manager, **kwargs):
         super().__init__(**kwargs)
         self.screen_manager = screen_manager
-        make_nav_plot('nav.png')
-        make_gains_plot('gains.png')
-        make_sectoral_plot('sectors.png')
-        make_day_gain_loss('day_gain_loss.png')
-
-        layout = GridLayout(cols=2, size_hint=(.9, .8), pos_hint={'center_x': .5, 'center_y': 0.5})
 
 
-        img = Image(source='nav.png')
-        layout.add_widget(img)  # 1
+    def add_widgets(self):
+        tryout.init()
+        if len(list(tryout.product_dict)) > 0:
+            make_nav_plot('nav.png')
+            make_gains_plot('gains.png')
+            make_sectoral_plot('sectors.png')
+            make_day_gain_loss('day_gain_loss.png')
+            layout = GridLayout(cols=2, size_hint=(.9, .8), pos_hint={'center_x': .5, 'center_y': 0.5})
+            img = Image(source='nav.png')
+            layout.add_widget(img)  # 1
+            img = Image(source='gains.png')
+            layout.add_widget(img)  # 2
+            img = Image(source='sectors.png')
+            layout.add_widget(img)  # 3
+            img = Image(source='day_gain_loss.png')
+            layout.add_widget(img)
+            self.add_widget(layout)
+            home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.02})
+            home_btn.md_bg_color = (1, 1, 1, 1)
+            home_btn.bind(on_press=self.go_home)
+            self.add_widget(home_btn)
 
-        img = Image(source='gains.png')
-        layout.add_widget(img)  # 2
-
-        img = Image(source='sectors.png')
-        layout.add_widget(img)  # 3
-
-        img = Image(source='day_gain_loss.png')
-        layout.add_widget(img)
-
-        self.add_widget(layout)
-
-        home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.02})
-        home_btn.md_bg_color = (1, 1, 1, 1)
-        home_btn.bind(on_press=self.go_home)
-        self.add_widget(home_btn)
 
     def go_home(self, instance):
         self.screen_manager.current = 'Main'

@@ -72,6 +72,18 @@ class PortfolioItem:
         return str(self.__dict__)
 
 
+def init():
+    if len(nse_price_data) == 0:
+        get_nse_prices()
+    if len(bse_price_data)  == 0:
+        get_bse_prices()
+    if len(nse_isin_to_symbol_map) == 0:
+        get_isin_to_symbol_map()
+    if os.path.exists('csv/pandb.csv'):
+        if len(product_dict) == 0:
+            make_product_dict_from_csv(csv_file='csv/pandb.csv')
+
+
 def convert_to_csv():
     csv_data = product_dict.values()
     a_dict = []
@@ -279,7 +291,7 @@ def get_isin_to_symbol_map():
     print('finished getting isin to symbol map')
 
 
-def get_delete_file(date_str,file_name):
+def get_delete_file(date_str, file_name):
     _30_day_months = {4: 4, 6: 5, 9: 9, 11: 11}
     _28_day_month = {2: 2}
     day = int(date_str[:2])
@@ -297,7 +309,7 @@ def get_delete_file(date_str,file_name):
             dd = 28  # good for 4 years
     pre_date = str(dd) + str(mm) + year
     print(pre_date)
-    return pre_date + '_'+file_name
+    return pre_date + '_' + file_name
 
 
 def get_nse_prices():
@@ -307,7 +319,7 @@ def get_nse_prices():
     day = get_date_string()
     nse_path = day + "_nse.csv"
     file_date = nse_path[:6]
-    if day != file_date or not(os.path.exists(nse_path)):
+    if day != file_date or not (os.path.exists(nse_path)):
         print('date changed. getting fresh nse price data')
         delete_file = get_delete_file(day, 'nse.csv')
         if os.path.exists(delete_file):

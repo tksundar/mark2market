@@ -7,7 +7,6 @@ from kivy.properties import ListProperty, BooleanProperty
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen, ScreenManager
-from kivymd.app import MDApp
 from kivymd.uix.button import *
 from kivymd.uix.datatables import MDDataTable
 
@@ -71,7 +70,6 @@ class PnLScreen(Screen):
         self.screen_manager: ScreenManager = screen_manager
         self.name = kwargs['name']
         Window.bind(on_keyboard=self.events)
-        self.add_widgets()
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
@@ -81,13 +79,11 @@ class PnLScreen(Screen):
 
     def go_home(self, instance):
         self.screen_manager.current = "Main"
+        self.screen_manager.get_screen('Main').ids.spinner.active = False
 
     def add_widgets(self):
-        self.processing = True
+        tryout.init()
         self.pf_data = list(tryout.product_dict.values())
-        app = MDApp.get_running_app().name
-        if app == 'UPDATE':
-            tryout.make_product_dict_from_csv(csv_file='csv/pandb.csv')
         pf_nav = 0
         for pi in self.pf_data:
             pf_nav += pi.nav

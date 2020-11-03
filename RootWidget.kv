@@ -21,7 +21,12 @@
         Rectangle:
           pos: self.pos
           size: self.size
-
+      MDSpinner:
+        id: spinner
+        size_hint: None, None
+        size: dp(46), dp(46)
+        pos_hint: { 'center_x': .5, 'center_y': .9 }
+        active: True if app.processing else False
       MDTextButton:
         text: 'Transaction file upload'
         pos_hint: { 'center_x': 0.5,'center_y': 0.8 }
@@ -47,6 +52,9 @@
         pos_hint: { 'center_x': 0.5,'center_y': 0.3 }
         on_release: app.charts()
 
+
+
+
 <TransactionUploadScreen>:
   canvas.before:
     Color:
@@ -69,6 +77,12 @@
         Rectangle:
           pos: self.pos
           size: self.size
+      MDSpinner:
+        id: spinner
+        size_hint: None, None
+        size: dp(46), dp(46)
+        pos_hint: { 'center_x': .5, 'center_y': .9 }
+        active: True if app.processing else False
       MDRectangleFlatIconButton:
         id: file_chooser
         text: "Chose Transaction File"
@@ -89,12 +103,6 @@
         pos_hint: { 'center_x': 0.5,'center_y': .1 }
         on_release: app.home()
 
-<SpinnerScreen>:
-  MDSpinner:
-    size_hint: None, None
-    size: dp(46), dp(46)
-    pos_hint: { 'center_x': .5, 'center_y': .5 }
-    active: True
 
 <TransactionEntryScreen>:
   canvas.before:
@@ -209,6 +217,7 @@
     Rectangle:
       pos: self.pos
       size: self.size
+
 
 <GainLossScreen>:
   canvas.before:
