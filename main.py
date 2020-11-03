@@ -48,7 +48,7 @@ def addMainScreen(sm):
 
 
 def add_dep_screens(sm):
-    sm.add_widget( PnLScreen(sm, name="NAV"))
+    sm.add_widget(PnLScreen(sm, name="NAV"))
     sm.add_widget(GainLossScreen(sm, name="GainLoss"))
     sm.add_widget(Analysis(sm, name="Charts"))
 
@@ -105,6 +105,7 @@ class Mark2MarketApp(MDApp):
         self.file_manager.ext = ['.csv', '.CSV', '.xlsx', '.XLSX']
         # self.characters = []
         self.popup = self.get_popup()
+        self.no_data_popup = self.no_data_popup()
         Builder.load_file("RootWidget.kv")
         self.screen_manager = ScreenManager()
         addMainScreen(self.screen_manager)
@@ -149,8 +150,30 @@ class Mark2MarketApp(MDApp):
         pop.size_hint = .6, .6
         return pop
 
+    def no_data_popup(self):
+        pop = Popup(title='Data status', auto_dismiss=False)
+        lbl = Label()
+        lbl.text = 'No Data!. Add some transactions'
+        btn = MDIconButton()
+        lbl.pos_hint = {'center_x': .5, 'center_y': .5}
+        btn.icon = 'home'
+        btn.bind(on_press=self.go_home)
+        btn.md_bg_color = (1, 1, 1, 1)
+        btn.pos_hint = {'center_x': .5, 'center_y': 0.1}
+        from kivy.uix.floatlayout import FloatLayout
+        layout = FloatLayout()
+        layout.add_widget(lbl)
+        layout.add_widget(btn)
+        pop.content = layout
+        pop.size_hint = .4, .6
+        return pop
+
+
     def go_nav(self):
-        self.screen_manager.current = "NAV"
+        if len(tryout.product_dict) > 0:
+            self.screen_manager.current = "NAV"
+        else:
+            self.no_data_popup.open()
 
     def upload_screen(self):
         self.screen_manager.current = 'Upload'
@@ -162,10 +185,16 @@ class Mark2MarketApp(MDApp):
         self.screen_manager.current = 'Trade'
 
     def gain_loss(self):
-        self.screen_manager.current = 'GainLoss'
+        if len(tryout.product_dict) > 0:
+            self.screen_manager.current = 'GainLoss'
+        else:
+            self.no_data_popup.open()
 
     def charts(self):
-        self.screen_manager.current = 'Charts'
+        if len(tryout.product_dict) > 0:
+            self.screen_manager.current = 'Charts'
+        else:
+            self.no_data_popup.open()
 
     def on_text(self):
         symbol = self.root.get_screen("Entry").ids.symbol.text
@@ -210,6 +239,7 @@ class Mark2MarketApp(MDApp):
     def go_home(self, instance):
         self.screen_manager.current = 'Main'
         self.popup.dismiss()
+        self.no_data_popup.dismiss()
 
     def file_manager_open(self):
         self.file_manager.show('/')  # output manager to the screen
