@@ -3,6 +3,7 @@ Created by Sundar on 29-10-2020.email tksrajan@gmail.com
 """
 from kivy.core.window import Window
 from kivy.metrics import dp
+from kivy.properties import BooleanProperty
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen, ScreenManager
@@ -21,16 +22,19 @@ def get_gain_loss(pf_data):
     gain_loss_pct = round((gain_loss / pf_cost) * 100, 2)
     return pf_nav, gain_loss, gain_loss_pct
 
+
 class GainLossScreen(Screen):
 
     def __init__(self, screen_manager: ScreenManager, **kwargs):
+        self.updated = False
+        if 'updated' in kwargs:
+            self.updated = kwargs.pop('updated')
         super().__init__(**kwargs)
         self.screen_manager = screen_manager
         Window.bind(on_keyboard=self.events)
 
-
     def add_widgets(self):
-        tryout.init()
+        tryout.init(updated=self.updated)
         pf_data = list(tryout.product_dict.values())
         if len(pf_data) > 0:
             pf_nav, gain_loss, gain_loss_percent = get_gain_loss(pf_data)
@@ -75,6 +79,8 @@ class GainLossScreen(Screen):
 
             row = [item.symbol, cost, current_nav, gain_loss]
             row_data.append(row)
+        if len(row_data) == 1:
+            row_data.append(['', '', '', ''])  # hack. MDDatatable breaks if there just one row
 
         table = MDDataTable(
             size_hint=(.9, 0.8),

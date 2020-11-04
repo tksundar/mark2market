@@ -5,6 +5,7 @@ Created by Sundar on 30-10-2020.email tksrajan@gmail.com
 import matplotlib.pyplot as plt
 import pandas as pd
 from kivy.core.window import Window
+from kivy.properties import BooleanProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
@@ -257,7 +258,11 @@ class TrendScreen(Screen):
 
 
 class Analysis(Screen):
+
     def __init__(self, screen_manager, **kwargs):
+        self.updated = False
+        if 'updated' in kwargs:
+            self.updated = kwargs.pop('updated')
         super().__init__(**kwargs)
         self.screen_manager: ScreenManager = screen_manager
         Window.bind(on_keyboard=self.events)
@@ -270,7 +275,7 @@ class Analysis(Screen):
         return True
 
     def add_widgets(self):
-        tryout.init()
+        tryout.init(updated=self.updated)
         if len(tryout.product_dict) > 0 and self.widgets_not_added:
             try:
                 self.screen_manager.get_screen('NAV_PLOT')

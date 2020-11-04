@@ -41,6 +41,8 @@ def get_table(data):
             continue
         row = [item.symbol, item.quantity, item.price, item.nav]
         row_data.append(row)
+    if len(row_data) == 1:
+        row_data.append(['', '', '', ''])  # hack. MDDatatable breaks if there just one row
 
     table = MDDataTable(
         size_hint=(.9, 0.8),
@@ -66,9 +68,13 @@ class PnLScreen(Screen):
     processing = BooleanProperty(defaultvalue=False)
 
     def __init__(self, screen_manager, **kwargs):
+        self.updated = False
+        if 'updated' in kwargs:
+            self.updated = kwargs.pop('updated')
         super().__init__(**kwargs)
         self.screen_manager: ScreenManager = screen_manager
         self.name = kwargs['name']
+
         Window.bind(on_keyboard=self.events)
 
     def events(self, instance, keyboard, keycode, text, modifiers):
@@ -82,7 +88,7 @@ class PnLScreen(Screen):
         self.screen_manager.get_screen('Main').ids.spinner.active = False
 
     def add_widgets(self):
-        tryout.init()
+        tryout.init(updated=self.updated)
         self.pf_data = list(tryout.product_dict.values())
         pf_nav = 0
         for pi in self.pf_data:

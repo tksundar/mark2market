@@ -72,15 +72,20 @@ class PortfolioItem:
         return str(self.__dict__)
 
 
-def init():
+def init(**kwargs):
     if len(nse_price_data) == 0:
         get_nse_prices()
     if len(bse_price_data) == 0:
         get_bse_prices()
     if len(nse_isin_to_symbol_map) == 0:
         get_isin_to_symbol_map()
+
+    updated = False
+    if 'updated' in kwargs:
+        updated = kwargs.pop('updated')
+
     if os.path.exists('csv/pandb.csv'):
-        if len(product_dict) == 0:
+        if len(product_dict) == 0 or updated:
             make_product_dict_from_csv(csv_file='csv/pandb.csv')
 
 
@@ -227,17 +232,19 @@ def update_or_create_portfolio_item(**kwargs):
         if isin is None:
             isin = bse_symbol_to_isin_map.get(pi.symbol)
         pi.isin = isin
+        pi.name = isin_to_name_map.get(pi.isin)
         price = nse_price_data.get(pi.symbol)
-        if price is None:
-            price = bse_price_data.get(bse_symbol_to_isin_map.get(pi.symbol))
-            if not (price is None):
-                pi.price = float(price)
-        else:
-            pi.price = float(price)
+        # if price is None:
+        #     price = bse_price_data.get(bse_symbol_to_isin_map.get(pi.symbol))
+        #     if not (price is None):
+        #         pi.price = float(price)
+        # else:
+        #     pi.price = float(price)
+        update_price(pi)
         update_gain(pi)
         product_dict.update({pi.isin: pi})
         symbol_product_dict.update({pi.symbol: pi})
-        print('processed %d symbols ' % len(symbol_product_dict))
+        print('processed %d symbols %s' % (len(symbol_product_dict),symbol_product_dict))
 
 
 def make_new_portfolio_item(row, isin, **kwargs):
@@ -442,6 +449,7 @@ def read_csv(fileName, **kwargs):
 
 
 def update_portfolio(symbol, qty, cost, side):
+    init()
     if symbol in symbol_product_dict:
         update_portfolio_item(None, None, symbol=symbol, quantity=qty, cost=cost, side=side)
     else:

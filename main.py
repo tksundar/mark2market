@@ -221,16 +221,17 @@ class Mark2MarketApp(MDApp):
             try:
                 self.screen_manager.get_screen('NAV')
             except ScreenManagerException:
-                self.screen_manager.add_widget(PnLScreen(self.screen_manager, name='NAV'))
+                pnl = PnLScreen(self.screen_manager, name='NAV', updated=True)
+                self.screen_manager.add_widget(pnl)
                 self.current = 'NAV'
             try:
                 self.screen_manager.get_screen('GainLoss')
             except ScreenManagerException:
-                self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name='GainLoss'))
+                self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name='GainLoss', updated=True))
             try:
                 self.screen_manager.get_screen('Charts')
             except ScreenManagerException:
-                self.screen_manager.add_widget(Analysis(self.screen_manager, name='Charts'))
+                self.screen_manager.add_widget(Analysis(self.screen_manager, name='Charts', updated=True))
             self.popup.open()
 
     def home(self):
