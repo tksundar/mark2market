@@ -257,6 +257,7 @@ class Mark2MarketApp(MDApp):
         extn = self.filePath[-4:].upper()
         if extn.__contains__('XLS'):
             csvFile = convert_to_csv(self.filePath)
+        tryout.init()
         tryout.make_product_dict_from_csv(csv_file=csvFile)
         self.go_nav()
         tryout.nav_name = 'NAV'
