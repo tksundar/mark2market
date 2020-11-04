@@ -80,6 +80,8 @@ def make_gains_plot(name):
     plt.xlabel("Stock Holdings (NAV ordered")
     plt.ylabel("Gain(Loss) millions")
     plt.grid(True, which='minor')
+    for index, value in enumerate(gains):
+        plt.text(index, value, names[index])
     plt.savefig(name)
 
 
@@ -187,6 +189,12 @@ def make_day_gain_loss(name):
     plt.xlabel("Stock Holdings (NAV ordered)")
     plt.ylabel("Prev Day's Gain(Loss) in %")
     plt.grid(True, which='minor')
+    for index, value in enumerate(data):
+        if value < 0:
+            value -= 0.1
+        else:
+            value += 0.1
+        plt.text(index, value, labels[index])
     plt.savefig(name)
 
 
