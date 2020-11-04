@@ -27,7 +27,7 @@ def make_nav_plot(name):
 
     plt.clf()
     fig, ax = plt.subplots()
-    fig.set_size_inches(12, 10)
+    fig.set_size_inches(12, 12)
     ax.pie(data, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90, explode=ex)
     ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
     plt.title('NAV Chart')
@@ -69,12 +69,7 @@ def make_gains_plot(name):
         else:
             colors.append('green')
     plt.clf()
-    # fig, axes = plt.subplots()
-    # fig.set_size_inches(12, 10)
-    # axes.bar(ticks, gains, color=colors)
-    # axes.xaxis.grid(True, which='minor')
-    # plt.title('Gain Loss Chart(in millions)')
-    plt.figure(figsize=(12, 10))
+    plt.figure(figsize=(12, 12))
     plt.bar(ticks, gains, color=colors)
     plt.title('Gain Loss Chart(in millions)')
     plt.xlabel("Stock Holdings (NAV ordered")
@@ -128,7 +123,7 @@ def make_sectoral_plot(name):
 
     plt.clf()
     fig, ax = plt.subplots()
-    fig.set_size_inches(12, 10)
+    fig.set_size_inches(12, 12)
     ax.pie(sector_data, labels=sector_labels, autopct='%1.1f%%', shadow=True, startangle=90, explode=explode)
     ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
     plt.title('Sectoral Exposure')
@@ -177,13 +172,8 @@ def make_day_gain_loss(name):
         else:
             colors.append('green')
     plt.clf()
-    # fig, axes = plt.subplots()
-    # fig.set_size_inches(12, 10)
-    # ticks = np.arange(0, len(labels))
-    # axes.bar(ticks, data, color=colors)
-    # axes.xaxis.grid(True, which='minor')
     ticks = np.arange(0, len(labels))
-    plt.figure(figsize=(12, 10))
+    plt.figure(figsize=(12, 12))
     plt.bar(ticks, data, color=colors)
     plt.title('Stock Movement for the last trading session')
     plt.xlabel("Stock Holdings (NAV ordered)")
