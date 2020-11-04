@@ -232,6 +232,10 @@ class Mark2MarketApp(MDApp):
                 self.screen_manager.get_screen('Charts')
             except ScreenManagerException:
                 self.screen_manager.add_widget(Analysis(self.screen_manager, name='Charts', updated=True))
+            self.screen_manager.get_screen('Entry').ids.symbol.text = ''
+            self.screen_manager.get_screen('Entry').ids.quantity.text = ''
+            self.screen_manager.get_screen('Entry').ids.cost.text = ''
+            self.screen_manager.get_screen('Entry').ids.side.text = ''
             self.popup.open()
 
     def home(self):
