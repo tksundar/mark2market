@@ -139,7 +139,7 @@ class Mark2MarketApp(MDApp):
         layout.add_widget(lbl)
         layout.add_widget(btn)
         pop.content = layout
-        pop.size_hint = .4, .6
+        pop.size_hint = .8, .6
         return pop
 
     def go_nav(self):

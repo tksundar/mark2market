@@ -466,4 +466,9 @@ def open_url(broker):
         url = 'https://ntrade.hdfcsec.com/?utm_source=netcore&utm_medium=emailer&utm_campaign=birthday&utm_content=manage'
     elif broker == 'ICICI Direct':
         url = 'https://secure.icicidirect.com/IDirectTrading/customer/login.aspx'
+    elif broker == 'Motilal Oswal':
+        url = 'https://invest.motilaloswal.com/'
+    elif broker == 'Indiabulls':
+        url = 'https://shubhweb.indiabulls.com/base/login'
+
     webbrowser.open(url)

@@ -44,9 +44,9 @@ requirements = python3,kivy==2.0.0rc4,git+https://github.com/tksundar/KivyMD.git
 
 # (str) Presplash of the application
 #presplash.filename = %(source.dir)s/data/presplash.png
-#presplash.filename = %(source.dir)s/assets/presplash.png
+presplash.filename = %(source.dir)s/m2m_40.png
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/m2m_40.png
 #icon.filename = %(source.dir)s/assets/kivymd.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)

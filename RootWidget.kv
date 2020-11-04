@@ -196,13 +196,25 @@
       MDTextButton:
         id: hdfc
         text: 'HDFC Securities'
-        pos_hint: { 'center_x': 0.5,'center_y': .7 }
+        pos_hint: { 'center_x': 0.5,'center_y': .8 }
         on_release: app.open_url(self)
 
       MDTextButton:
         id: icici
         text: 'ICICI Direct'
+        pos_hint: { 'center_x': 0.5,'center_y': .7 }
+        on_release: app.open_url(self)
+
+      MDTextButton:
+        id: motilal
+        text: 'Motilal Oswal'
         pos_hint: { 'center_x': 0.5,'center_y': .6 }
+        on_release: app.open_url(self)
+
+      MDTextButton:
+        id: indiabulls
+        text: 'Indiabulls'
+        pos_hint: { 'center_x': 0.5,'center_y': .5 }
         on_release: app.open_url(self)
 
       MDIconButton:
