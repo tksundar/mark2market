@@ -75,13 +75,35 @@ class PortfolioItem:
 def init():
     if len(nse_price_data) == 0:
         get_nse_prices()
-    if len(bse_price_data)  == 0:
+    if len(bse_price_data) == 0:
         get_bse_prices()
     if len(nse_isin_to_symbol_map) == 0:
         get_isin_to_symbol_map()
     if os.path.exists('csv/pandb.csv'):
         if len(product_dict) == 0:
             make_product_dict_from_csv(csv_file='csv/pandb.csv')
+
+
+sort_param = 'nav'
+
+
+def sort(param, pf_data):
+    global sort_param
+    sort_param = param
+    pf_data.sort(key=get_sort_key, reverse=True if param == 'quantity' or param == 'price' or param == 'nav' else False)
+
+
+def get_sort_key(obj):
+    if sort_param == 'symbol':
+        return obj.symbol
+    if sort_param == 'name':
+        return obj.name
+    if sort_param == 'quantity':
+        return obj.quantity
+    if sort_param == 'price':
+        return obj.price
+    if sort_param == 'nav':
+        return obj.nav
 
 
 def convert_to_csv():

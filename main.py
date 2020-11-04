@@ -1,10 +1,12 @@
 import time
 
+from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.uix.progressbar import ProgressBar
 from kivy.uix.screenmanager import Screen, ScreenManager, ScreenManagerException
 from kivymd.app import MDApp
 from kivymd.toast import toast
@@ -38,7 +40,7 @@ class SpinnerScreen(Screen):
     pass
 
 
-def addMainScreen(sm):
+def addMainScreen(sm, self):
     sm.add_widget(MainScreen(name="Main"))
     sm.add_widget(TransactionUploadScreen(name="Upload"))
     sm.add_widget(TransactionEntryScreen(name="Entry"))
@@ -68,6 +70,11 @@ class Mark2MarketApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         start = time.time()
+        Builder.load_file("RootWidget.kv")
+        self.screen_manager = ScreenManager()
+        addMainScreen(self.screen_manager, self)
+        self.screen_manager.current = "Main"
+        self.current = "Main"
         self.processing = False
         self.manager_open = False
         self.filePath = ""
@@ -81,14 +88,8 @@ class Mark2MarketApp(MDApp):
             select_path=self.select_path,
         )
         self.file_manager.ext = ['.csv', '.CSV', '.xlsx', '.XLSX']
-        # self.characters = []
         self.popup = self.get_popup()
         self.no_data_popup = self.no_data_popup()
-        Builder.load_file("RootWidget.kv")
-        self.screen_manager = ScreenManager()
-        addMainScreen(self.screen_manager)
-        self.screen_manager.current = "Main"
-        self.current = "Main"
         end = time.time()
         print('elapsed time for startup is %d seconds ' % (end - start))
 
@@ -258,23 +259,6 @@ class Mark2MarketApp(MDApp):
             csvFile = convert_to_csv(self.filePath)
         tryout.make_product_dict_from_csv(csv_file=csvFile)
         self.go_nav()
-        # for item in list(tryout.product_dict.values()):
-        #     print(item)
-        # screen_name = "UPDATE" + str(time())
-        # pnl = PnLScreen(self.screen_manager, name='NAV')
-        # pnl.add_widgets()
-        # try:
-        #     self.screen_manager.get_screen('NAV')
-        #     self.screen_manager.remove_widget('NAV')
-        #     self.screen_manager.add_widget(pnl)
-        # except ScreenManagerException:
-        #     self.screen_manager.add_widget(pnl)
-        #
-        # # self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name="GainLoss"))
-        # # analysis = Analysis(self.screen_manager, name="Charts")
-        # #self.screen_manager.add_widget(analysis)
-        # self.screen_manager.current = "NAV"
-        # self.current = 'NAV'
         tryout.nav_name = 'NAV'
 
     def select_path(self, path):
