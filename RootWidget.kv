@@ -1,7 +1,7 @@
 <MainScreen>:
   canvas.before:
     Color:
-      rgba: 1, 1, 1, 1
+      rgba: .9, .9, .9, 1
     Rectangle:
       pos: self.pos
       size: self.size
@@ -12,12 +12,12 @@
     MDToolbar:
       title: 'Mark 2 Market'
       right_action_items: [ [ 'close', lambda x: app.exit() ] ]
-      md_bg_color: 0, 0, 0, 1
+      md_bg_color: 0.2, .447, 1, 1
 
     FloatLayout:
       canvas.before:
         Color:
-          rgba: .9, .9, .9, 1
+          rgba: .2, .2, .2, 1
         Rectangle:
           pos: self.pos
           size: self.size
@@ -58,7 +58,7 @@
 <TransactionUploadScreen>:
   canvas.before:
     Color:
-      rgba: 1, 1, 1, 1
+      rgba: .9, .9, .9, 1
     Rectangle:
       pos: self.pos
       size: self.size
@@ -69,11 +69,11 @@
     MDToolbar:
       title: 'Mark 2 Market - Transaction file Upload.'
       right_action_items: [ [ 'close', lambda x: app.exit() ] ]
-      md_bg_color: 0, 0, 0, 1
+      md_bg_color: 0.2, .447, 1, 1
     FloatLayout:
       canvas.before:
         Color:
-          rgba: .9, .9, .9, 1
+          rgba: .2, .2, .2, 1
         Rectangle:
           pos: self.pos
           size: self.size
@@ -92,6 +92,7 @@
         on_release: app.file_manager_open()
       MDIconButton:
         icon: 'help'
+        md_bg_color: 0.2, .447, 1, 1
         pos_hint: { 'center_x': 0.95,'center_y': 0.5 }
         on_press: app.help()
       MDRectangleFlatButton:
@@ -100,6 +101,7 @@
         on_release: app.process_file()
       MDIconButton:
         icon: 'home'
+        md_bg_color: 0.2, .447, 1, 1
         pos_hint: { 'center_x': 0.5,'center_y': .1 }
         on_release: app.home()
 
@@ -107,7 +109,7 @@
 <TransactionEntryScreen>:
   canvas.before:
     Color:
-      rgba: 1, 1, 1, 1
+      rgba: .9, .9, .9, 1
     Rectangle:
       pos: self.pos
       size: self.size
@@ -118,11 +120,11 @@
     MDToolbar:
       title: 'Mark 2 Market - Transaction Entry.'
       right_action_items: [ [ 'close', lambda x: app.exit() ] ]
-      md_bg_color: 0, 0, 0, 1
+      md_bg_color: 0.2, .447, 1, 1
     FloatLayout:
       canvas.before:
         Color:
-          rgba: .9, .9, .9, 1
+          rgba: .2, .2, .2, 1
         Rectangle:
           pos: self.pos
           size: self.size
@@ -164,6 +166,7 @@
         pos_hint: { 'center_x': 0.5,'center_y': .25 }
       MDIconButton:
         icon: 'home'
+        md_bg_color: 0.2, .447, 1, 1
         pos_hint: { 'center_x': 0.5,'center_y': .1 }
         on_release: app.home()
 
@@ -171,7 +174,7 @@
 <TradingScreen>:
   canvas.before:
     Color:
-      rgba: 1, 1, 1, 1
+      rgba: .9, .9, .9, 1
     Rectangle:
       pos: self.pos
       size: self.size
@@ -182,11 +185,11 @@
     MDToolbar:
       title: 'Mark 2 Market - Trade'
       right_action_items: [ [ 'close', lambda x: app.exit() ] ]
-      md_bg_color: 0, 0, 0, 1
+      md_bg_color: 0.2, .447, 1, 1
     FloatLayout:
       canvas.before:
         Color:
-          rgba: .9, .9, .9, 1
+          rgba: .2, .2, .2, 1
         Rectangle:
           pos: self.pos
           size: self.size
@@ -204,12 +207,13 @@
 
       MDIconButton:
         icon: 'home'
+        md_bg_color: 0.2, .447, 1, 1
         pos_hint: { 'center_x': 0.5,'center_y': .1 }
         on_release: app.home()
 <PnLScreen>:
   canvas.before:
     Color:
-      rgba: .9, .9, .9, 1
+      rgba: .2, .2, .2, 1
     Rectangle:
       pos: self.pos
       size: self.size
@@ -218,7 +222,7 @@
 <GainLossScreen>:
   canvas.before:
     Color:
-      rgba: .9, .9, .9, 1
+      rgba: .2, .2, .2, 1
     Rectangle:
       pos: self.pos
       size: self.size
@@ -231,11 +235,11 @@
     MDToolbar:
       title: 'Mark 2 Market - Analysis'
       right_action_items: [ [ 'close', lambda x: app.exit() ] ]
-      md_bg_color: 0, 0, 0, 1
+      md_bg_color: 0.2, .447, 1, 1
     FloatLayout:
       canvas.before:
         Color:
-          rgba: .9, .9, .9, 1
+          rgba: .2, .2, .2, 1
         Rectangle:
           pos: self.pos
           size: self.size

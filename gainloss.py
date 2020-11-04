@@ -43,16 +43,18 @@ class GainLossScreen(Screen):
             g = str(gain_loss)
             gp = str(gain_loss_percent)
             text_string = "Nav = " + n + "    Gain = " + g + "( " + gp + "% )"
-            button: Button = Button(text=text_string,
-                                    pos_hint=({'center_x': .5, 'center_y': .95}),
-                                    size_hint=(1, .08), )
-            button.background_color = (0, 0, 0, 1)
+            button: Button = MDRaisedButton(text=text_string,
+                                            pos_hint=({'center_x': .5, 'center_y': .95}),
+                                            size_hint=(.9, .09), )
+            button.background_color = (0.2, .447, 1, 1)
             button.bind(on_press=self.go_home)
             floatLayout.add_widget(button)
 
             table = self.get_table(pf_data)
             floatLayout.add_widget(table)
-            home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.05})
+            home_btn = MDIconButton(icon='home',
+                                    pos_hint={'center_x': 0.5, 'center_y': 0.05})
+            home_btn.md_bg_color = (0.2, .447, 1, 1)
             home_btn.bind(on_press=self.go_home)
             floatLayout.add_widget(home_btn)
             self.add_widget(floatLayout)
@@ -86,6 +88,7 @@ class GainLossScreen(Screen):
             size_hint=(.9, 0.8),
             pos_hint={'center_x': 0.5, 'center_y': 0.5},
             use_pagination=True,
+            background_color= (0.2,.2,.2,1),
             rows_num=7,
             pagination_menu_pos='auto',
             check=False,
@@ -97,7 +100,7 @@ class GainLossScreen(Screen):
             ],
             row_data=row_data
         )
-
+        table.md_bg_color = (0.2,.2,.2,1)
         return table
 
     def go_home(self, instance):
