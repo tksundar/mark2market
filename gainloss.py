@@ -3,7 +3,6 @@ Created by Sundar on 29-10-2020.email tksrajan@gmail.com
 """
 from kivy.core.window import Window
 from kivy.metrics import dp
-from kivy.properties import BooleanProperty
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen, ScreenManager

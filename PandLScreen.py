@@ -1,6 +1,8 @@
 """
 Created by Sundar on 19-10-2020.email tksrajan@gmail.com
 """
+from functools import partial
+
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.metrics import dp
@@ -11,14 +13,9 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager
-from kivymd.app import MDApp
 from kivymd.uix.button import *
 from kivymd.uix.datatables import MDDataTable, CellRow
-from kivymd.uix.label import MDLabel
-from kivymd.uix.spinner import MDSpinner
 from nsetools import Nse
-from pprint import pprint
-from functools import partial
 
 import tryout
 

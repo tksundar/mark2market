@@ -5,11 +5,8 @@ Created by Sundar on 30-10-2020.email tksrajan@gmail.com
 import matplotlib.pyplot as plt
 import pandas as pd
 from kivy.core.window import Window
-from kivy.properties import BooleanProperty
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
-from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen, ScreenManager, ScreenManagerException
 from kivymd.uix.button import MDIconButton, MDTextButton
 
