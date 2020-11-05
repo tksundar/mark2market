@@ -37,7 +37,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy==2.0.0rc4,git+https://github.com/tksundar/KivyMD.git@master,sdl2_ttf==2.0.15,matplotlib==3.1.3,pandas,xlrd,nsetools
+requirements = python3,kivy==2.0.0rc4,git+https://github.com/tksundar/KivyMD.git@master,sdl2_ttf==2.0.15,matplotlib==3.1.3,pandas,xlrd
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
 #requirements.source.kivymd = ../../kivymd/
@@ -46,7 +46,7 @@ requirements = python3,kivy==2.0.0rc4,git+https://github.com/tksundar/KivyMD.git
 #presplash.filename = %(source.dir)s/data/presplash.png
 presplash.filename = %(source.dir)s/giphy.gif
 # (str) Icon of the application
-icon.filename = %(source.dir)s/m2m_40.png
+icon.filename = %(source.dir)s/ic_launcher.png
 #icon.filename = %(source.dir)s/assets/kivymd.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
