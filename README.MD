@@ -26,8 +26,7 @@ In all, the following screens are available
 9. View  overall gain/loss of each stock 
 10. View stock movement in the last trading session.
 
-The application has 10 screens, displaying various aspects of a portfolio abd facilitating transaction inputs.
-As of now, it is almost fully functional. A few more embellishments are required such as
+A few more enhancements are in the pipeline such as
 
 1. Pressing a symbol on a datagrid will show live stock data of that symbol during trading hours
 2. Add additional analytical charts, stock trends etc to enable trading.
