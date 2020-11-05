@@ -13,9 +13,13 @@ If the ISIN is present, the portfolio is updated , else a new portfolio item is 
 kivy/kivyMD datatables do not seem to have auto refresh capability based on how the model changes So at present, the
 app needs to be restarted for the changes to reflect.
 
-This is still very rudimentary. I have not been able to package this for windows using pyinstaller or android using buildozer
-pyinstaller doesnt package kivyMD dependency and buildozer has gotchas when it comes to packaging
-pandas(actually it fails when applying some numpy patch while build). It is quite possible that these are problems due to 
-my lack of understanding of the packaging process. I will update this page as and when there is progress.
+This is still very rudimentary. I have not been able to package this for windows using pyinstaller. Packaging for
+android using buildozer has been completed.
 
-The application has two screens. Sample screenshots page1.png and page2.png are available for viewing
+The application has 10 screens, displaying various aspects of a portfolio abd facilitating transaction inputs.
+As of now, it is almost fully functional. A few more embellishments are required such as
+
+1. Pressing a symbol on a datagrid will show live stock data of that symbol during trading hours
+2. Add additional analytical charts, stock trends etc to enable trading.
+
+
