@@ -20,11 +20,10 @@ def get_content():
       --------------------------------------------------------------------
       IN9155A01020,100,212.33,Sell,
           
-      Short sell is not supported 
-         
+      Short sell is not supported           
           
-          
-    press anywhere outside this screen to dismiss.
+         press anywhere outside 
+         this screen to dismiss.
           '''
     label = Label(text=text)
     return label

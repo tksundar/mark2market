@@ -88,21 +88,21 @@
         text: "Chose Transaction File"
         icon: "folder"
         size_hint: 0.8,0.1
-        pos_hint: { 'center_x': 0.45,'center_y': 0.8 }
+        pos_hint: { 'center_x': 0.5,'center_y': 0.8 }
         on_release: app.file_manager_open()
       MDIconButton:
         icon: 'help'
         md_bg_color: 0.2, .447, 1, 1
-        pos_hint: { 'center_x': 0.95,'center_y': 0.8 }
+        pos_hint: { 'center_x': 0.9,'center_y': 0.1 }
         on_press: app.help()
       MDRectangleFlatButton:
         text: 'Process'
-        pos_hint: { 'center_x': 0.45,'center_y': 0.5 }
+        pos_hint: { 'center_x': 0.5,'center_y': 0.5 }
         on_release: app.process_file(self)
       MDIconButton:
         icon: 'home'
         md_bg_color: 0.2, .6, 1, 1
-        pos_hint: { 'center_x': 0.45,'center_y': .1 }
+        pos_hint: { 'center_x': 0.5,'center_y': .1 }
         on_release: app.home()
 
 
