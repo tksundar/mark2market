@@ -266,7 +266,7 @@ class Analysis(Screen):
         super().__init__(**kwargs)
         self.screen_manager: ScreenManager = screen_manager
         Window.bind(on_keyboard=self.events)
-        self.widgets_not_added = True
+        self.add_widgets()
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
@@ -276,13 +276,15 @@ class Analysis(Screen):
 
     def add_widgets(self):
         tryout.init(updated=self.updated)
-        if len(tryout.product_dict) > 0 and self.widgets_not_added:
+        if len(tryout.product_dict) > 0:
             try:
                 self.screen_manager.get_screen('NAV_PLOT')
+                print('got nav screen')
             except ScreenManagerException:
                 nav_plot = NavScreen(self.screen_manager, name='NAV_PLOT')
                 nav_plot.add_widgets()
                 self.screen_manager.add_widget(nav_plot)
+                print('added nav screen')
             # 2
             try:
                 self.screen_manager.get_screen('GL_PLOT')
@@ -323,7 +325,8 @@ class Analysis(Screen):
             floatLayout.add_widget(trend_btn)
             self.add_widget(floatLayout)
             add_home_btn(self)
-            self.widgets_not_added = False
+
+
 
     def go_nav_plot(self, instance):
         self.screen_manager.current = 'NAV_PLOT'

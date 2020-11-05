@@ -80,7 +80,7 @@
       MDSpinner:
         id: spinner
         size_hint: None, None
-        size: dp(46), dp(46)
+        size: dp(30), dp(30)
         pos_hint: { 'center_x': .5, 'center_y': .9 }
         active: True if app.processing else False
       MDRectangleFlatIconButton:
@@ -98,7 +98,7 @@
       MDRectangleFlatButton:
         text: 'Process'
         pos_hint: { 'center_x': 0.45,'center_y': 0.5 }
-        on_release: app.process_file()
+        on_release: app.process_file(self)
       MDIconButton:
         icon: 'home'
         md_bg_color: 0.2, .6, 1, 1
@@ -128,6 +128,12 @@
         Rectangle:
           pos: self.pos
           size: self.size
+      MDSpinner:
+        id: spinner
+        size_hint: None, None
+        size: dp(15), dp(15)
+        pos_hint: { 'center_x': .5, 'center_y': .95 }
+        active: True if app.processing else False
       MDTextField:
         id: symbol
         size_hint_x: 0.8

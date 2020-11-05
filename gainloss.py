@@ -32,6 +32,7 @@ class GainLossScreen(Screen):
         super().__init__(**kwargs)
         self.screen_manager = screen_manager
         Window.bind(on_keyboard=self.events)
+        self.add_widgets()
 
     def add_widgets(self):
         tryout.init(updated=self.updated)

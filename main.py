@@ -1,3 +1,4 @@
+import threading
 import time
 
 from kivy.clock import Clock
@@ -70,6 +71,7 @@ class Mark2MarketApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         start = time.time()
+        self.updated = False
         Builder.load_file("RootWidget.kv")
         self.screen_manager = ScreenManager()
         addMainScreen(self.screen_manager, self)
@@ -144,18 +146,27 @@ class Mark2MarketApp(MDApp):
 
     def go_nav(self):
         self.processing = True
+        Clock.schedule_once(self.nav_delegate, 1)
+
+    def add_nav_widget(self):
+        pnl = PnLScreen(self.screen_manager, name='NAV', updated=self.updated)
+        self.updated = False
+        self.screen_manager.add_widget(pnl)
+
+    def nav_delegate(self, dt):
         try:
             pnl = self.screen_manager.get_screen('NAV')
-            pnl.add_widgets()
+            if self.updated:
+                self.screen_manager.remove_widget(pnl)
+                self.add_nav_widget()
         except ScreenManagerException:
-            pnl = PnLScreen(self.screen_manager, name='NAV')
-            self.screen_manager.add_widget(pnl)
-            pnl.add_widgets()
-        self.processing = False
+            self.add_nav_widget()
         if len(tryout.product_dict) == 0:
             self.no_data_popup.open()
         else:
             self.screen_manager.current = "NAV"
+        self.processing = False
+
 
     def upload_screen(self):
         self.screen_manager.current = 'Upload'
@@ -168,13 +179,15 @@ class Mark2MarketApp(MDApp):
 
     def gain_loss(self):
         self.processing = True
+        Clock.schedule_once(self.gain_loss_delegate, 1)
+
+    def gain_loss_delegate(self,dt):
+        self.processing = True
         try:
-            gl = self.screen_manager.get_screen('GainLoss')
-            gl.add_widgets()
+            self.screen_manager.get_screen('GainLoss')
         except ScreenManagerException:
             gl = GainLossScreen(self.screen_manager, name='GainLoss')
             self.screen_manager.add_widget(gl)
-            gl.add_widgets()
         if len(tryout.product_dict) == 0:
             self.no_data_popup.open()
         else:
@@ -183,13 +196,18 @@ class Mark2MarketApp(MDApp):
 
     def charts(self):
         self.processing = True
+        Clock.schedule_once(self.chart_delegate, 1)
+
+    def chart_delegate(self, dt):
+        print(dt)
+        self.processing = True
         try:
             analysis = self.screen_manager.get_screen('Charts')
-            analysis.add_widgets()
         except ScreenManagerException:
             analysis = Analysis(self.screen_manager, name='Charts')
-            analysis.add_widgets()
+            # analysis.add_widgets()
             self.screen_manager.add_widget(analysis)
+            print('-->', self.screen_manager, analysis.screen_manager.get_screen('NAV_PLOT'))
         if len(tryout.product_dict) > 0:
             self.screen_manager.current = 'Charts'
         else:
@@ -210,6 +228,12 @@ class Mark2MarketApp(MDApp):
         tryout.open_url(instance.text)
 
     def on_submit(self):
+        self.processing = True
+        Clock.schedule_once(self.submit_delegate,1)
+
+
+
+    def submit_delegate(self, dt):
         print(self.symbol, self.qty, self.cost, self.side)
         symbol = self.symbol.pop().upper()
         qty = float(self.qty.pop().upper())
@@ -236,7 +260,10 @@ class Mark2MarketApp(MDApp):
             self.screen_manager.get_screen('Entry').ids.quantity.text = ''
             self.screen_manager.get_screen('Entry').ids.cost.text = ''
             self.screen_manager.get_screen('Entry').ids.side.text = ''
+            self.updated = True
+            self.processing = False
             self.popup.open()
+
 
     def home(self):
         self.screen_manager.current = 'Main'
@@ -252,8 +279,11 @@ class Mark2MarketApp(MDApp):
         # if len(self.characters) > 0:
         #     self.root.get_screen("Main").ids.input.text = self.characters.pop()
 
-    def process_file(self):
+    def process_file(self, instance):
         self.processing = True
+        Clock.schedule_once(self.process_file_delegate, 1)
+
+    def process_file_delegate(self,dt):
         if len(self.filePath) == 0:
             toast('You must select a transaction file')
             return
@@ -266,6 +296,8 @@ class Mark2MarketApp(MDApp):
         tryout.make_product_dict_from_csv(csv_file=csvFile)
         self.go_nav()
         tryout.nav_name = 'NAV'
+        self.processing = False
+
 
     def select_path(self, path):
         """It will be called when you click on the file name

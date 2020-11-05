@@ -66,6 +66,7 @@ def get_table(data):
 class PnLScreen(Screen):
     data = ListProperty(defaultvalue=[])
     processing = BooleanProperty(defaultvalue=False)
+    updated = False
 
     def __init__(self, screen_manager, **kwargs):
         self.updated = False
@@ -74,8 +75,9 @@ class PnLScreen(Screen):
         super().__init__(**kwargs)
         self.screen_manager: ScreenManager = screen_manager
         self.name = kwargs['name']
-
         Window.bind(on_keyboard=self.events)
+        self.add_widgets()
+
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""

@@ -83,6 +83,7 @@ def init(**kwargs):
     updated = False
     if 'updated' in kwargs:
         updated = kwargs.pop('updated')
+    print(len(product_dict))
 
     if os.path.exists('csv/pandb.csv'):
         if len(product_dict) == 0 or updated:
@@ -152,6 +153,8 @@ def create_portfolio_item_dict(df, isin):
 
 def make_product_dict_from_csv(**kwargs):
     csvFile = kwargs['csv_file']
+    print('creating product dictionary from ', csvFile)
+
     usecols = ["isin", "quantity", "side", "cost", "price", "name"]
     df = read_csv(csvFile, usecols=usecols)
     for row in df:
@@ -244,7 +247,7 @@ def update_or_create_portfolio_item(**kwargs):
         update_gain(pi)
         product_dict.update({pi.isin: pi})
         symbol_product_dict.update({pi.symbol: pi})
-        print('processed %d symbols %s' % (len(symbol_product_dict),symbol_product_dict))
+        print('processed %d symbols %s' % (len(symbol_product_dict), symbol_product_dict))
 
 
 def make_new_portfolio_item(row, isin, **kwargs):
@@ -350,9 +353,6 @@ def get_nse_prices():
     file_date = nse_path[:6]
     if day != file_date or not (os.path.exists(nse_path)):
         print('date changed. getting fresh nse price data')
-        delete_file = get_delete_file(day, 'nse.csv')
-        if os.path.exists(delete_file):
-            os.remove(delete_file)
         context = ssl.SSLContext()
         r = urllib.request.Request(nse_url, None, headers)
         response = urllib.request.urlopen(r, context=context)
@@ -364,6 +364,19 @@ def get_nse_prices():
         price = row[" CLOSE_PRICE"]
         nse_price_data.update({symbol: price})
     print('finished getting nse price data')
+    # cleanup
+    cleanup('nse.csv')
+
+
+def cleanup(endswith):
+    print('cleaning up old files')
+    file_list = [f for f in os.listdir('.') if f.endswith(endswith)]
+    ds = get_date_string()
+    for f in file_list:
+        if f.startswith(ds):
+            continue
+        os.remove(f)
+        print('removed ', f)
 
 
 def get_content():
@@ -410,9 +423,6 @@ def get_bse_prices():
                 bse_zip.extractall()
                 copyfile(bse_csv_file, bse_file)
                 os.remove(bse_csv_file)
-            delete_file = get_delete_file(day, 'bse_csv')
-            if os.path.exists(delete_file):
-                os.remove(delete_file)
         except HTTPError:
             msg = 'BSE price file not available now. Using last available price file'
             print(msg)
@@ -427,6 +437,9 @@ def get_bse_prices():
     if os.path.exists('bse.zip'):
         os.remove('bse.zip')
     print('finished getting bse price data')
+
+    # cleanup
+    cleanup('bse.csv')
 
 
 def read_csv(fileName, **kwargs):
