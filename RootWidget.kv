@@ -235,6 +235,12 @@
     Rectangle:
       pos: self.pos
       size: self.size
+  MDSpinner:
+    id: spinner
+    size_hint: None, None
+    size: dp(15), dp(15)
+    pos_hint: { 'center_x': .5, 'center_y': .95 }
+    active: True if app.processing else False
 
 
 <GainLossScreen>:
