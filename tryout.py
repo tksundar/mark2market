@@ -12,6 +12,8 @@ from zipfile import ZipFile
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
+from nsetools import Nse
+
 
 def get_date_string():
     d = datetime.now()
@@ -70,6 +72,24 @@ class PortfolioItem:
 
     def __str__(self):
         return str(self.__dict__)
+
+
+def is_in_trading_hours():
+    d = datetime.now()
+    if 9 < d.hour < 15:
+        return True
+    if 15 < d.hour < 16:
+        if d.minute < 30:
+            return True
+    return False
+
+
+def get_stock_data(symbol):
+    if is_in_trading_hours():
+        nse = Nse()
+        quote = nse.get_quote(symbol)
+    else:
+        return Label(text='Data unavailable outside market hours')
 
 
 def init(**kwargs):
