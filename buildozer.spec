@@ -14,7 +14,7 @@ source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
 #source.include_exts = assets/*,py,png,jpg,kv,atlas
-source.include_exts = py,png,jpg,jpeg,gif,ttf,md,kv,json,csv,xlsx,mpg
+source.include_exts = py,png,jpg,jpeg,gif,ttf,md,kv,json,csv,xlsx
 
 # (list) List of inclusions using pattern matching
 source.include_patterns = assets/*
@@ -44,7 +44,7 @@ requirements = python3,kivy==2.0.0rc4,git+https://github.com/tksundar/KivyMD.git
 
 # (str) Presplash of the application
 #presplash.filename = %(source.dir)s/data/presplash.png
-presplash.filename = %(source.dir)s/analytics_splash.mpg
+presplash.filename = %(source.dir)s/analytics.png
 # (str) Icon of the application
 icon.filename = %(source.dir)s/ic_launcher2.png
 #icon.filename = %(source.dir)s/assets/kivymd.png
