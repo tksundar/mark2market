@@ -1,6 +1,7 @@
 """
 Created by Sundar on 30-10-2020.email tksrajan@gmail.com
 """
+import os
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -132,9 +133,12 @@ def make_sectoral_plot(name):
 
 def make_day_gain_loss(name):
     import numpy as np
-    date = tryout.get_date_string()
+    date, prev_date = tryout.get_date_string()
+    file_name = date + '_nse.csv'
+    if not os.path.exists(file_name):
+        file_name =prev_date+'_nse.csv'
 
-    df = pd.read_csv(date + '_nse.csv', usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
+    df = pd.read_csv(file_name, usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
     _, _, symbols = get_nav_data()
     up_down = {}
 
@@ -147,8 +151,11 @@ def make_day_gain_loss(name):
         sym_trend.update({
             symbol: up_down_percent
         })
+    filename = date+'_bse.csv'
+    if not os.path.exists(filename):
+        filename = prev_date+'_bse.csv'
 
-    df = pd.read_csv(date + '_bse.csv', usecols=['ISIN_CODE', 'PREVCLOSE', 'CLOSE'])
+    df = pd.read_csv(filename, usecols=['ISIN_CODE', 'PREVCLOSE', 'CLOSE'])
     for index, row in df.iterrows():
         isin = row['ISIN_CODE']
         symbol = tryout.bse_isin_to_symbol_map.get(isin)
