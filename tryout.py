@@ -7,7 +7,7 @@ from datetime import datetime
 from shutil import copyfile
 from urllib.error import HTTPError
 from urllib.request import Request
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -18,20 +18,23 @@ from nsetools import Nse
 def get_date_string():
     d = datetime.now()
     dd = str(int(d.strftime('%d')))
+    prev_d = str(int(d.strftime('%d')) - 1)
     mm = d.strftime('%m')
     yyyy = d.strftime('%y')
     if d.day < 10:
         dd = '0' + dd
-    hrs = d.hour
+    if d.day - 1 < 10:
+        prev_d = '0' + prev_d
 
+    hrs = d.hour
     if 0 < hrs < 17:
         dd = str(int(d.strftime('%d')) - 1)
         if d.day < 10:
             dd = '0' + dd
-    return dd + mm + yyyy
+    return dd + mm + yyyy, prev_d + mm + yyyy
 
 
-date = get_date_string()
+date, _ = get_date_string()
 
 nse_equities_list_url = 'http://www1.nseindia.com/content/equities/EQUITY_L.csv'
 nse_url = 'http://www1.nseindia.com/products/content/sec_bhavdata_full.csv'
@@ -368,7 +371,7 @@ def get_nse_prices():
     """Return a dict of Symbol to Close_Price"""
     # Fetch the csv file from NSE
     print('getting fresh nse price data')
-    day = get_date_string()
+    day, _ = get_date_string()
     nse_path = day + "_nse.csv"
     file_date = nse_path[:6]
     if day != file_date or not (os.path.exists(nse_path)):
@@ -424,9 +427,15 @@ def get_content():
     popup = p
 
 
+def get_prev_day_string():
+    pass
+
+
 def get_bse_prices():
+    msg = 'BSE price file not available now. Using last available price file'
     print('getting bse prices')
-    day = get_date_string()
+    day, prev_day = get_date_string()
+    prev_bse_file = prev_day + "_bse.csv"
     bse_file = day + "_bse.csv"
     file_date = bse_file[:6]
     if day != file_date or not (os.path.exists(bse_file)):
@@ -438,13 +447,18 @@ def get_bse_prices():
             response = urllib.request.urlopen(r, context=context)
             with open('bse.zip', "wb") as f:
                 f.write(response.read())
-            with ZipFile('bse.zip', 'r') as bse_zip:
-                bse_zip.printdir()
-                bse_zip.extractall()
-                copyfile(bse_csv_file, bse_file)
-                os.remove(bse_csv_file)
+            import zipfile
+            try:
+                zipfile.ZipFile('bse.zip')
+                with ZipFile('bse.zip', 'r') as bse_zip:
+                    bse_zip.printdir()
+                    bse_zip.extractall()
+                    copyfile(bse_csv_file, bse_file)
+                    os.remove(bse_csv_file)
+            except BadZipFile:
+                bse_file = prev_bse_file
+                print(msg)
         except HTTPError:
-            msg = 'BSE price file not available now. Using last available price file'
             print(msg)
 
     df = read_csv(bse_file, usecols=['ISIN_CODE', 'LAST'])
