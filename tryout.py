@@ -76,7 +76,6 @@ class PortfolioItem:
     def __str__(self):
         return str(self.__dict__)
 
-
 def is_in_trading_hours():
     d = datetime.now()
     if 9 < d.hour < 15:
@@ -388,18 +387,22 @@ def get_nse_prices():
         nse_price_data.update({symbol: price})
     print('finished getting nse price data')
     # cleanup
-    cleanup('nse.csv')
+    cleanup('_nse.csv')
 
 
 def cleanup(endswith):
     print('cleaning up old files')
     file_list = [f for f in os.listdir('.') if f.endswith(endswith)]
-    ds = get_date_string()
+    ds, ds1 = get_date_string()
+    filename = ds+endswith
     for f in file_list:
         if f.startswith(ds):
             continue
-        os.remove(f)
-        print('removed ', f)
+        if os.path.exists(filename):
+            os.remove(f)
+            print('removed ', f)
+        else:
+            print('current price file ' + filename + ' not available. Not deleting prev file')
 
 
 def get_content():
@@ -473,7 +476,7 @@ def get_bse_prices():
     print('finished getting bse price data')
 
     # cleanup
-    cleanup('bse.csv')
+    cleanup('_bse.csv')
 
 
 def read_csv(fileName, **kwargs):
