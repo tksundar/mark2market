@@ -165,7 +165,7 @@ class PnLScreen(Screen):
         floatLayout.add_widget(table)
         home_btn = MDIconButton(icon='home',
                                 pos_hint={'center_x': 0.5, 'center_y': 0.05})
-        home_btn.md_bg_color = (0.2, .6, 1, 1)
+        home_btn.md_bg_color = (1, 1, 1, 1)
         home_btn.bind(on_press=self.go_home)
         floatLayout.add_widget(home_btn)
         self.add_widget(floatLayout)

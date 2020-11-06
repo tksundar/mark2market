@@ -65,6 +65,7 @@ def convert_to_csv(filePath):
 
 class Mark2MarketApp(MDApp):
     processing = BooleanProperty(defaultValue=False)
+    analytics = BooleanProperty(defaultValue=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -95,6 +96,9 @@ class Mark2MarketApp(MDApp):
 
     def on_processing(self, instance, value):
         print('instance, value', instance, value)
+
+    def on_analytics(self, instance,value):
+        print('on_analytics->instance, value', instance, value)
 
     def help(self):
         HelpScreen().open()
@@ -194,22 +198,23 @@ class Mark2MarketApp(MDApp):
 
     def charts(self):
         self.processing = True
-        Clock.schedule_once(self.chart_delegate, 1)
+        Clock.schedule_once(self.chart_delegate,3)
+
 
     def chart_delegate(self, dt):
         print(dt)
-        self.processing = True
+
         try:
             analysis = self.screen_manager.get_screen('Charts')
         except ScreenManagerException:
-            analysis = Analysis(self.screen_manager, name='Charts')
+            analysis = Analysis(self.screen_manager, name='Charts', updated=self.updated)
             # analysis.add_widgets()
             self.screen_manager.add_widget(analysis)
-            print('-->', self.screen_manager, analysis.screen_manager.get_screen('NAV_PLOT'))
         if len(tryout.product_dict) > 0:
             self.screen_manager.current = 'Charts'
         else:
             self.no_data_popup.open()
+
         self.processing = False
 
     def on_text(self):

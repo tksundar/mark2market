@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = Mark 2 Market
+title = Analytics
 
 # (str) Package name
-package.name = mark2market
+package.name = analytics
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.tksundar
@@ -46,7 +46,7 @@ requirements = python3,kivy==2.0.0rc4,git+https://github.com/tksundar/KivyMD.git
 #presplash.filename = %(source.dir)s/data/presplash.png
 presplash.filename = %(source.dir)s/giphy.gif
 # (str) Icon of the application
-icon.filename = %(source.dir)s/m2m_40.png
+icon.filename = %(source.dir)s/analytics
 #icon.filename = %(source.dir)s/assets/kivymd.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)

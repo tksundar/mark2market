@@ -4,10 +4,12 @@ Created by Sundar on 30-10-2020.email tksrajan@gmail.com
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen, ScreenManager, ScreenManagerException
+from kivymd.app import MDApp
 from kivymd.uix.button import MDIconButton, MDTextButton
 
 import tryout
@@ -187,7 +189,7 @@ def make_day_gain_loss(name):
 
 
 def add_home_btn(widget):
-    home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.02})
+    home_btn = MDIconButton(icon='home', pos_hint={'center_x': 0.5, 'center_y': 0.05})
     home_btn.md_bg_color = (1, 1, 1, 1)
     home_btn.bind(on_press=widget.go_home)
     widget.add_widget(home_btn)
@@ -254,6 +256,15 @@ class TrendScreen(Screen):
         self.screen_manager.current = 'Charts'
 
 
+def disable_spinner():
+    MDApp.get_running_app().analytics = True
+
+
+def enable_spinner(delegate):
+    MDApp.get_running_app().analytics = False
+    Clock.schedule_once(delegate, 1)
+
+
 class Analysis(Screen):
 
     def __init__(self, screen_manager, **kwargs):
@@ -273,69 +284,77 @@ class Analysis(Screen):
 
     def add_widgets(self):
         tryout.init(updated=self.updated)
+        floatLayout = FloatLayout(size_hint=(.9, .9))
+        nav_btn = MDTextButton(text='NAV Plot', pos_hint={'center_x': 0.55, 'center_y': 0.7})
+        nav_btn.bind(on_press=self.go_nav_plot)
+        floatLayout.add_widget(nav_btn)
+
+        gl_btn = MDTextButton(text='Gain Loss Plot', pos_hint={'center_x': 0.55, 'center_y': 0.6})
+        gl_btn.bind(on_press=self.go_gl_plot)
+        floatLayout.add_widget(gl_btn)
+
+        sec_btn = MDTextButton(text='Sectoral Exposure Plot', pos_hint={'center_x': 0.55, 'center_y': 0.5})
+        sec_btn.bind(on_press=self.go_sec_plot)
+        floatLayout.add_widget(sec_btn)
+
+        trend_btn = MDTextButton(text='Stock Movement plot', pos_hint={'center_x': 0.55, 'center_y': 0.4})
+        trend_btn.bind(on_press=self.go_trend_plot)
+        floatLayout.add_widget(trend_btn)
+        self.add_widget(floatLayout)
+        add_home_btn(self)
+
+    def go_nav_plot(self, instance):
+        enable_spinner(self.nav_plot_delegate)
+
+    def nav_plot_delegate(self, dt):
         if len(tryout.product_dict) > 0:
             try:
                 self.screen_manager.get_screen('NAV_PLOT')
-                print('got nav screen')
             except ScreenManagerException:
                 nav_plot = NavScreen(self.screen_manager, name='NAV_PLOT')
                 nav_plot.add_widgets()
                 self.screen_manager.add_widget(nav_plot)
-                print('added nav screen')
-            # 2
-            try:
-                self.screen_manager.get_screen('GL_PLOT')
-            except ScreenManagerException:
-                gl_plot = GLScreen(self.screen_manager, name='GL_PLOT')
-                gl_plot.add_widgets()
-                self.screen_manager.add_widget(gl_plot)
-            # 3
-            try:
-                self.screen_manager.get_screen('SEC_PLOT')
-            except ScreenManagerException:
-                sec_plot = SectorScreen(self.screen_manager, name='SEC_PLOT')
-                sec_plot.add_widgets()
-                self.screen_manager.add_widget(sec_plot)
-            # 4
-            try:
-                self.screen_manager.get_screen('TREND_PLOT')
-            except ScreenManagerException:
-                trend_plot = TrendScreen(self.screen_manager, name='TREND_PLOT')
-                trend_plot.add_widgets()
-                self.screen_manager.add_widget(trend_plot)
-
-            floatLayout = FloatLayout(size_hint=(.9, .9))
-            nav_btn = MDTextButton(text='NAV Plot', pos_hint={'center_x': 0.5, 'center_y': 0.7})
-            nav_btn.bind(on_press=self.go_nav_plot)
-            floatLayout.add_widget(nav_btn)
-
-            gl_btn = MDTextButton(text='Gain Loss Plot', pos_hint={'center_x': 0.5, 'center_y': 0.6})
-            gl_btn.bind(on_press=self.go_gl_plot)
-            floatLayout.add_widget(gl_btn)
-
-            sec_btn = MDTextButton(text='Sectoral Exposure Plot', pos_hint={'center_x': 0.5, 'center_y': 0.5})
-            sec_btn.bind(on_press=self.go_sec_plot)
-            floatLayout.add_widget(sec_btn)
-
-            trend_btn = MDTextButton(text='Stock Movement plot', pos_hint={'center_x': 0.5, 'center_y': 0.4})
-            trend_btn.bind(on_press=self.go_trend_plot)
-            floatLayout.add_widget(trend_btn)
-            self.add_widget(floatLayout)
-            add_home_btn(self)
-
-
-
-    def go_nav_plot(self, instance):
         self.screen_manager.current = 'NAV_PLOT'
+        disable_spinner()
 
     def go_gl_plot(self, instance):
+        enable_spinner(self.gl_plot_delegate)
+
+    def gl_plot_delegate(self, dt):
+        try:
+            self.screen_manager.get_screen('GL_PLOT')
+        except ScreenManagerException:
+            gl_plot = GLScreen(self.screen_manager, name='GL_PLOT')
+            gl_plot.add_widgets()
+            self.screen_manager.add_widget(gl_plot)
         self.screen_manager.current = 'GL_PLOT'
+        disable_spinner()
 
     def go_sec_plot(self, instance):
+        enable_spinner(self.sec_plot_delegate)
+
+    def sec_plot_delegate(self, dt):
+        try:
+            self.screen_manager.get_screen('SEC_PLOT')
+        except ScreenManagerException:
+            sec_plot = SectorScreen(self.screen_manager, name='SEC_PLOT')
+            sec_plot.add_widgets()
+            self.screen_manager.add_widget(sec_plot)
         self.screen_manager.current = 'SEC_PLOT'
+        disable_spinner()
 
     def go_trend_plot(self, instance):
+        enable_spinner(self.trend_plot_delegate)
+
+    def trend_plot_delegate(self, dt):
+        try:
+            self.screen_manager.get_screen('TREND_PLOT')
+        except ScreenManagerException:
+            trend_plot = TrendScreen(self.screen_manager, name='TREND_PLOT')
+            trend_plot.add_widgets()
+            self.screen_manager.add_widget(trend_plot)
         self.screen_manager.current = 'TREND_PLOT'
+        disable_spinner()
 
     def go_home(self, instance):
         self.screen_manager.current = 'Main'
