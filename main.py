@@ -167,6 +167,7 @@ class Mark2MarketApp(MDApp):
             self.no_data_popup.open()
         else:
             self.screen_manager.current = "NAV"
+
         self.processing = False
 
 
@@ -232,7 +233,7 @@ class Mark2MarketApp(MDApp):
 
     def on_submit(self):
         self.processing = True
-        Clock.schedule_once(self.submit_delegate,1)
+        Clock.schedule_once(self.submit_delegate, 1)
 
 
 
@@ -300,6 +301,7 @@ class Mark2MarketApp(MDApp):
         self.go_nav()
         tryout.nav_name = 'NAV'
         self.processing = False
+        self.root.get_screen(self.root.current).ids.file_chooser.text = 'Choose a transaction file'
 
 
     def select_path(self, path):
