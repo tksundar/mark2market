@@ -132,13 +132,10 @@ def make_sectoral_plot(name):
 
 
 def make_day_gain_loss(name):
+    global close
     import numpy as np
     date, prev_date = tryout.get_date_string()
-    file_name = date + '_nse.csv'
-    if not os.path.exists(file_name):
-        file_name =prev_date+'_nse.csv'
-
-    df = pd.read_csv(file_name, usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
+    df = pd.read_csv('nse.csv', usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
     _, _, symbols = get_nav_data()
     up_down = {}
 
@@ -146,14 +143,20 @@ def make_day_gain_loss(name):
     for index, row in df.iterrows():
         symbol = row['SYMBOL']
         prev = float(row[' PREV_CLOSE'])
-        close = float(row[' CLOSE_PRICE'])
+        last = row[' CLOSE_PRICE']
+        try:
+            close = float(last)
+        except ValueError:
+            print('bad price %s for symbol %s ' % (last, symbol))
+
         up_down_percent = ((close - prev) / prev) * 100
+        print('%s, %f, %f %f' % (symbol, close, prev,up_down_percent))
         sym_trend.update({
             symbol: up_down_percent
         })
-    filename = date+'_bse.csv'
+    filename = date + '_bse.csv'
     if not os.path.exists(filename):
-        filename = prev_date+'_bse.csv'
+        filename = prev_date + '_bse.csv'
 
     df = pd.read_csv(filename, usecols=['ISIN_CODE', 'PREVCLOSE', 'CLOSE'])
     for index, row in df.iterrows():
@@ -164,9 +167,10 @@ def make_day_gain_loss(name):
         up_down_percent = 0
         if prev > 0:
             up_down_percent = ((close - prev) / prev) * 100
-        sym_trend.update({
-            symbol: up_down_percent
-        })
+        if not (symbol in sym_trend):
+            sym_trend.update({
+                symbol: up_down_percent
+            })
     for symbol in symbols:
         up_down.update({symbol: sym_trend[symbol]})
 

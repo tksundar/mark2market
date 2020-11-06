@@ -370,24 +370,24 @@ def get_nse_prices():
     """Return a dict of Symbol to Close_Price"""
     # Fetch the csv file from NSE
     print('getting fresh nse price data')
-    day, _ = get_date_string()
-    nse_path = day + "_nse.csv"
-    file_date = nse_path[:6]
-    if day != file_date or not (os.path.exists(nse_path)):
-        print('date changed. getting fresh nse price data')
-        context = ssl.SSLContext()
-        r = urllib.request.Request(nse_url, None, headers)
-        response = urllib.request.urlopen(r, context=context)
-        with open(nse_path, "wb") as f:
-            f.write(response.read())
+    # day, _ = get_date_string()
+    #nse_path = day + "_nse.csv"
+    # file_date = nse_path[:6]
+    # if day != file_date or not (os.path.exists(nse_path)):
+    nse_path = 'nse.csv'
+    print('date changed. getting fresh nse price data')
+    context = ssl.SSLContext()
+    r = urllib.request.Request(nse_url, None, headers)
+    response = urllib.request.urlopen(r, context=context)
+    with open(nse_path, "wb") as f:
+        f.write(response.read())
     df = read_csv(nse_path, usecols=['SYMBOL', ' CLOSE_PRICE'])
     for row in df:
         symbol = row["SYMBOL"]
         price = row[" CLOSE_PRICE"]
         nse_price_data.update({symbol: price})
     print('finished getting nse price data')
-    # cleanup
-    cleanup('_nse.csv')
+
 
 
 def cleanup(endswith):
