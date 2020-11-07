@@ -45,11 +45,9 @@ bse_canonical_file = "bse.csv"
 bse_zip_file = 'bse.zip'
 nse_isin_to_symbol_map: dict = {}
 bse_isin_to_symbol_map: dict = {}
-bse_symbol_to_isin_map: dict = {}
-nse_symbol_to_isin_map: dict = {}
 symbol_to_exchange_map: dict = {}
+isin_to_sc_code_map = {}
 isin_to_name_map: dict = {}
-name_to_isin_map: dict = {}
 nse_price_data: dict = {}
 bse_price_data: dict = {}
 product_dict = {}
@@ -58,6 +56,7 @@ user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/
 headers = {'User-Agent': user_agent, }
 popup = None
 nav_name = 'NAV'
+sort_param = 'nav'
 
 
 class PortfolioItem:
@@ -114,7 +113,7 @@ def init(**kwargs):
             make_product_dict_from_csv(csv_file='csv/pandb.csv')
 
 
-sort_param = 'nav'
+
 
 
 def sort(param, pf_data):
@@ -186,6 +185,7 @@ def make_product_dict_from_csv(**kwargs):
         if "isin" in row:
             isin = row["isin"]
         elif "name" in row:
+            name_to_isin_map = {name: isin for isin, name in isin_to_name_map.items()}
             isin = name_to_isin_map.get(row['name'])
             if row['name'] in nse_isin_to_symbol_map or row['name'] in bse_isin_to_symbol_map:
                 isin = row['name']
@@ -256,18 +256,13 @@ def update_or_create_portfolio_item(**kwargs):
         pi.symbol = symbol
         pi.quantity = float(kwargs['quantity'])
         pi.cost = float(kwargs['cost'])
+        nse_symbol_to_isin_map = {symbol: isin for isin, symbol in nse_isin_to_symbol_map.items()}
         isin = nse_symbol_to_isin_map.get(pi.symbol)
         if isin is None:
+            bse_symbol_to_isin_map = {symbol: isin for isin, symbol in bse_isin_to_symbol_map.items()}
             isin = bse_symbol_to_isin_map.get(pi.symbol)
         pi.isin = isin
         pi.name = isin_to_name_map.get(pi.isin)
-        price = nse_price_data.get(pi.symbol)
-        # if price is None:
-        #     price = bse_price_data.get(bse_symbol_to_isin_map.get(pi.symbol))
-        #     if not (price is None):
-        #         pi.price = float(price)
-        # else:
-        #     pi.price = float(price)
         update_price(pi)
         update_gain(pi)
         product_dict.update({pi.isin: pi})
@@ -306,10 +301,7 @@ def update_gain(pi):
     pi.percent = round(percent, 2)
 
 
-isin_to_sc_code_map = {}
-
-
-def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_symbol_map, symbol_isin_map, **kwargs):
+def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_symbol_map, **kwargs):
     for row in df:
         isin = row[isin_header]
         symbol = row[symbol_header]
@@ -318,14 +310,14 @@ def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_
             ind = name.index('.-$')
             name = name[0:ind].strip()
         isin_symbol_map.update({isin: symbol})
-        symbol_isin_map.update({symbol: isin})
+        # symbol_isin_map.update({symbol: isin})
         if len(kwargs) > 0:
             if 'sc_code_header' in kwargs:
                 sc_code = row['Security Code']
                 isin_to_sc_code_map.update({isin: sc_code})
         if not (isin in isin_to_name_map):
             isin_to_name_map.update({isin: name})
-        name_to_isin_map.update({name: isin})
+        # name_to_isin_map.update({name: isin})
 
 
 def get_isin_to_symbol_map():
@@ -340,8 +332,7 @@ def get_isin_to_symbol_map():
     symbol_header = 'SYMBOL'
     name_header = 'NAME OF COMPANY'
     df = read_csv('csv/EQUITY_L.csv', usecols=['SYMBOL', ' ISIN NUMBER', 'NAME OF COMPANY'])
-    create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, nse_isin_to_symbol_map,
-                              nse_symbol_to_isin_map)
+    create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, nse_isin_to_symbol_map, )
     if not os.path.exists('csv/Equity.csv'):
         pass
         # get this dynamically
@@ -350,7 +341,7 @@ def get_isin_to_symbol_map():
     isin_header = 'ISIN No'
     name_header = 'Security Name'
     create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, bse_isin_to_symbol_map,
-                              bse_symbol_to_isin_map, sc_code_header='Security Code')
+                              sc_code_header='Security Code')
 
     print('finished getting isin to symbol map')
 
