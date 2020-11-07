@@ -45,7 +45,7 @@ class GainLossScreen(Screen):
             text_string = "Nav = " + n + "    Gain = " + g + "( " + gp + "% )"
             button: Button = MDRaisedButton(text=text_string,
                                             pos_hint=({'center_x': .5, 'center_y': .95}),
-                                            size_hint=(.9, .09), )
+                                            size_hint=(1, .09), )
             button.background_color = (0.2, .6, 1, 1)
             button.bind(on_press=self.go_home)
             floatLayout.add_widget(button)
@@ -85,7 +85,7 @@ class GainLossScreen(Screen):
             row_data.append(['', '', '', ''])  # hack. MDDatatable breaks if there just one row
 
         table = MDDataTable(
-            size_hint=(.9, 0.8),
+            size_hint=(1, 0.8),
             pos_hint={'center_x': 0.5, 'center_y': 0.5},
             use_pagination=True,
             background_color=(0.2, .2, .2, 1),

@@ -67,7 +67,7 @@ class PnLScreen(Screen):
             row_data.append(['', '', '', ''])  # hack. MDDatatable breaks if there just one row
 
         table = MDDataTable(
-            size_hint=(.9, 0.8),
+            size_hint=(1, 0.8),
             pos_hint={'center_x': 0.5, 'center_y': 0.5},
             use_pagination=True,
             pagination_menu_pos='center',
@@ -157,7 +157,7 @@ class PnLScreen(Screen):
         floatLayout = FloatLayout()
         button: Button = MDRaisedButton(text="Portfolio NAV is " + str(self.pf_nav),
                                         pos_hint=({'center_x': .5, 'center_y': .95}),
-                                        size_hint=(.9, .09), )
+                                        size_hint=(1, .09), )
         button.background_color = (0.2, .6, 1, 1)
         button.bind(on_press=self.go_home)
         floatLayout.add_widget(button)
