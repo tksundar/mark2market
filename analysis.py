@@ -138,7 +138,6 @@ def make_day_gain_loss(name):
     df = pd.read_csv('nse.csv', usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
     _, _, symbols = get_nav_data()
     up_down = {}
-
     sym_trend = {}
     for index, row in df.iterrows():
         symbol = row['SYMBOL']
@@ -156,26 +155,30 @@ def make_day_gain_loss(name):
     filename = date + '_bse.csv'
     if not os.path.exists(filename):
         filename = prev_date + '_bse.csv'
+    try:
+        df = pd.read_csv(filename, usecols=['SC_CODE', 'PREVCLOSE', 'CLOSE'])
+        for index, row in df.iterrows():
+            sc_code = str(int(row['SC_CODE']))
+            sc_code_to_isin = {sc_code: isin for isin, sc_code in tryout.isin_to_sc_code_map.items()}
+            isin = ''
+            if sc_code in sc_code_to_isin:
+                isin = sc_code_to_isin[sc_code]
+            symbol = tryout.bse_isin_to_symbol_map.get(isin)
+            prev = float(row['PREVCLOSE'])
+            close = float(row['CLOSE'])
+            up_down_percent = 0
+            if prev > 0:
+                up_down_percent = ((close - prev) / prev) * 100
+            if not (symbol in sym_trend):
+                sym_trend.update({
+                    symbol: up_down_percent
+                })
+    except FileNotFoundError:
+        pass
 
-    df = pd.read_csv(filename, usecols=['SC_CODE', 'PREVCLOSE', 'CLOSE'])
-    for index, row in df.iterrows():
-        sc_code = str(int(row['SC_CODE']))
-        sc_code_to_isin = {sc_code: isin for isin, sc_code in tryout.isin_to_sc_code_map.items()}
-        isin = ''
-        if sc_code in sc_code_to_isin:
-            isin = sc_code_to_isin[sc_code]
-        symbol = tryout.bse_isin_to_symbol_map.get(isin)
-        prev = float(row['PREVCLOSE'])
-        close = float(row['CLOSE'])
-        up_down_percent = 0
-        if prev > 0:
-            up_down_percent = ((close - prev) / prev) * 100
-        if not (symbol in sym_trend):
-            sym_trend.update({
-                symbol: up_down_percent
-            })
     for symbol in symbols:
-        up_down.update({symbol: sym_trend[symbol]})
+        if symbol in sym_trend:
+            up_down.update({symbol: sym_trend[symbol]})
 
     labels = list(up_down.keys())
     data = list(up_down.values())
