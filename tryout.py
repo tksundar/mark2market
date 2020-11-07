@@ -76,6 +76,7 @@ class PortfolioItem:
     def __str__(self):
         return str(self.__dict__)
 
+
 def is_in_trading_hours():
     d = datetime.now()
     if 9 < d.hour < 15:
@@ -371,7 +372,7 @@ def get_nse_prices():
     # Fetch the csv file from NSE
     print('getting fresh nse price data')
     # day, _ = get_date_string()
-    #nse_path = day + "_nse.csv"
+    # nse_path = day + "_nse.csv"
     # file_date = nse_path[:6]
     # if day != file_date or not (os.path.exists(nse_path)):
     nse_path = 'nse.csv'
@@ -389,12 +390,11 @@ def get_nse_prices():
     print('finished getting nse price data')
 
 
-
 def cleanup(endswith):
     print('cleaning up old files')
     file_list = [f for f in os.listdir('.') if f.endswith(endswith)]
     ds, ds1 = get_date_string()
-    filename = ds+endswith
+    filename = ds + endswith
     for f in file_list:
         if f.startswith(ds):
             continue
@@ -463,20 +463,20 @@ def get_bse_prices():
                 print(msg)
         except HTTPError:
             print(msg)
-
-    df = read_csv(bse_file, usecols=['ISIN_CODE', 'LAST'])
-    print("Getting prices for symbols")
-    for row in df:
-        isin = row["ISIN_CODE"]
-        price = row["LAST"]
-        bse_price_data.update({isin: price})
-
-    if os.path.exists('bse.zip'):
-        os.remove('bse.zip')
-    print('finished getting bse price data')
-
-    # cleanup
-    cleanup('_bse.csv')
+    try:
+        df = read_csv(bse_file, usecols=['ISIN_CODE', 'LAST'])
+        print("Getting prices for symbols")
+        for row in df:
+            isin = row["ISIN_CODE"]
+            price = row["LAST"]
+            bse_price_data.update({isin: price})
+            if os.path.exists('bse.zip'):
+                os.remove('bse.zip')
+            print('finished getting bse price data')
+            # cleanup
+            cleanup('_bse.csv')
+    except FileNotFoundError:
+        print('No price file available from bse')
 
 
 def read_csv(fileName, **kwargs):
