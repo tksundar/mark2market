@@ -22,14 +22,16 @@
     SOFTWARE.
 
 """
+import datetime as dt
 import io
 import os
 import zipfile
-import datetime as dt
-from urllib.request import Request
-from nsetools.datemgr import mkdate, usable_date, get_date_range
-from nsetools import Nse
 from abc import ABCMeta, abstractmethod
+from urllib.request import Request
+
+from nsetools import Nse
+from nsetools.datemgr import mkdate, get_date_range
+
 
 class BaseBhavcopyDownloader(metaclass=ABCMeta):
     """Base class for all types of bhavcopy downloader"""
@@ -45,7 +47,7 @@ class BaseBhavcopyDownloader(metaclass=ABCMeta):
 
     def generate_dates(self):
         return get_date_range(self.from_date, self.to_date, skip_dates=self.skip_dates)
-    
+
     def get_bhavcopy_url(self, d):
         """accept date and return bhavcopy url"""
         day_of_month = d.strftime("%d")
@@ -78,11 +80,11 @@ class BaseBhavcopyDownloader(metaclass=ABCMeta):
 
     @abstractmethod
     def download(self):
-        pass 
-    
+        pass
+
     @abstractmethod
     def update(self):
-        pass 
+        pass
 
 
 class BhavcopyFileSystemDownloader(BaseBhavcopyDownloader):
@@ -104,9 +106,9 @@ class BhavcopyFileSystemDownloader(BaseBhavcopyDownloader):
                 fh = open(self.directory + "/" + date.strftime("%Y-%m-%d") + ".csv", "w")
                 fh.write(content)
                 fh.close()
-    
+
     def update(self):
-        pass 
+        pass
 
 
 if __name__ == '__main__':

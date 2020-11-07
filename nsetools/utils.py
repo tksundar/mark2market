@@ -22,8 +22,9 @@
     SOFTWARE.
 
 """
-import six
 import re
+
+import six
 
 
 def byte_adaptor(fbuffer):

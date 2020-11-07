@@ -1,16 +1,15 @@
 """
 Created by Sundar on 29-10-2020.email tksrajan@gmail.com
 """
-from functools import partial
 
-from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.uix.button import Button
+from kivy.uix.carousel import Carousel
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.uix.button import *
-from kivymd.uix.datatables import MDDataTable, CellRow
+from kivymd.uix.datatables import MDDataTable
 
 import tryout
 
@@ -69,43 +68,46 @@ class GainLossScreen(Screen):
         return True
 
     def get_table(self, data):
-        row_data = []
-        for item in data:
-            if item.nav == 0:
-                continue
+        carousel = Carousel()
+        c_data = [data[i:i + 5] for i in range(0, len(data), 5)]
+        for fragment in c_data:
+            row_data = []
+            for item in fragment:
+                if item.nav == 0:
+                    continue
+                cost = round(item.cost * item.quantity, 2)
+                gain_loss = item.gain
+                current_nav = item.nav
+                if gain_loss < 0:
+                    gain_loss = '(' + str(round(gain_loss, 2))[1:] + ')'
+                else:
+                    gain_loss = str(round(gain_loss, 2))
 
-            cost = round(item.cost * item.quantity, 2)
-            gain_loss = item.gain
-            current_nav = item.nav
-            if gain_loss < 0:
-                gain_loss = '(' + str(round(gain_loss, 2))[1:] + ')'
-            else:
-                gain_loss = str(round(gain_loss, 2))
+                row = [item.symbol, cost, current_nav, gain_loss]
+                row_data.append(row)
+            if len(fragment) == 1:
+                row_data.append(['', '', '', ''])  # hack. MDDatatable breaks if there just one row
 
-            row = [item.symbol, cost, current_nav, gain_loss]
-            row_data.append(row)
-        if len(row_data) == 1:
-            row_data.append(['', '', '', ''])  # hack. MDDatatable breaks if there just one row
+            table = MDDataTable(
+                size_hint=(1, 0.8),
+                pos_hint={'center_x': 0.5, 'center_y': 0.5},
+                use_pagination=False,
+                background_color=(0.2, .2, .2, 1),
+                rows_num=5,
+                check=False,
+                column_data=[
+                    ("Symbol", dp(15)),
+                    ("Cost", dp(15)),
+                    ("NAV", dp(15)),
+                    ("Gain", dp(15)),
+                ],
+                row_data=row_data
+            )
+            table.md_bg_color = (0.2, .2, .2, 1)
+            table.bind(on_row_press=tryout.on_row_press)
+            carousel.add_widget(table)
+        return carousel
 
-        table = MDDataTable(
-            size_hint=(1, 0.8),
-            pos_hint={'center_x': 0.5, 'center_y': 0.5},
-            use_pagination=True,
-            background_color=(0.2, .2, .2, 1),
-            rows_num=7,
-            pagination_menu_pos='auto',
-            check=False,
-            column_data=[
-                ("Symbol", dp(15)),
-                ("Cost", dp(15)),
-                ("NAV", dp(15)),
-                ("Gain", dp(15)),
-            ],
-            row_data=row_data
-        )
-        table.md_bg_color = (0.2, .2, .2, 1)
-        table.bind(on_row_press=tryout.on_row_press)
-        return table
 
     # def on_row_press(self, instance_table, instance_row: CellRow):
     #     """Called when a table row is clicked."""

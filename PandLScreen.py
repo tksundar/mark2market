@@ -1,25 +1,18 @@
 """
 Created by Sundar on 19-10-2020.email tksrajan@gmail.com
 """
-from functools import partial
 
-from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.properties import ListProperty, BooleanProperty
 from kivy.uix.button import Button
 from kivy.uix.carousel import Carousel
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.label import Label
-from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.app import MDApp
 from kivymd.uix.button import *
-from kivymd.uix.datatables import MDDataTable, CellRow
+from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.spinner import MDSpinner
-
-from nsetools.nse import Nse
 
 import tryout
 
@@ -45,15 +38,6 @@ def sort(param, pf_data):
     pf_data.sort(key=get_sort_key, reverse=True if param == 'quantity' or param == 'price' or param == 'nav' else False)
 
 
-def get_c_data(data):
-    lists = [data[i:i + 5] for i in range(0, len(data), 5)]
-    for list in lists:
-        print('-----')
-        for pi in list:
-            print(pi.symbol)
-    return lists
-
-
 class PnLScreen(Screen):
     data = ListProperty(defaultvalue=[])
     processing = BooleanProperty(defaultvalue=False)
@@ -71,7 +55,7 @@ class PnLScreen(Screen):
 
     def get_carousel(self, data):
         carousel = Carousel()
-        c_data = get_c_data(data)
+        c_data = [data[i:i + 5] for i in range(0, len(data), 5)]
         for fragment in c_data:
             row_data = []
             for item in fragment:

@@ -22,27 +22,22 @@
     SOFTWARE.
 
 """
+import io
+import json
+import re
+import ssl
 import urllib
+import zipfile
+from http.cookiejar import CookieJar
+from urllib.parse import urlencode
+from urllib.request import Request
+from urllib.request import build_opener, HTTPCookieProcessor
 
 import six
-import ast
-import re
-import json
-import zipfile
-import io
-import ssl
-from dateutil import parser
+
 from nsetools.bases import AbstractBaseExchange
 from nsetools.utils import byte_adaptor
-from nsetools.utils import js_adaptor
-
-from urllib.request import build_opener, HTTPCookieProcessor, Request
-from urllib.parse import urlencode
-from http.cookiejar import CookieJar
-
-from nsetools.utils import byte_adaptor, js_adaptor
 from .datemgr import mkdate
-from urllib.request import Request
 
 
 class Nse(AbstractBaseExchange):
