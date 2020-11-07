@@ -38,8 +38,9 @@ date, _ = get_date_string()
 
 nse_equities_list_url = 'http://www1.nseindia.com/content/equities/EQUITY_L.csv'
 nse_url = 'http://www1.nseindia.com/products/content/sec_bhavdata_full.csv'
-bse_url = 'http://www.bseindia.com/download/BhavCopy/Equity/EQ_ISINCODE_' + date + '.zip'
-bse_csv_file = 'EQ_ISINCODE_' + date + '.CSV'
+# bse_url = 'http://www.bseindia.com/download/BhavCopy/Equity/EQ_ISINCODE_' + date + '.zip'
+bse_url = 'https://www.bseindia.com/download/BhavCopy/Equity/EQ' + date + '_CSV.ZIP'
+bse_csv_file = 'EQ' + date + '.CSV'
 bse_canonical_file = "bse.csv"
 bse_zip_file = 'bse.zip'
 nse_isin_to_symbol_map: dict = {}
@@ -230,10 +231,11 @@ def update_price(pi: PortfolioItem):
     if not (px is None):
         pi.price = float(px)
     else:
-        isn = pi.isin
-        px = bse_price_data.get(isn)
+        isin = pi.isin
+        sc_code = isin_to_sc_code_map.get(isin)
+        px = bse_price_data.get(sc_code)
         if px:
-            pi.price = float(bse_price_data.get(isn))
+            pi.price = float(px)
 
 
 def update_or_create_portfolio_item(**kwargs):
@@ -304,7 +306,10 @@ def update_gain(pi):
     pi.percent = round(percent, 2)
 
 
-def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_symbol_map, symbol_isin_map):
+isin_to_sc_code_map = {}
+
+
+def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_symbol_map, symbol_isin_map, **kwargs):
     for row in df:
         isin = row[isin_header]
         symbol = row[symbol_header]
@@ -314,6 +319,10 @@ def create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, isin_
             name = name[0:ind].strip()
         isin_symbol_map.update({isin: symbol})
         symbol_isin_map.update({symbol: isin})
+        if len(kwargs) > 0:
+            if 'sc_code_header' in kwargs:
+                sc_code = row['Security Code']
+                isin_to_sc_code_map.update({isin: sc_code})
         if not (isin in isin_to_name_map):
             isin_to_name_map.update({isin: name})
         name_to_isin_map.update({name: isin})
@@ -336,12 +345,12 @@ def get_isin_to_symbol_map():
     if not os.path.exists('csv/Equity.csv'):
         pass
         # get this dynamically
-    df = read_csv('csv/Equity.csv', usecols=['Security Id', 'ISIN No', 'Security Name'])
+    df = read_csv('csv/Equity.csv', usecols=['Security Id', 'ISIN No', 'Security Name', 'Security Code'])
     symbol_header = 'Security Id'
     isin_header = 'ISIN No'
     name_header = 'Security Name'
     create_isin_to_symbol_map(df, isin_header, symbol_header, name_header, bse_isin_to_symbol_map,
-                              bse_symbol_to_isin_map)
+                              bse_symbol_to_isin_map, sc_code_header='Security Code')
 
     print('finished getting isin to symbol map')
 
@@ -464,12 +473,12 @@ def get_bse_prices():
         except HTTPError:
             print(msg)
     try:
-        df = read_csv(bse_file, usecols=['ISIN_CODE', 'LAST'])
+        df = read_csv(bse_file, usecols=['SC_CODE', 'LAST'])
         print("Getting prices for symbols")
         for row in df:
-            isin = row["ISIN_CODE"]
+            sec_code = row["SC_CODE"]
             price = row["LAST"]
-            bse_price_data.update({isin: price})
+            bse_price_data.update({sec_code: price})
             if os.path.exists('bse.zip'):
                 os.remove('bse.zip')
             print('finished getting bse price data')

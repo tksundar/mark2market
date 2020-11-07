@@ -150,7 +150,6 @@ def make_day_gain_loss(name):
             print('bad price %s for symbol %s ' % (last, symbol))
 
         up_down_percent = ((close - prev) / prev) * 100
-        print('%s, %f, %f %f' % (symbol, close, prev,up_down_percent))
         sym_trend.update({
             symbol: up_down_percent
         })
@@ -158,9 +157,13 @@ def make_day_gain_loss(name):
     if not os.path.exists(filename):
         filename = prev_date + '_bse.csv'
 
-    df = pd.read_csv(filename, usecols=['ISIN_CODE', 'PREVCLOSE', 'CLOSE'])
+    df = pd.read_csv(filename, usecols=['SC_CODE', 'PREVCLOSE', 'CLOSE'])
     for index, row in df.iterrows():
-        isin = row['ISIN_CODE']
+        sc_code = str(int(row['SC_CODE']))
+        sc_code_to_isin = {sc_code: isin for isin, sc_code in tryout.isin_to_sc_code_map.items()}
+        isin = ''
+        if sc_code in sc_code_to_isin:
+            isin = sc_code_to_isin[sc_code]
         symbol = tryout.bse_isin_to_symbol_map.get(isin)
         prev = float(row['PREVCLOSE'])
         close = float(row['CLOSE'])
@@ -192,9 +195,9 @@ def make_day_gain_loss(name):
     plt.grid(True, which='minor')
     for index, value in enumerate(data):
         if value < 0:
-            value -= 0.1
+            value -= 0.2
         else:
-            value += 0.1
+            value += 0.2
         plt.text(index, value, labels[index])
     plt.savefig(name)
 
