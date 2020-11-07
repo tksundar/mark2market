@@ -54,7 +54,7 @@ class PnLScreen(Screen):
         self.add_widgets()
 
     def get_carousel(self, data):
-        carousel = Carousel()
+        carousel = Carousel(direction='right')
         c_data = [data[i:i + 5] for i in range(0, len(data), 5)]
         for fragment in c_data:
             row_data = []

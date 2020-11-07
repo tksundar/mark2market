@@ -68,7 +68,7 @@ class GainLossScreen(Screen):
         return True
 
     def get_table(self, data):
-        carousel = Carousel()
+        carousel = Carousel(direction='right')
         c_data = [data[i:i + 5] for i in range(0, len(data), 5)]
         for fragment in c_data:
             row_data = []
