@@ -84,7 +84,6 @@ class PortfolioItem:
 def on_row_press(instance_table, instance_row: CellRow):
     """Called when a table row is clicked."""
     MDApp.get_running_app().stock_fetch = True
-    print(instance_row.text)
     text: str = instance_row.text
     Clock.schedule_once(partial(get_stock_data, text), .5)
 
@@ -93,7 +92,7 @@ def get_stock_data(symbol, dt):
     nse = Nse()
     q = nse.get_quote(symbol)
     popup = Popup()
-    popup.title = 'Live data for ' + symbol + '. ( delayed by a minute)'
+    popup.title = 'Live data for ' + symbol
     popup.size_hint = (.7, .6)
     popup.pos_hint = {'center_x': .5, 'center_y': .5}
 
@@ -141,7 +140,7 @@ def get_stock_data(symbol, dt):
 
     popup.content = content
     popup.open()
-    MDApp.get_running_app().stock_fetch = True
+    MDApp.get_running_app().stock_fetch = False
 
 
 def init(**kwargs):
