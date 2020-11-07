@@ -510,6 +510,8 @@ def get_bse_prices():
         except HTTPError:
             print(msg)
     try:
+        if not os.path.exists(bse_file):
+            bse_file = prev_bse_file
         df = read_csv(bse_file, usecols=['SC_CODE', 'LAST'])
         print("Getting prices for symbols")
         for row in df:

@@ -98,8 +98,11 @@ class Mark2MarketApp(MDApp):
     def on_processing(self, instance, value):
         print('instance, value', instance, value)
 
-    def on_analytics(self, instance,value):
+    def on_analytics(self, instance, value):
         print('on_analytics->instance, value', instance, value)
+
+    def on_stock_fetch(self, instance, value):
+        print('on_stock_fetch->instance, value', instance, value)
 
     def help(self):
         HelpScreen().open()
@@ -171,7 +174,6 @@ class Mark2MarketApp(MDApp):
 
         self.processing = False
 
-
     def upload_screen(self):
         self.screen_manager.current = 'Upload'
 
@@ -185,7 +187,7 @@ class Mark2MarketApp(MDApp):
         self.processing = True
         Clock.schedule_once(self.gain_loss_delegate, 1)
 
-    def gain_loss_delegate(self,dt):
+    def gain_loss_delegate(self, dt):
         self.processing = True
         try:
             self.screen_manager.get_screen('GainLoss')
@@ -200,8 +202,7 @@ class Mark2MarketApp(MDApp):
 
     def charts(self):
         self.processing = True
-        Clock.schedule_once(self.chart_delegate,3)
-
+        Clock.schedule_once(self.chart_delegate, 3)
 
     def chart_delegate(self, dt):
         print(dt)
@@ -236,8 +237,6 @@ class Mark2MarketApp(MDApp):
         self.processing = True
         Clock.schedule_once(self.submit_delegate, 1)
 
-
-
     def submit_delegate(self, dt):
         print(self.symbol, self.qty, self.cost, self.side)
         symbol = self.symbol.pop().upper()
@@ -269,7 +268,6 @@ class Mark2MarketApp(MDApp):
             self.processing = False
             self.popup.open()
 
-
     def home(self):
         self.screen_manager.current = 'Main'
 
@@ -288,7 +286,7 @@ class Mark2MarketApp(MDApp):
         self.processing = True
         Clock.schedule_once(self.process_file_delegate, 1)
 
-    def process_file_delegate(self,dt):
+    def process_file_delegate(self, dt):
         if len(self.filePath) == 0:
             toast('You must select a transaction file')
             return
@@ -303,7 +301,6 @@ class Mark2MarketApp(MDApp):
         tryout.nav_name = 'NAV'
         self.processing = False
         self.root.get_screen(self.root.current).ids.file_chooser.text = 'Choose a transaction file'
-
 
     def select_path(self, path):
         """It will be called when you click on the file name
