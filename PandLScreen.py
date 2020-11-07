@@ -13,8 +13,11 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager
+from kivymd.app import MDApp
 from kivymd.uix.button import *
 from kivymd.uix.datatables import MDDataTable, CellRow
+from kivymd.uix.spinner import MDSpinner
+
 from nsetools.nse import Nse
 
 import tryout
@@ -163,6 +166,16 @@ class PnLScreen(Screen):
         floatLayout.add_widget(button)
         table = self.get_table(self.pf_data)
         floatLayout.add_widget(table)
+
+        spinner = MDSpinner()
+        MDApp.get_running_app().stock_fetch = False
+        spinner.active = MDApp.get_running_app().stock_fetch
+        spinner.size_hint = None, None
+        spinner.size = dp(30), dp(30)
+        spinner.pos_hint = {'center_x': .5, 'center_y': .8}
+
+        floatLayout.add_widget(spinner)
+
         home_btn = MDIconButton(icon='home',
                                 pos_hint={'center_x': 0.5, 'center_y': 0.05})
         home_btn.md_bg_color = (1, 1, 1, 1)

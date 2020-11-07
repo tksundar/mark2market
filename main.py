@@ -66,6 +66,7 @@ def convert_to_csv(filePath):
 class Mark2MarketApp(MDApp):
     processing = BooleanProperty(defaultValue=False)
     analytics = BooleanProperty(defaultValue=True)
+    stock_fetch = BooleanProperty(defaultValue=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

@@ -14,6 +14,7 @@ from kivy.clock import Clock
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivymd.app import MDApp
 from kivymd.uix.datatables import CellRow
 
 from nsetools.nse import Nse
@@ -82,9 +83,10 @@ class PortfolioItem:
 
 def on_row_press(instance_table, instance_row: CellRow):
     """Called when a table row is clicked."""
+    MDApp.get_running_app().stock_fetch = True
     print(instance_row.text)
     text: str = instance_row.text
-    Clock.schedule_once(partial(get_stock_data, text), 0.5)
+    Clock.schedule_once(partial(get_stock_data, text), .5)
 
 
 def get_stock_data(symbol, dt):
@@ -92,11 +94,12 @@ def get_stock_data(symbol, dt):
     q = nse.get_quote(symbol)
     popup = Popup()
     popup.title = 'Live data for ' + symbol + '. ( delayed by a minute)'
-    popup.size_hint = (.9, .6)
+    popup.size_hint = (.7, .6)
     popup.pos_hint = {'center_x': .5, 'center_y': .5}
-    popup.open()
+
     if q is not None:
-        name = q['companyName']
+        symbol_to_isin_map = {symbol: isin for isin, symbol in nse_isin_to_symbol_map.items()}
+        isin = symbol_to_isin_map[symbol]
         ltp = q['lastPrice']
         low = q['dayLow']
         high = q['dayHigh']
@@ -104,8 +107,8 @@ def get_stock_data(symbol, dt):
         low52 = q['low52']
         c1 = Label(text='Symbol')
         c2 = Label(text=symbol)
-        c3 = Label(text='Name')
-        c4 = Label(text=name)
+        c3 = Label(text='ISIN')
+        c4 = Label(text=isin)
         c5 = Label(text='Last Traded Price')
         c6 = Label(text=str(ltp))
         c7 = Label(text='Day Low')
@@ -137,6 +140,8 @@ def get_stock_data(symbol, dt):
         content = Label(text='No data available for symbol ' + symbol)
 
     popup.content = content
+    popup.open()
+    MDApp.get_running_app().stock_fetch = True
 
 
 def init(**kwargs):
