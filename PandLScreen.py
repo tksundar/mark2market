@@ -15,7 +15,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.uix.button import *
 from kivymd.uix.datatables import MDDataTable, CellRow
-from nsetools import Nse
+from nsetools.nse import Nse
 
 import tryout
 

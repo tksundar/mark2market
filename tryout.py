@@ -12,7 +12,7 @@ from zipfile import ZipFile, BadZipFile
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
-from nsetools import Nse
+from nsetools.nse import Nse
 
 
 def get_date_string():
