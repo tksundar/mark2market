@@ -113,9 +113,6 @@ def init(**kwargs):
             make_product_dict_from_csv(csv_file='csv/pandb.csv')
 
 
-
-
-
 def sort(param, pf_data):
     global sort_param
     sort_param = param
@@ -175,9 +172,9 @@ def create_portfolio_item_dict(df, isin):
 
 
 def make_product_dict_from_csv(**kwargs):
+    name_to_isin_map = {name.replace(' ', ''): isin for isin, name in isin_to_name_map.items()}
     csvFile = kwargs['csv_file']
     print('creating product dictionary from ', csvFile)
-
     usecols = ["isin", "quantity", "side", "cost", "price", "name"]
     df = read_csv(csvFile, usecols=usecols)
     for row in df:
@@ -185,8 +182,9 @@ def make_product_dict_from_csv(**kwargs):
         if "isin" in row:
             isin = row["isin"]
         elif "name" in row:
-            name_to_isin_map = {name: isin for isin, name in isin_to_name_map.items()}
-            isin = name_to_isin_map.get(row['name'])
+            name = row["name"].replace(' ','')
+            isin = name_to_isin_map.get(name)
+            # if isin is given under names heading
             if row['name'] in nse_isin_to_symbol_map or row['name'] in bse_isin_to_symbol_map:
                 isin = row['name']
         if not isin:
@@ -472,9 +470,8 @@ def get_bse_prices():
             bse_price_data.update({sec_code: price})
             if os.path.exists('bse.zip'):
                 os.remove('bse.zip')
-            print('finished getting bse price data')
-            # cleanup
-            cleanup('_bse.csv')
+        print('finished getting bse price data')
+        cleanup('_bse.csv')
     except FileNotFoundError:
         print('No price file available from bse')
 
