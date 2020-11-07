@@ -82,61 +82,61 @@ class PnLScreen(Screen):
             row_data=row_data,
 
         )
-        table.bind(on_row_press=self.on_row_press)
+        table.bind(on_row_press=tryout.on_row_press)
         return table
 
-    def on_row_press(self, instance_table, instance_row: CellRow):
-        """Called when a table row is clicked."""
+    # def on_row_press(self, instance_table, instance_row: CellRow):
+    #     """Called when a table row is clicked."""
+    #
+    #     print(instance_row.text)
+    #     text: str = instance_row.text
+    #     Clock.schedule_once(partial(tryout.get_stock_data, text), 0.5)
 
-        print(instance_row.text)
-        text: str = instance_row.text
-        Clock.schedule_once(partial(self.get_nse_data, text), 0.5)
-
-    def get_nse_data(self, symbol, dt):
-        nse = Nse()
-        q = nse.get_quote(symbol)
-        name = q['companyName']
-        ltp = q['lastPrice']
-        low = q['dayLow']
-        high = q['dayHigh']
-        high52 = q['high52']
-        low52 = q['low52']
-        c1 = Label(text='Symbol')
-        c2 = Label(text=symbol)
-        c3 = Label(text='Name')
-        c4 = Label(text=name)
-        c5 = Label(text='Last Traded Price')
-        c6 = Label(text=str(ltp))
-        c7 = Label(text='Day Low')
-        c8 = Label(text=str(low))
-        c9 = Label(text='Day High')
-        c10 = Label(text=str(high))
-        c11 = Label(text='52 week Low')
-        c12 = Label(text=str(low52))
-        c13 = Label(text='52 week High')
-        c14 = Label(text=str(high52))
-
-        gridlayout = GridLayout(cols=2)
-        gridlayout.add_widget(c1)
-        gridlayout.add_widget(c2)
-        gridlayout.add_widget(c3)
-        gridlayout.add_widget(c4)
-        gridlayout.add_widget(c5)
-        gridlayout.add_widget(c6)
-        gridlayout.add_widget(c7)
-        gridlayout.add_widget(c8)
-        gridlayout.add_widget(c9)
-        gridlayout.add_widget(c10)
-        gridlayout.add_widget(c11)
-        gridlayout.add_widget(c12)
-        gridlayout.add_widget(c13)
-        gridlayout.add_widget(c14)
-        popup = Popup()
-        popup.content = gridlayout
-        popup.title = 'Live data for ' + symbol + '. ( delayed by a minute)'
-        popup.size_hint = (.8, .6)
-        popup.pos_hint = {'center_x': .5, 'center_y': .5}
-        popup.open()
+    # def get_nse_data(self, symbol, dt):
+    #     nse = Nse()
+    #     q = nse.get_quote(symbol)
+    #     name = q['companyName']
+    #     ltp = q['lastPrice']
+    #     low = q['dayLow']
+    #     high = q['dayHigh']
+    #     high52 = q['high52']
+    #     low52 = q['low52']
+    #     c1 = Label(text='Symbol')
+    #     c2 = Label(text=symbol)
+    #     c3 = Label(text='Name')
+    #     c4 = Label(text=name)
+    #     c5 = Label(text='Last Traded Price')
+    #     c6 = Label(text=str(ltp))
+    #     c7 = Label(text='Day Low')
+    #     c8 = Label(text=str(low))
+    #     c9 = Label(text='Day High')
+    #     c10 = Label(text=str(high))
+    #     c11 = Label(text='52 week Low')
+    #     c12 = Label(text=str(low52))
+    #     c13 = Label(text='52 week High')
+    #     c14 = Label(text=str(high52))
+    #
+    #     gridlayout = GridLayout(cols=2)
+    #     gridlayout.add_widget(c1)
+    #     gridlayout.add_widget(c2)
+    #     gridlayout.add_widget(c3)
+    #     gridlayout.add_widget(c4)
+    #     gridlayout.add_widget(c5)
+    #     gridlayout.add_widget(c6)
+    #     gridlayout.add_widget(c7)
+    #     gridlayout.add_widget(c8)
+    #     gridlayout.add_widget(c9)
+    #     gridlayout.add_widget(c10)
+    #     gridlayout.add_widget(c11)
+    #     gridlayout.add_widget(c12)
+    #     gridlayout.add_widget(c13)
+    #     gridlayout.add_widget(c14)
+    #     popup = Popup()
+    #     popup.content = gridlayout
+    #     popup.title = 'Live data for ' + symbol + '. ( delayed by a minute)'
+    #     popup.size_hint = (.8, .6)
+    #     popup.pos_hint = {'center_x': .5, 'center_y': .5}
+    #     popup.open()
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""

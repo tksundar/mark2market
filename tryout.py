@@ -4,13 +4,17 @@ import ssl
 import urllib
 import webbrowser
 from datetime import datetime
+from functools import partial
 from shutil import copyfile
 from urllib.error import HTTPError
 from urllib.request import Request
 from zipfile import ZipFile, BadZipFile
 
+from kivy.clock import Clock
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivymd.uix.datatables import CellRow
 
 from nsetools.nse import Nse
 
@@ -54,7 +58,6 @@ product_dict = {}
 symbol_product_dict = {}
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 headers = {'User-Agent': user_agent, }
-popup = None
 nav_name = 'NAV'
 sort_param = 'nav'
 
@@ -77,22 +80,63 @@ class PortfolioItem:
         return str(self.__dict__)
 
 
-def is_in_trading_hours():
-    d = datetime.now()
-    if 9 < d.hour < 15:
-        return True
-    if 15 < d.hour < 16:
-        if d.minute < 30:
-            return True
-    return False
+def on_row_press(instance_table, instance_row: CellRow):
+    """Called when a table row is clicked."""
+    print(instance_row.text)
+    text: str = instance_row.text
+    Clock.schedule_once(partial(get_stock_data, text), 0.5)
 
 
-def get_stock_data(symbol):
-    if is_in_trading_hours():
-        nse = Nse()
-        quote = nse.get_quote(symbol)
+def get_stock_data(symbol, dt):
+    nse = Nse()
+    q = nse.get_quote(symbol)
+    popup = Popup()
+    popup.title = 'Live data for ' + symbol + '. ( delayed by a minute)'
+    popup.size_hint = (.8, .6)
+    popup.pos_hint = {'center_x': .5, 'center_y': .5}
+    popup.open()
+    if q is not None:
+        name = q['companyName']
+        ltp = q['lastPrice']
+        low = q['dayLow']
+        high = q['dayHigh']
+        high52 = q['high52']
+        low52 = q['low52']
+        c1 = Label(text='Symbol')
+        c2 = Label(text=symbol)
+        c3 = Label(text='Name')
+        c4 = Label(text=name)
+        c5 = Label(text='Last Traded Price')
+        c6 = Label(text=str(ltp))
+        c7 = Label(text='Day Low')
+        c8 = Label(text=str(low))
+        c9 = Label(text='Day High')
+        c10 = Label(text=str(high))
+        c11 = Label(text='52 week Low')
+        c12 = Label(text=str(low52))
+        c13 = Label(text='52 week High')
+        c14 = Label(text=str(high52))
+        # add the data
+        gridlayout = GridLayout(cols=2)
+        gridlayout.add_widget(c1)
+        gridlayout.add_widget(c2)
+        gridlayout.add_widget(c3)
+        gridlayout.add_widget(c4)
+        gridlayout.add_widget(c5)
+        gridlayout.add_widget(c6)
+        gridlayout.add_widget(c7)
+        gridlayout.add_widget(c8)
+        gridlayout.add_widget(c9)
+        gridlayout.add_widget(c10)
+        gridlayout.add_widget(c11)
+        gridlayout.add_widget(c12)
+        gridlayout.add_widget(c13)
+        gridlayout.add_widget(c14)
+        content = gridlayout
     else:
-        return Label(text='Data unavailable outside market hours')
+        content = Label(text='No data available for symbol ' + symbol)
+
+    popup.content = content
 
 
 def init(**kwargs):
@@ -182,7 +226,7 @@ def make_product_dict_from_csv(**kwargs):
         if "isin" in row:
             isin = row["isin"]
         elif "name" in row:
-            name = row["name"].replace(' ','')
+            name = row["name"].replace(' ', '')
             isin = name_to_isin_map.get(name)
             # if isin is given under names heading
             if row['name'] in nse_isin_to_symbol_map or row['name'] in bse_isin_to_symbol_map:

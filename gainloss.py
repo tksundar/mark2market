@@ -1,13 +1,16 @@
 """
 Created by Sundar on 29-10-2020.email tksrajan@gmail.com
 """
+from functools import partial
+
+from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.uix.button import *
-from kivymd.uix.datatables import MDDataTable
+from kivymd.uix.datatables import MDDataTable, CellRow
 
 import tryout
 
@@ -101,7 +104,14 @@ class GainLossScreen(Screen):
             row_data=row_data
         )
         table.md_bg_color = (0.2, .2, .2, 1)
+        table.bind(on_row_press=tryout.on_row_press)
         return table
+
+    # def on_row_press(self, instance_table, instance_row: CellRow):
+    #     """Called when a table row is clicked."""
+    #     print(instance_row.text)
+    #     text: str = instance_row.text
+    #     Clock.schedule_once(partial(tryout.get_stock_data, text), 0.5)
 
     def go_home(self, instance):
         self.screen_manager.current = 'Main'
