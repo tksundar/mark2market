@@ -84,6 +84,7 @@ class PortfolioItem:
 def on_row_press(instance_table, instance_row: CellRow):
     """Called when a table row is clicked."""
     MDApp.get_running_app().stock_fetch = True
+    print('stock_fetch =', MDApp.get_running_app().stock_fetch)
     text: str = instance_row.text
     Clock.schedule_once(partial(get_stock_data, text), .5)
 

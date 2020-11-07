@@ -55,7 +55,7 @@ class PnLScreen(Screen):
 
     def get_carousel(self, data):
         carousel = Carousel(direction='right')
-        c_data = [data[i:i + 5] for i in range(0, len(data), 5)]
+        c_data = [data[i:i + 7] for i in range(0, len(data), 7)]
         for fragment in c_data:
             row_data = []
             for item in fragment:
@@ -70,7 +70,7 @@ class PnLScreen(Screen):
                 pos_hint={'center_x': 0.5, 'center_y': 0.5},
                 use_pagination=False,
                 pagination_menu_pos='center',
-                rows_num=5,
+                rows_num=7,
                 check=False,
                 column_data=[
                     ("Symbol", dp(15)),
