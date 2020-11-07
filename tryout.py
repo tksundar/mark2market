@@ -92,7 +92,7 @@ def get_stock_data(symbol, dt):
     q = nse.get_quote(symbol)
     popup = Popup()
     popup.title = 'Live data for ' + symbol + '. ( delayed by a minute)'
-    popup.size_hint = (.8, .6)
+    popup.size_hint = (.9, .6)
     popup.pos_hint = {'center_x': .5, 'center_y': .5}
     popup.open()
     if q is not None:
