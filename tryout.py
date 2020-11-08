@@ -55,7 +55,9 @@ symbol_to_exchange_map: dict = {}
 isin_to_sc_code_map = {}
 isin_to_name_map: dict = {}
 nse_price_data: dict = {}
+nse_prev_price_data: dict = {}
 bse_price_data: dict = {}
+bse_prev_price_data: dict = {}
 product_dict = {}
 symbol_product_dict = {}
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
@@ -91,67 +93,32 @@ def on_row_press(instance_table, instance_row: CellRow):
 
 
 def get_prev_pf_nav():
-    df = pd.read_csv('nse.csv', usecols=['SYMBOL', ' PREV_CLOSE'])
     prev_nav = 0
-    prev_close_dict = {}
-    for symbol in symbol_product_dict.keys():
-        for index, row in df.iterrows():
-            sym = row['SYMBOL']
-            if sym == symbol:
-                prev_close = row[' PREV_CLOSE']
-                prev_close_dict.update({symbol: prev_close})
-    date, prev_date = get_date_string()
-
-    bse_file = date + '_bse.csv'
-    if not os.path.exists(bse_file):
-        bse_file = prev_date + '_bse.csv'
-    if os.path.exists(bse_file):
-        df = pd.read_csv(bse_file, usecols=['SC_CODE', 'PREVCLOSE'])
-        sc_code_to_isin = {sc_code: isin for isin, sc_code in isin_to_sc_code_map.items()}
-        for symbol in symbol_product_dict.keys():
-            for index, row in df.iterrows():
-                if symbol in prev_close_dict:
-                    continue  # dont process symbols already processed
-                sc_code = row['SC_CODE']
-                isin = sc_code_to_isin.get(sc_code)
-                sym = bse_isin_to_symbol_map.get(isin)
-                if sym == symbol:
-                    prev_close = row['PREVCLOSE']
-                    prev_close_dict.update({symbol: prev_close})
+    symbol_to_isin = {symbol: isin for isin, symbol in nse_isin_to_symbol_map.items()}
 
     for pf in product_dict.values():
-        p_close = prev_close_dict.get(pf.symbol)
-        if p_close is not None:
-            prev_nav += pf.quantity * p_close
-
+        if pf.symbol in nse_prev_price_data:
+            prev_close = float(nse_prev_price_data.get(pf.symbol))
+            prev_nav += prev_close * pf.quantity
+        else:
+            isin = symbol_to_isin.get(pf.symbol)
+            sc_code = isin_to_sc_code_map.get(isin)
+            p = bse_prev_price_data.get(sc_code)
+            if p is not None:
+                prev_close = float(p)
+                prev_nav += prev_close * pf.quantity
     return prev_nav
 
 
 def get_prev_close(symbol, ltp):
-    df = pd.read_csv('nse.csv', usecols=['SYMBOL', ' PREV_CLOSE'])
+    if symbol in nse_prev_price_data:
+        return float(nse_prev_price_data.get(symbol))
 
-    for index, row in df.iterrows():
-        sym = row['SYMBOL']
-        if sym == symbol:
-            prev_close = row[' PREV_CLOSE']
-            return prev_close
-
-    date, prev_date = get_date_string()
-    filename = date + '_bse.csv'
-    if not os.path.exists(filename):
-        filename = prev_date + '_bse.csv'
-    try:
-        df = pd.read_csv(filename, usecols=['SC_CODE', 'PREVCLOSE'])
-        sc_code_to_isin = {sc_code: isin for isin, sc_code in isin_to_sc_code_map.items()}
-
-        for index, row in df.iterrows():
-            code = str(int(row['SC_CODE']))
-            isin = sc_code_to_isin.get(code)
-            sym = bse_isin_to_symbol_map.get(isin)
-            if sym == symbol:
-                return row['PREVCLOSE']
-    except FileNotFoundError:
-        pass
+    symbol_to_isin_map = {s: i for i, s in bse_isin_to_symbol_map.items()}
+    isin = symbol_to_isin_map.get(symbol)
+    sc_code = isin_to_sc_code_map.get(isin)
+    if sc_code in bse_prev_price_data:
+        return float(bse_prev_price_data.get(sc_code))
 
     return ltp
 
@@ -501,10 +468,6 @@ def get_nse_prices():
     """Return a dict of Symbol to Close_Price"""
     # Fetch the csv file from NSE
     print('getting fresh nse price data')
-    # day, _ = get_date_string()
-    # nse_path = day + "_nse.csv"
-    # file_date = nse_path[:6]
-    # if day != file_date or not (os.path.exists(nse_path)):
     nse_path = 'nse.csv'
     print('date changed. getting fresh nse price data')
     context = ssl.SSLContext()
@@ -512,11 +475,13 @@ def get_nse_prices():
     response = urllib.request.urlopen(r, context=context)
     with open(nse_path, "wb") as f:
         f.write(response.read())
-    df = read_csv(nse_path, usecols=['SYMBOL', ' CLOSE_PRICE'])
+    df = read_csv(nse_path, usecols=['SYMBOL', ' CLOSE_PRICE', ' PREV_CLOSE'])
     for row in df:
         symbol = row["SYMBOL"]
         price = row[" CLOSE_PRICE"]
+        prev_price = row[" PREV_CLOSE"]
         nse_price_data.update({symbol: price})
+        nse_prev_price_data.update({symbol: prev_price})
     print('finished getting nse price data')
 
 
@@ -596,12 +561,14 @@ def get_bse_prices():
     try:
         if not os.path.exists(bse_file):
             bse_file = prev_bse_file
-        df = read_csv(bse_file, usecols=['SC_CODE', 'LAST'])
+        df = read_csv(bse_file, usecols=['SC_CODE', 'LAST', 'PREVCLOSE'])
         print("Getting prices for symbols")
         for row in df:
             sec_code = row["SC_CODE"]
             price = row["LAST"]
+            prev_price = row['PREVCLOSE']
             bse_price_data.update({sec_code: price})
+            bse_prev_price_data.update({sec_code: prev_price})
             if os.path.exists('bse.zip'):
                 os.remove('bse.zip')
         print('finished getting bse price data')

@@ -5,6 +5,7 @@ Created by Sundar on 29-10-2020.email tksrajan@gmail.com
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.uix.button import Button
+from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager
 from kivymd.uix.button import *
 from kivymd.uix.datatables import MDDataTable
@@ -39,16 +40,23 @@ class GainLossScreen(BaseGrid):
         pf_data = list(tryout.product_dict.values())
         if len(pf_data) > 0:
             pf_nav, gain_loss, gain_loss_percent = get_gain_loss(pf_data)
-
             n = str(pf_nav)
             g = str(gain_loss)
-            gp = str(gain_loss_percent)
-            text_string = "Nav = " + n + "    Gain = " + g + "( " + gp + "% )"
-            button: Button = MDRaisedButton(text=text_string,
-                                            pos_hint=({'center_x': .5, 'center_y': .95}),
-                                            size_hint=(1, .09), )
+            if gain_loss_percent < 0:
+                gp = '[color=FF0000]' + str(abs(gain_loss_percent)) + '%[/color]'
+            elif gain_loss_percent > 0:
+                gp = '[color=00FF00]' + str(abs(gain_loss_percent)) + '%[/color]'
+            else:
+                gp = str(gain_loss_percent) + '%'
+            text_string = "Nav = " + n + "    Gain = " + g + "( " + gp + ")"
+            labl = Label(text=text_string, markup=True, pos_hint=({'center_x': .5, 'center_y': .95}),
+                         size_hint=(1, .09), )
+            button: Button = MDRaisedButton(
+                pos_hint=({'center_x': .5, 'center_y': .95}),
+                size_hint=(1, .09), )
             button.background_color = (0.2, .6, 1, 1)
             button.bind(on_press=self.go_home)
+            button.add_widget(labl)
             self.layout.add_widget(button)
 
             self.add_table_screens(pf_data)
@@ -62,9 +70,7 @@ class GainLossScreen(BaseGrid):
             self.layout.add_widget(home_btn)
 
             self.add_widget(self.layout)
-            print('current screen index =',self.screen_index)
-
-
+            print('current screen index =', self.screen_index)
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
@@ -111,7 +117,6 @@ class GainLossScreen(BaseGrid):
             table.bind(on_row_press=tryout.on_row_press)
             tableScreen = TableScreen(table, name='table_g' + str(index))
             self.screens.append(tableScreen)
-
 
     def go_home(self, instance):
         self.screen_manager.current = 'Main'

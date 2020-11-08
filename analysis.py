@@ -132,53 +132,67 @@ def make_sectoral_plot(name):
 
 
 def make_day_gain_loss(name):
-    global close
+    global close, prev_close
     import numpy as np
     date, prev_date = tryout.get_date_string()
     df = pd.read_csv('nse.csv', usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
     _, _, symbols = get_nav_data()
     up_down = {}
-    sym_trend = {}
-    for index, row in df.iterrows():
-        symbol = row['SYMBOL']
-        prev = float(row[' PREV_CLOSE'])
-        last = row[' CLOSE_PRICE']
-        try:
-            close = float(last)
-        except ValueError:
-            print('bad price %s for symbol %s ' % (last, symbol))
+    symbol_isin = {symbol: isin for isin, symbol in tryout.bse_isin_to_symbol_map.items()}
 
-        up_down_percent = ((close - prev) / prev) * 100
-        sym_trend.update({
-            symbol: up_down_percent
-        })
-    filename = date + '_bse.csv'
-    if not os.path.exists(filename):
-        filename = prev_date + '_bse.csv'
-    try:
-        df = pd.read_csv(filename, usecols=['SC_CODE', 'PREVCLOSE', 'CLOSE'])
-        sc_code_to_isin = {sc_code: isin for isin, sc_code in tryout.isin_to_sc_code_map.items()}
-        for index, row in df.iterrows():
-            sc_code = str(int(row['SC_CODE']))
-            isin = ''
-            if sc_code in sc_code_to_isin:
-                isin = sc_code_to_isin[sc_code]
-            symbol = tryout.bse_isin_to_symbol_map.get(isin)
-            prev = float(row['PREVCLOSE'])
-            close = float(row['CLOSE'])
-            up_down_percent = 0
-            if prev > 0:
-                up_down_percent = ((close - prev) / prev) * 100
-            if not (symbol in sym_trend):
-                sym_trend.update({
-                    symbol: up_down_percent
-                })
-    except FileNotFoundError:
-        pass
+    for s in symbols:
+        if s in tryout.nse_price_data:
+            close = float(tryout.nse_price_data.get(s))
+            prev_close = float(tryout.nse_prev_price_data.get(s))
+        else:
+            isin = symbol_isin.get(s)
+            sc_code = tryout.isin_to_sc_code_map.get(isin)
+            if sc_code is not None:
+                close = float(tryout.bse_price_data.get(sc_code))
+                prev_close = float(tryout.bse_prev_price_data.get(sc_code))
+        percent = round((close - prev_close) / prev_close * 100, 2)
+        up_down.update({s: percent})
 
-    for symbol in symbols:
-        if symbol in sym_trend:
-            up_down.update({symbol: sym_trend[symbol]})
+    # for index, row in df.iterrows():
+    #     symbol = row['SYMBOL']
+    #     prev = float(row[' PREV_CLOSE'])
+    #     last = row[' CLOSE_PRICE']
+    #     try:
+    #         close = float(last)
+    #     except ValueError:
+    #         print('bad price %s for symbol %s ' % (last, symbol))
+    #
+    #     up_down_percent = ((close - prev) / prev) * 100
+    #     sym_trend.update({
+    #         symbol: up_down_percent
+    #     })
+    # filename = date + '_bse.csv'
+    # if not os.path.exists(filename):
+    #     filename = prev_date + '_bse.csv'
+    # try:
+    #     df = pd.read_csv(filename, usecols=['SC_CODE', 'PREVCLOSE', 'CLOSE'])
+    #     sc_code_to_isin = {sc_code: isin for isin, sc_code in tryout.isin_to_sc_code_map.items()}
+    #     for index, row in df.iterrows():
+    #         sc_code = str(int(row['SC_CODE']))
+    #         isin = ''
+    #         if sc_code in sc_code_to_isin:
+    #             isin = sc_code_to_isin[sc_code]
+    #         symbol = tryout.bse_isin_to_symbol_map.get(isin)
+    #         prev = float(row['PREVCLOSE'])
+    #         close = float(row['CLOSE'])
+    #         up_down_percent = 0
+    #         if prev > 0:
+    #             up_down_percent = ((close - prev) / prev) * 100
+    #         if not (symbol in sym_trend):
+    #             sym_trend.update({
+    #                 symbol: up_down_percent
+    #             })
+    # except FileNotFoundError:
+    #     pass
+
+    # for symbol in symbols:
+    #     if symbol in sym_trend:
+    #         up_down.update({symbol: sym_trend[symbol]})
 
     labels = list(up_down.keys())
     data = list(up_down.values())

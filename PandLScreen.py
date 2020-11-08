@@ -6,6 +6,7 @@ from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.properties import ListProperty, BooleanProperty
 from kivy.uix.button import Button
+from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager
 from kivymd.uix.button import *
 from kivymd.uix.datatables import MDDataTable
@@ -97,20 +98,26 @@ class PnLScreen(BaseGrid):
             pf_nav += pi.nav
         self.pf_nav = round(pf_nav, 2)
         prev_nav = tryout.get_prev_pf_nav()
-        print(pf_nav,prev_nav)
+        print(pf_nav, prev_nav)
         percent = round(((self.pf_nav - prev_nav) / prev_nav) * 100, 2)
         mov_str = str(percent)
         if prev_nav > pf_nav:
-            mov_str = 'down '+str(percent)+'%'
+            mov_str = '[color=FF0000]' + str(abs(percent)) + '%[/color]'
         elif prev_nav < pf_nav:
-            mov_str = 'up ' + str(percent)+'%'
+            mov_str = '[color=00FF00] ' + str(percent) + '%[/color]'
         text = "Portfolio NAV is " + str(self.pf_nav) + '(' + mov_str + ')'
-        button: Button = MDRaisedButton(text=text,
+        labl = Label(text=text, markup=True, pos_hint=({'center_x': .5, 'center_y': .95}),
+                     size_hint=(1, .09), )
+        labl.background_color = (0.2, .6, 1, 1)
+        button: Button = MDRaisedButton(
                                         pos_hint=({'center_x': .5, 'center_y': .95}),
                                         size_hint=(1, .09), )
+
         button.background_color = (0.2, .6, 1, 1)
         button.bind(on_press=self.go_home)
+        button.add_widget(labl)
         self.layout.add_widget(button)
+        #self.layout.add_widget(labl)
         self.add_table_screens(self.pf_data)
         self.layout.add_widget(self.screens[0])
 
