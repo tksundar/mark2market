@@ -37,12 +37,12 @@ class BaseGrid(Screen):
     def add_nav_buttons(self):
         right_nav_btn = MDIconButton(icon='chevron-right')
         right_nav_btn.disabled = False if self.screen_index + 1 < len(self.screens) else True
-        right_nav_btn.pos_hint = {'center_x': .5, 'center_y': .15}
+        right_nav_btn.pos_hint = {'center_x': .6, 'center_y': .15}
         right_nav_btn.bind(on_press=self.go_next)
         self.layout.add_widget(right_nav_btn)
 
         left_nav_btn = MDIconButton(icon='chevron-left')
         left_nav_btn.disabled = True if self.screen_index == 0 else False
-        left_nav_btn.pos_hint = {'center_x': .45, 'center_y': .15}
+        left_nav_btn.pos_hint = {'center_x': .4, 'center_y': .15}
         left_nav_btn.bind(on_press=self.go_prev)
         self.layout.add_widget(left_nav_btn)
