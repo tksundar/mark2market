@@ -157,9 +157,9 @@ def make_day_gain_loss(name):
         filename = prev_date + '_bse.csv'
     try:
         df = pd.read_csv(filename, usecols=['SC_CODE', 'PREVCLOSE', 'CLOSE'])
+        sc_code_to_isin = {sc_code: isin for isin, sc_code in tryout.isin_to_sc_code_map.items()}
         for index, row in df.iterrows():
             sc_code = str(int(row['SC_CODE']))
-            sc_code_to_isin = {sc_code: isin for isin, sc_code in tryout.isin_to_sc_code_map.items()}
             isin = ''
             if sc_code in sc_code_to_isin:
                 isin = sc_code_to_isin[sc_code]

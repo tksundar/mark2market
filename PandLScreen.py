@@ -16,9 +16,6 @@ from base import BaseGrid, TableScreen
 sort_param = ''
 
 
-
-
-
 def get_sort_key(obj):
     if sort_param == 'symbol':
         return obj.symbol
@@ -99,8 +96,16 @@ class PnLScreen(BaseGrid):
         for pi in self.pf_data:
             pf_nav += pi.nav
         self.pf_nav = round(pf_nav, 2)
-
-        button: Button = MDRaisedButton(text="Portfolio NAV is " + str(self.pf_nav),
+        prev_nav = tryout.get_prev_pf_nav()
+        print(pf_nav,prev_nav)
+        percent = round(((self.pf_nav - prev_nav) / prev_nav) * 100, 2)
+        mov_str = str(percent)
+        if prev_nav > pf_nav:
+            mov_str = 'down '+str(percent)+'%'
+        elif prev_nav < pf_nav:
+            mov_str = 'up ' + str(percent)+'%'
+        text = "Portfolio NAV is " + str(self.pf_nav) + '(' + mov_str + ')'
+        button: Button = MDRaisedButton(text=text,
                                         pos_hint=({'center_x': .5, 'center_y': .95}),
                                         size_hint=(1, .09), )
         button.background_color = (0.2, .6, 1, 1)

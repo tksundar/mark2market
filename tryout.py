@@ -16,6 +16,7 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivymd.app import MDApp
 from kivymd.uix.datatables import CellRow
+import pandas as pd
 
 from nsetools.nse import Nse
 
@@ -89,8 +90,90 @@ def on_row_press(instance_table, instance_row: CellRow):
     Clock.schedule_once(partial(get_stock_data, text), .5)
 
 
+def get_prev_pf_nav():
+    df = pd.read_csv('nse.csv', usecols=['SYMBOL', ' PREV_CLOSE'])
+    prev_nav = 0
+    prev_close_dict = {}
+    for symbol in symbol_product_dict.keys():
+        for index, row in df.iterrows():
+            sym = row['SYMBOL']
+            if sym == symbol:
+                prev_close = row[' PREV_CLOSE']
+                prev_close_dict.update({symbol: prev_close})
+    date, prev_date = get_date_string()
+
+    bse_file = date + '_bse.csv'
+    if not os.path.exists(bse_file):
+        bse_file = prev_date + '_bse.csv'
+    if os.path.exists(bse_file):
+        df = pd.read_csv(bse_file, usecols=['SC_CODE', 'PREVCLOSE'])
+        sc_code_to_isin = {sc_code: isin for isin, sc_code in isin_to_sc_code_map.items()}
+        for symbol in symbol_product_dict.keys():
+            for index, row in df.iterrows():
+                if symbol in prev_close_dict:
+                    continue  # dont process symbols already processed
+                sc_code = row['SC_CODE']
+                isin = sc_code_to_isin.get(sc_code)
+                sym = bse_isin_to_symbol_map.get(isin)
+                if sym == symbol:
+                    prev_close = row['PREVCLOSE']
+                    prev_close_dict.update({symbol: prev_close})
+
+    for pf in product_dict.values():
+        p_close = prev_close_dict.get(pf.symbol)
+        if p_close is not None:
+            prev_nav += pf.quantity * p_close
+
+    return prev_nav
+
+
+def get_prev_close(symbol, ltp):
+    df = pd.read_csv('nse.csv', usecols=['SYMBOL', ' PREV_CLOSE'])
+
+    for index, row in df.iterrows():
+        sym = row['SYMBOL']
+        if sym == symbol:
+            prev_close = row[' PREV_CLOSE']
+            return prev_close
+
+    date, prev_date = get_date_string()
+    filename = date + '_bse.csv'
+    if not os.path.exists(filename):
+        filename = prev_date + '_bse.csv'
+    try:
+        df = pd.read_csv(filename, usecols=['SC_CODE', 'PREVCLOSE'])
+        sc_code_to_isin = {sc_code: isin for isin, sc_code in isin_to_sc_code_map.items()}
+
+        for index, row in df.iterrows():
+            code = str(int(row['SC_CODE']))
+            isin = sc_code_to_isin.get(code)
+            sym = bse_isin_to_symbol_map.get(isin)
+            if sym == symbol:
+                return row['PREVCLOSE']
+    except FileNotFoundError:
+        pass
+
+    return ltp
+
+
+def get_ltp_string(symbol, ltp):
+    prev_close = get_prev_close(symbol, ltp)
+
+    val = str(ltp)
+    if prev_close > ltp:
+
+        percent = round(((ltp - prev_close) / prev_close) * 100, 2)
+        val = '[color=FF0000]' + str(ltp) + '[/color]' + '(' + str(percent) + '%' ')'
+    elif prev_close < ltp:
+        percent = round(((ltp - prev_close) / prev_close) * 100, 2)
+        val = '[color=00FF00]' + str(ltp) + '[/color]' + '(' + str(percent) + '%' + ')'
+    return val
+
+
 def get_stock_data(symbol, dt):
     nse = Nse()
+    if not symbol.isalpha():
+        return
     q = nse.get_quote(symbol)
     popup = Popup()
     popup.title = 'Live data for ' + symbol
@@ -110,7 +193,8 @@ def get_stock_data(symbol, dt):
         c3 = Label(text='ISIN')
         c4 = Label(text=isin)
         c5 = Label(text='Last Traded Price')
-        c6 = Label(text=str(ltp))
+        val = get_ltp_string(symbol, ltp)
+        c6 = Label(text=val, markup=True)
         c7 = Label(text='Day Low')
         c8 = Label(text=str(low))
         c9 = Label(text='Day High')
@@ -138,7 +222,6 @@ def get_stock_data(symbol, dt):
         content = gridlayout
     else:
         content = Label(text='No data available for symbol ' + symbol)
-
     popup.content = content
     popup.open()
     MDApp.get_running_app().stock_fetch = False
