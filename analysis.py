@@ -147,11 +147,13 @@ def make_day_gain_loss(name):
         else:
             isin = symbol_isin.get(s)
             sc_code = tryout.isin_to_sc_code_map.get(isin)
-            if sc_code is not None:
-                close = float(tryout.bse_price_data.get(sc_code))
+            p = tryout.bse_price_data.get(sc_code)
+            if p is not None:
+                close = float()
                 prev_close = float(tryout.bse_prev_price_data.get(sc_code))
-        percent = round((close - prev_close) / prev_close * 100, 2)
-        up_down.update({s: percent})
+        if not (close == 0 or prev_date == 0):
+            percent = round((close - prev_close) / prev_close * 100, 2)
+            up_down.update({s: percent})
 
     # for index, row in df.iterrows():
     #     symbol = row['SYMBOL']
