@@ -6,17 +6,17 @@ from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.properties import ListProperty, BooleanProperty
 from kivy.uix.button import Button
-from kivy.uix.carousel import Carousel
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.screenmanager import Screen, ScreenManager
-from kivymd.app import MDApp
+from kivy.uix.screenmanager import ScreenManager
 from kivymd.uix.button import *
 from kivymd.uix.datatables import MDDataTable
-from kivymd.uix.spinner import MDSpinner
 
 import tryout
+from base import BaseGrid, TableScreen
 
 sort_param = ''
+
+
+
 
 
 def get_sort_key(obj):
@@ -38,7 +38,7 @@ def sort(param, pf_data):
     pf_data.sort(key=get_sort_key, reverse=True if param == 'quantity' or param == 'price' or param == 'nav' else False)
 
 
-class PnLScreen(Screen):
+class PnLScreen(BaseGrid):
     data = ListProperty(defaultvalue=[])
     processing = BooleanProperty(defaultvalue=False)
     updated = False
@@ -53,10 +53,9 @@ class PnLScreen(Screen):
         Window.bind(on_keyboard=self.events)
         self.add_widgets()
 
-    def get_carousel(self, data):
-        carousel = Carousel(direction='right')
+    def add_table_screens(self, data):
         c_data = [data[i:i + 7] for i in range(0, len(data), 7)]
-        for fragment in c_data:
+        for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
                 if item.nav == 0:
@@ -81,9 +80,8 @@ class PnLScreen(Screen):
                 row_data=row_data,
             )
             table.bind(on_row_press=tryout.on_row_press)
-            carousel.add_widget(table)
-
-        return carousel
+            tableScreen = TableScreen(table, name='table' + str(index))
+            self.screens.append(tableScreen)
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
@@ -101,28 +99,21 @@ class PnLScreen(Screen):
         for pi in self.pf_data:
             pf_nav += pi.nav
         self.pf_nav = round(pf_nav, 2)
-        floatLayout = FloatLayout()
+
         button: Button = MDRaisedButton(text="Portfolio NAV is " + str(self.pf_nav),
                                         pos_hint=({'center_x': .5, 'center_y': .95}),
                                         size_hint=(1, .09), )
         button.background_color = (0.2, .6, 1, 1)
         button.bind(on_press=self.go_home)
-        floatLayout.add_widget(button)
-        carousel = self.get_carousel(self.pf_data)
-        floatLayout.add_widget(carousel)
+        self.layout.add_widget(button)
+        self.add_table_screens(self.pf_data)
+        self.layout.add_widget(self.screens[0])
 
-        spinner = MDSpinner()
-        MDApp.get_running_app().stock_fetch = False
-        spinner.active = MDApp.get_running_app().stock_fetch
-        spinner.size_hint = None, None
-        spinner.size = dp(30), dp(30)
-        spinner.pos_hint = {'center_x': .5, 'center_y': .8}
-
-        floatLayout.add_widget(spinner)
+        self.add_nav_buttons()
 
         home_btn = MDIconButton(icon='home',
                                 pos_hint={'center_x': 0.5, 'center_y': 0.05})
         home_btn.md_bg_color = (1, 1, 1, 1)
         home_btn.bind(on_press=self.go_home)
-        floatLayout.add_widget(home_btn)
-        self.add_widget(floatLayout)
+        self.layout.add_widget(home_btn)
+        self.add_widget(self.layout)

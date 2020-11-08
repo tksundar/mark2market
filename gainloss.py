@@ -5,13 +5,12 @@ Created by Sundar on 29-10-2020.email tksrajan@gmail.com
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.uix.button import Button
-from kivy.uix.carousel import Carousel
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy.uix.screenmanager import ScreenManager
 from kivymd.uix.button import *
 from kivymd.uix.datatables import MDDataTable
 
 import tryout
+from base import BaseGrid, TableScreen
 
 
 def get_gain_loss(pf_data):
@@ -24,7 +23,7 @@ def get_gain_loss(pf_data):
     return pf_nav, gain_loss, gain_loss_pct
 
 
-class GainLossScreen(Screen):
+class GainLossScreen(BaseGrid):
 
     def __init__(self, screen_manager: ScreenManager, **kwargs):
         self.updated = False
@@ -40,7 +39,7 @@ class GainLossScreen(Screen):
         pf_data = list(tryout.product_dict.values())
         if len(pf_data) > 0:
             pf_nav, gain_loss, gain_loss_percent = get_gain_loss(pf_data)
-            floatLayout = FloatLayout()
+
             n = str(pf_nav)
             g = str(gain_loss)
             gp = str(gain_loss_percent)
@@ -50,16 +49,22 @@ class GainLossScreen(Screen):
                                             size_hint=(1, .09), )
             button.background_color = (0.2, .6, 1, 1)
             button.bind(on_press=self.go_home)
-            floatLayout.add_widget(button)
+            self.layout.add_widget(button)
 
-            table = self.get_table(pf_data)
-            floatLayout.add_widget(table)
+            self.add_table_screens(pf_data)
+            self.layout.add_widget(self.screens[0])
+            self.add_nav_buttons()
+
             home_btn = MDIconButton(icon='home',
                                     pos_hint={'center_x': 0.5, 'center_y': 0.05})
             home_btn.md_bg_color = (1, 1, 1, 1)
             home_btn.bind(on_press=self.go_home)
-            floatLayout.add_widget(home_btn)
-            self.add_widget(floatLayout)
+            self.layout.add_widget(home_btn)
+
+            self.add_widget(self.layout)
+            print('current screen index =',self.screen_index)
+
+
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
@@ -67,10 +72,9 @@ class GainLossScreen(Screen):
             self.screen_manager.current = 'Main'
         return True
 
-    def get_table(self, data):
-        carousel = Carousel(direction='right')
+    def add_table_screens(self, data):
         c_data = [data[i:i + 7] for i in range(0, len(data), 7)]
-        for fragment in c_data:
+        for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
                 if item.nav == 0:
@@ -105,15 +109,9 @@ class GainLossScreen(Screen):
             )
             table.md_bg_color = (0.2, .2, .2, 1)
             table.bind(on_row_press=tryout.on_row_press)
-            carousel.add_widget(table)
-        return carousel
+            tableScreen = TableScreen(table, name='table_g' + str(index))
+            self.screens.append(tableScreen)
 
-
-    # def on_row_press(self, instance_table, instance_row: CellRow):
-    #     """Called when a table row is clicked."""
-    #     print(instance_row.text)
-    #     text: str = instance_row.text
-    #     Clock.schedule_once(partial(tryout.get_stock_data, text), 0.5)
 
     def go_home(self, instance):
         self.screen_manager.current = 'Main'
