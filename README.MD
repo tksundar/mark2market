@@ -15,7 +15,7 @@ I have not been able to package this for windows using pyinstaller. Packaging fo
 
 In all, the following screens are available
 
-1. Home : ![ScreenShot](/screenshots/home.jpg?raw=True)
+1. Home : <img src="/screenshots/home.jpg?raw=true" width="100" height="100" />
 2. File upload : https://github.com/tksundar/mark2market/blob/master/screenshots/file_upload.jpg?raw=True
 https://github.com/tksundar/mark2market/blob/master/screenshots/upload_popup.jpg?raw=True
 3. Trade Entry : https://github.com/tksundar/mark2market/blob/master/screenshots/trade_entry.jpg?raw=True
