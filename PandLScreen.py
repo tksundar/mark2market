@@ -93,6 +93,8 @@ class PnLScreen(BaseGrid):
     def add_widgets(self):
         tryout.init(updated=self.updated)
         self.pf_data = list(tryout.product_dict.values())
+        if len(self.pf_data) == 0:
+            return
         pf_nav = 0
         for pi in self.pf_data:
             pf_nav += pi.nav

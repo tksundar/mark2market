@@ -246,20 +246,6 @@ class Mark2MarketApp(MDApp):
         print(symbol, qty, cost, side)
         success = tryout.update_portfolio(symbol, qty, cost, side)
         if success:
-            try:
-                self.screen_manager.get_screen('NAV')
-            except ScreenManagerException:
-                pnl = PnLScreen(self.screen_manager, name='NAV', updated=True)
-                self.screen_manager.add_widget(pnl)
-                self.current = 'NAV'
-            try:
-                self.screen_manager.get_screen('GainLoss')
-            except ScreenManagerException:
-                self.screen_manager.add_widget(GainLossScreen(self.screen_manager, name='GainLoss', updated=True))
-            try:
-                self.screen_manager.get_screen('Charts')
-            except ScreenManagerException:
-                self.screen_manager.add_widget(Analysis(self.screen_manager, name='Charts', updated=True))
             self.screen_manager.get_screen('Entry').ids.symbol.text = ''
             self.screen_manager.get_screen('Entry').ids.quantity.text = ''
             self.screen_manager.get_screen('Entry').ids.cost.text = ''
