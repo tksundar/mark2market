@@ -276,7 +276,8 @@ def make_product_dict_from_csv(**kwargs):
         if "isin" in row:
             isin = row["isin"]
         elif "name" in row:
-            name = row["name"].replace(' ', '')
+            name = row["name"].upper().replace('LTD', 'LIMITED').replace(' ','')
+            print(name)
             isin = name_to_isin_map.get(name)
             # if isin is given under names heading
             if row['name'] in nse_isin_to_symbol_map or row['name'] in bse_isin_to_symbol_map:

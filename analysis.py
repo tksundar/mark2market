@@ -173,9 +173,9 @@ def make_day_gain_loss(name):
     plt.grid(True, which='minor')
     for index, value in enumerate(data):
         if value < 0:
-            value -= 0.2
+            value -= 0.1
         else:
-            value += 0.2
+            value += 0.1
         plt.text(index, value, labels[index])
     plt.savefig(name)
 
