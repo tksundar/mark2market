@@ -61,7 +61,7 @@ class PnLScreen(BaseGrid):
                 row = [item.symbol, item.quantity, item.price, item.nav]
                 row_data.append(row)
                 if len(fragment) == 1:
-                    row_data.append('')
+                    row_data.append(['', '', '', ''])
             table = MDDataTable(
                 size_hint=(1, 0.8),
                 pos_hint={'center_x': 0.5, 'center_y': 0.5},
