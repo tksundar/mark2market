@@ -124,23 +124,18 @@ def get_prev_close(symbol, ltp):
 
 
 def get_ltp_string(symbol, ltp):
-    prev_close = get_prev_close(symbol, ltp)
-
+    close = float(nse_price_data.get(symbol))
+    percent = round(((ltp - close) / close) * 100, 2)
     val = str(ltp)
-    if prev_close > ltp:
-
-        percent = round(((ltp - prev_close) / prev_close) * 100, 2)
+    if close > ltp:
         val = '[color=FF0000]' + str(ltp) + '[/color]' + '(' + str(percent) + '%' ')'
-    elif prev_close < ltp:
-        percent = round(((ltp - prev_close) / prev_close) * 100, 2)
+    elif close < ltp:
         val = '[color=00FF00]' + str(ltp) + '[/color]' + '(' + str(percent) + '%' + ')'
     return val
 
 
 def get_stock_data(symbol, dt):
     nse = Nse()
-    if not symbol.isalpha():
-        return
     q = nse.get_quote(symbol)
     popup = Popup()
     popup.title = 'Live data for ' + symbol
@@ -159,7 +154,7 @@ def get_stock_data(symbol, dt):
         c2 = Label(text=symbol)
         c3 = Label(text='ISIN')
         c4 = Label(text=isin)
-        c5 = Label(text='Last Traded Price')
+        c5 = Label(text='Last Price')
         val = get_ltp_string(symbol, ltp)
         c6 = Label(text=val, markup=True)
         c7 = Label(text='Day Low')

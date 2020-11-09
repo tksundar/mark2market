@@ -154,6 +154,7 @@ class Nse(AbstractBaseExchange):
             context = ssl.SSLContext()
             # this can raise HTTPError and URLError, but we are not handling it
             # north bound APIs should use it for exception handling
+            #res = self.opener.open(req)
             res = urllib.request.urlopen(req, context=context)
 
             # for py3 compat covert byte file like object to
