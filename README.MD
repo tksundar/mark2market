@@ -16,7 +16,7 @@ I have not been able to package this for windows using pyinstaller. Packaging fo
 In all, the following screens are available
 
 1. Home
-    ![alt text](https://github.com/[tksundar]/[mark2market]/blob/[master]/home.jpg?raw=true)
+    https://github.com/tksundar/mark2market/blob/master/home.jpg?raw=true
 2. File upload
 3. Trade Entry
 4. Trade in markets
