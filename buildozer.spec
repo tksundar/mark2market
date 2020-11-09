@@ -25,8 +25,8 @@ source.include_patterns = assets/*
 # (list) List of directory to exclude (let empty to not exclude anything)
 source.exclude_dirs = tests, bin, venv,screenshots
 
-# (list) List of exclusions using pattern matching
-#source.exclude_patterns = license,images/*/*.jpg
+(list) List of exclusions using pattern matching
+source.exclude_patterns = screenshots/*/*.jpg
 
 # (str) Application versioning (method 1)
 version = 0.1
