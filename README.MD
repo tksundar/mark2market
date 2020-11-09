@@ -17,12 +17,12 @@ In all, the following screens are available
 
 1. Home : <p><img src="/screenshots/home.jpg?raw=true" width="500" height="800" /></p>
 2. File upload : <p><img src="/screenshots/file_upload.jpg?raw=true" width="500" height="800" /></p>
-   a) File upload help : <p><img src="/screenshots/upload_help.jpg?raw=true" width="500" height="800" /></p>
+   a) File upload help : <p><img src="/screenshots/upload_popup.jpg?raw=true" width="500" height="800" /></p>
 3. Trade Entry : <p><img src="/screenshots/trade_entry.jpg?raw=true" width="500" height="800" /></p>
 4. Trade in markets: <p><img src="/screenshots/trade_markets.jpg?raw=true" width="500" height="800" /></p>
 5. View Net Asset Value of portfolio and individual stocks:<p><img src="/screenshots/nav_screen.jpg?raw=true" width="500" height="800" /></p>
 6. View gain loss of portfolio and individual stocks:<p><img src="/screenshots/gain_loss.jpg?raw=true" width="500" height="800" /></p>
-7. View exposure chart with respect to net asset value:<p><img src="/screenshots/nav_exosure.jpg?raw=true" width="500" height="800" /></p>
+7. View exposure chart with respect to net asset value:<p><img src="/screenshots/nav_exposure.jpg?raw=true" width="500" height="800" /></p>
 8. View exposure chart with respect to industry sectors:<p><img src="/screenshots/sectoral_exposure.jpg?raw=true" width="500" height="800" /></p>
 9. View  overall gain/loss of each stock: <p><img src="/screenshots/overall_gain_loss.jpg?raw=true" width="500" height="800" /></p>
 10. View stock movement in the last trading session: <p><img src="/screenshots/daily_gain_loss.jpg?raw=true" width="500" height="800" /></p>
