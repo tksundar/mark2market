@@ -16,9 +16,8 @@ I have not been able to package this for windows using pyinstaller. Packaging fo
 In all, the following screens are available
 
 1. Home : <p><img src="/screenshots/home.jpg?raw=true" width="500" height="800" /></p>
-2. File upload : https://github.com/tksundar/mark2market/blob/master/screenshots/file_upload.jpg?raw=True
-https://github.com/tksundar/mark2market/blob/master/screenshots/upload_popup.jpg?raw=True
-3. Trade Entry : https://github.com/tksundar/mark2market/blob/master/screenshots/trade_entry.jpg?raw=True
+2. File upload : <p><img src="/screenshots/file_upload.jpg?raw=true" width="500" height="800" /></p>
+3. Trade Entry : <p><img src="/screenshots/trade_entry.jpg?raw=true" width="500" height="800" /></p>
 4. Trade in markets
 5. View Net Asset Value of portfolio and individual stocks
 6. View gain loss of portfolio and individual stocks
