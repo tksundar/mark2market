@@ -192,7 +192,7 @@ class Mark2MarketApp(MDApp):
         try:
             self.screen_manager.get_screen('GainLoss')
         except ScreenManagerException:
-            gl = GainLossScreen(self.screen_manager, name='GainLoss')
+            gl = GainLossScreen(self.screen_manager, name='GainLoss', updated=self.updated)
             self.screen_manager.add_widget(gl)
         if len(tryout.product_dict) == 0:
             self.no_data_popup.open()
