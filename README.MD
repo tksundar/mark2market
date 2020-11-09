@@ -17,6 +17,7 @@ In all, the following screens are available
 
 1. Home : https://github.com/tksundar/mark2market/blob/master/screenshots/home.jpg?raw=True
 2. File upload : https://github.com/tksundar/mark2market/blob/master/screenshots/file_upload.jpg?raw=True
+https://github.com/tksundar/mark2market/blob/master/screenshots/upload_popup.jpg?raw=True
 3. Trade Entry : https://github.com/tksundar/mark2market/blob/master/screenshots/trade_entry.jpg?raw=True
 4. Trade in markets
 5. View Net Asset Value of portfolio and individual stocks
