@@ -23,7 +23,7 @@ source.include_patterns = assets/*
 #source.exclude_exts = spec
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-#source.exclude_dirs = tests, bin, venv
+source.exclude_dirs = tests, bin, venv,screenshots
 
 # (list) List of exclusions using pattern matching
 #source.exclude_patterns = license,images/*/*.jpg
