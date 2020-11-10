@@ -1,7 +1,7 @@
 """
 Created by Sundar on 19-10-2020.email tksrajan@gmail.com
 """
-
+import platform
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.properties import ListProperty, BooleanProperty
@@ -53,6 +53,8 @@ class PnLScreen(BaseGrid):
 
     def add_table_screens(self, data):
         c_data = [data[i:i + 7] for i in range(0, len(data), 7)]
+
+        plt = platform.system()
         for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
@@ -74,6 +76,11 @@ class PnLScreen(BaseGrid):
                     ("Quantity", dp(15)),
                     ("Price", dp(15)),
                     ("NAV", dp(15)),
+                ] if plt == 'Linux' else[
+                    ("Symbol", dp(45)),
+                    ("Quantity", dp(45)),
+                    ("Price", dp(45)),
+                    ("NAV", dp(45)),
                 ],
                 row_data=row_data,
             )

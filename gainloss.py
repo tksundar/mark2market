@@ -1,7 +1,7 @@
 """
 Created by Sundar on 29-10-2020.email tksrajan@gmail.com
 """
-
+import platform
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.uix.button import Button
@@ -80,6 +80,8 @@ class GainLossScreen(BaseGrid):
 
     def add_table_screens(self, data):
         c_data = [data[i:i + 7] for i in range(0, len(data), 7)]
+        plt = platform.system()
+        print(plt)
         for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
@@ -110,6 +112,11 @@ class GainLossScreen(BaseGrid):
                     ("Cost", dp(15)),
                     ("NAV", dp(15)),
                     ("Gain", dp(15)),
+                ] if plt == 'Linux' else [
+                    ("Symbol", dp(45)),
+                    ("Cost", dp(45)),
+                    ("NAV", dp(45)),
+                    ("Gain", dp(45)),
                 ],
                 row_data=row_data
             )
