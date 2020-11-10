@@ -32,4 +32,9 @@ A few more enhancements are in the pipeline such as
 
 Add additional analytical charts, stock trends etc to enable trading.
 
+The project is written in python 3.8. It uses the Kivy UI framework and also uses some components from the 
+KivyMD project, notably the datagrid and filemanager. The datagrid is still evolving, so more features will be 
+introduced as and when they are available( ability to stile the row cells  individually, adding widgets to
+cells etc). In addition, the project uses pandas and matplotlib for generating charts.
+
 
