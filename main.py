@@ -265,8 +265,7 @@ class Mark2MarketApp(MDApp):
     def file_manager_open(self):
         self.file_manager.show('/')  # output manager to the screen
         self.manager_open = True
-        # if len(self.characters) > 0:
-        #     self.root.get_screen("Main").ids.input.text = self.characters.pop()
+
 
     def process_file(self, instance):
         self.processing = True
@@ -318,7 +317,7 @@ class Mark2MarketApp(MDApp):
             if self.manager_open:
                 self.file_manager.back()
             else:
-                exit()
+                self.exit()
         return True
 
     def build(self):
