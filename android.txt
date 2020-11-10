@@ -1,3 +1,0 @@
-title=Mark2Market
-author=tksundar
-orientation=portrait
