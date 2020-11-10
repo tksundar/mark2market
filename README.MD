@@ -22,7 +22,7 @@ In all, the following screens are available
 4. Trade in markets: <p><img src="/screenshots/trade_markets.jpg?raw=true" width="500" height="800" /></p>
 5. View Net Asset Value of portfolio and individual stocks:<p><img src="/screenshots/nav_screen.jpg?raw=true" width="500" height="800" /></p>
 6. View gain loss of portfolio and individual stocks:<p><img src="/screenshots/gain_loss.jpg?raw=true" width="500" height="800" /></p>
-7. View exposure chart with respect to net asset value:<p><img src="/screenshots/nav_screen.jpg?raw=true" width="500" height="800" /></p>
+7. View exposure chart with respect to net asset value:<p><img src="/screenshots/nav_plot.jpg?raw=true" width="500" height="800" /></p>
 8. View exposure chart with respect to industry sectors:<p><img src="/screenshots/sector_plot.jpg?raw=true" width="500" height="800" /></p>
 9. View  overall gain/loss of each stock: <p><img src="/screenshots/gain_loss_plot.jpg?raw=true" width="500" height="800" /></p>
 10. View stock movement in the last trading session: <p><img src="/screenshots/movement.jpg?raw=true" width="500" height="800" /></p>
