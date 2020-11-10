@@ -27,15 +27,13 @@ def get_date_string():
     prev_d = str(int(d.strftime('%d')) - 1)
     mm = d.strftime('%m')
     yyyy = d.strftime('%y')
-    if d.day < 10:
-        dd = '0' + dd
     if d.day - 1 < 10:
         prev_d = '0' + prev_d
 
     hrs = d.hour
     if 0 < hrs < 17:
         dd = str(int(d.strftime('%d')) - 1)
-        if d.day < 10:
+        if d.day <= 10:
             dd = '0' + dd
     return dd + mm + yyyy, prev_d + mm + yyyy
 
