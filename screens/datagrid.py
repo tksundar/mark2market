@@ -1,6 +1,8 @@
 """
 Created by Sundar on 11-11-2020.email tksrajan@gmail.com
 """
+import platform
+
 from kivy.app import App
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Rectangle
@@ -20,8 +22,13 @@ class DataGrid(GridLayout):
         if 'cols' in kwargs:
             cols = kwargs.pop('cols')
         super().__init__(**kwargs)
-        self.padding = [100, 100, 100, 100]
-        self.pos_hint = {'center_x': .6, 'center_y': .5}
+        plt = platform.system()
+        if plt == 'Windows':
+            self.padding = [100, 100, 100, 100]
+            self.pos_hint = {'center_x': .6, 'center_y': .5}
+        else:
+            self.padding = [200, 200, 200, 200]
+            self.pos_hint = {'center_x': .5, 'center_y': .5}
         if rows > 0 and cols > 0 or rows == 0:
             self.cols = cols
         elif rows > 0:
@@ -29,8 +36,12 @@ class DataGrid(GridLayout):
 
         for col in colData:
             col.size_hint = None, None
-            col.height = dp(40)
-            col.width = dp(colWidth)
+            if plt == 'Windows':
+                 col.height = dp(40)
+                 col.width = dp(colWidth)
+            else:
+                col.height = dp(80)
+                col.width = dp(15)
             self.add_widget(col)
 
         for rows in rowData:
