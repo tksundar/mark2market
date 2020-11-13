@@ -317,62 +317,7 @@ class Mark2MarketApp(MDApp):
         return True
 
     def build(self):
-        kv = """
-<MainScreen>:
-  canvas.before:
-    Color:
-      rgba: .9, .9, .9, 1
-    Rectangle:
-      pos: self.pos
-      size: self.size
-  BoxLayout:
-    orientation: 'vertical'
-    size_hint: 1,1
-    pos_hint: { 'center_x': .5, 'center_y': .5 }
-    MDToolbar:
-      title: 'Portfolio Analytics'
-      right_action_items: [ [ 'close', lambda x: app.exit() ] ]
-      md_bg_color: 0.2, .6, 1, 1
-
-    FloatLayout:
-      canvas.before:
-        Color:
-          rgba: .2, .2, .2, 1
-        Rectangle:
-          pos: self.pos
-          size: self.size
-      MDSpinner:
-        id: spinner
-        size_hint: None, None
-        size: dp(46), dp(46)
-        pos_hint: { 'center_x': .5, 'center_y': .9 }
-        active: True if app.processing else False
-      MDTextButton:
-        text: 'Transaction file upload'
-        pos_hint: { 'center_x': 0.5,'center_y': 0.8 }
-        on_release: app.upload_screen()
-      MDTextButton:
-        text: 'Trade entry'
-        pos_hint: { 'center_x': 0.5,'center_y': 0.7 }
-        on_release: app.entry_screen()
-      MDTextButton:
-        text: 'Trade in markets'
-        pos_hint: { 'center_x': 0.5,'center_y': 0.6 }
-        on_release: app.trading_screen()
-      MDTextButton:
-        text: 'View Net Asset Value'
-        pos_hint: { 'center_x': 0.5,'center_y': 0.5 }
-        on_release: app.go_nav()
-      MDTextButton:
-        text: 'View  Gain Loss'
-        pos_hint: { 'center_x': 0.5,'center_y': 0.4 }
-        on_release: app.gain_loss()
-      MDTextButton:
-        text: 'View Performance  charts'
-        pos_hint: { 'center_x': 0.5,'center_y': 0.3 }
-        on_release: app.charts()
-        """
-        Builder.load_string(kv)
+        Builder.load_file('RootWidget.kv')
         addMainScreen(self.screen_manager, self)
         self.screen_manager.current = "Main"
         self.current = "Main"
