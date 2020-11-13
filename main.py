@@ -11,6 +11,7 @@ from kivymd.app import MDApp
 from kivymd.toast import toast
 from kivymd.uix.button import MDIconButton, MDRaisedButton
 from kivymd.uix.filemanager import MDFileManager
+from kivy.uix.floatlayout import FloatLayout
 
 import tryout
 from PandLScreen import PnLScreen
@@ -143,7 +144,6 @@ class Mark2MarketApp(MDApp):
         btn.bind(on_press=self.go_home)
         btn.md_bg_color = (1, 1, 1, 1)
         btn.pos_hint = {'center_x': .5, 'center_y': 0.1}
-        from kivy.uix.floatlayout import FloatLayout
         layout = FloatLayout()
         layout.add_widget(lbl)
         layout.add_widget(btn)
@@ -152,6 +152,9 @@ class Mark2MarketApp(MDApp):
         return pop
 
     def go_nav(self):
+        if len(tryout.product_dict) == 0:
+            self.no_data_popup.open()
+            return
         self.processing = True
         Clock.schedule_once(self.nav_delegate, 1)
 
@@ -163,16 +166,16 @@ class Mark2MarketApp(MDApp):
     def nav_delegate(self, dt):
         try:
             pnl = self.screen_manager.get_screen('NAV')
-            if self.updated:
+            if self.updated or len(tryout.product_dict) == 0:
                 self.screen_manager.remove_widget(pnl)
                 self.add_nav_widget()
         except ScreenManagerException:
             self.add_nav_widget()
+            print('prod dict length = ', len(tryout.product_dict))
         if len(tryout.product_dict) == 0:
             self.no_data_popup.open()
         else:
             self.screen_manager.current = "NAV"
-
         self.processing = False
 
     def upload_screen(self):
@@ -185,6 +188,9 @@ class Mark2MarketApp(MDApp):
         self.screen_manager.current = 'Trade'
 
     def gain_loss(self):
+        if len(tryout.product_dict) == 0:
+            self.no_data_popup.open()
+            return
         self.processing = True
         Clock.schedule_once(self.gain_loss_delegate, 1)
 
@@ -202,6 +208,9 @@ class Mark2MarketApp(MDApp):
         self.processing = False
 
     def charts(self):
+        if len(tryout.product_dict) == 0:
+            self.no_data_popup.open()
+            return
         self.processing = True
         Clock.schedule_once(self.chart_delegate, 3)
 
@@ -318,13 +327,11 @@ class Mark2MarketApp(MDApp):
         return True
 
     def build(self):
-        # Builder.load_file('RootWidget.kv')
-        # addMainScreen(self.screen_manager, self)
-        # self.screen_manager.current = "Main"
-        # return self.screen_manager
-        btn = MDRaisedButton(text='START')
-        btn.pos_hint = hint_center
-        return btn
+        Builder.load_file('RootWidget.kv')
+        addMainScreen(self.screen_manager, self)
+        self.screen_manager.current = "Main"
+        return self.screen_manager
+
 
 if __name__ == '__main__':
     Mark2MarketApp().run()

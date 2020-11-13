@@ -16,7 +16,7 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivymd.app import MDApp
 from kivymd.uix.datatables import CellRow
-import pandas as pd
+
 
 from nsetools.nse import Nse
 
