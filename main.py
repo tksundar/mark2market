@@ -72,12 +72,12 @@ class Mark2MarketApp(MDApp):
         super().__init__(**kwargs)
         start = time.time()
         self.updated = False
+        self.processing = True
         Builder.load_file("RootWidget.kv")
         self.screen_manager = ScreenManager()
         addMainScreen(self.screen_manager, self)
         self.screen_manager.current = "Main"
         self.current = "Main"
-        self.processing = False
         self.manager_open = False
         self.filePath = ""
         self.symbol = []
@@ -94,15 +94,16 @@ class Mark2MarketApp(MDApp):
         self.no_data_popup = self.no_data_popup()
         end = time.time()
         print('elapsed time for startup is %d seconds ' % (end - start))
+        self.processing = False
 
     def on_processing(self, instance, value):
-        print('instance, value', instance, value)
+        pass
 
     def on_analytics(self, instance, value):
-        print('on_analytics->instance, value', instance, value)
+        pass
 
     def on_stock_fetch(self, instance, value):
-        print('on_stock_fetch->instance, value', instance, value)
+        pass
 
     def help(self):
         HelpScreen().open()
@@ -111,8 +112,7 @@ class Mark2MarketApp(MDApp):
         Window.close()
 
     def on_state(self, instance, value):
-        print(value)
-        print(instance)
+        pass
 
     def get_popup(self):
         pop = Popup(title='Transaction status', auto_dismiss=False)
@@ -205,8 +205,6 @@ class Mark2MarketApp(MDApp):
         Clock.schedule_once(self.chart_delegate, 3)
 
     def chart_delegate(self, dt):
-        print(dt)
-
         try:
             analysis = self.screen_manager.get_screen('Charts')
         except ScreenManagerException:
@@ -238,7 +236,6 @@ class Mark2MarketApp(MDApp):
         Clock.schedule_once(self.submit_delegate, 1)
 
     def submit_delegate(self, dt):
-        print(self.symbol, self.qty, self.cost, self.side)
         symbol = self.symbol.pop().upper()
         qty = float(self.qty.pop().upper())
         cost = float(self.cost.pop().upper())
@@ -265,7 +262,6 @@ class Mark2MarketApp(MDApp):
     def file_manager_open(self):
         self.file_manager.show('/')  # output manager to the screen
         self.manager_open = True
-
 
     def process_file(self, instance):
         self.processing = True

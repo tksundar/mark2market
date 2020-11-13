@@ -85,22 +85,19 @@ class PortfolioItem:
 def on_row_press(instance_table, instance_row: CellRow):
     """Called when a table row is clicked."""
     MDApp.get_running_app().stock_fetch = True
-    print('stock_fetch =', MDApp.get_running_app().stock_fetch)
     text: str = instance_row.text
     Clock.schedule_once(partial(get_stock_data, text), .5)
 
 
 def get_prev_pf_nav():
     prev_nav = 0
-    symbol_to_isin = {symbol: isin for isin, symbol in nse_isin_to_symbol_map.items()}
-
     for pf in product_dict.values():
         if pf.symbol in nse_prev_price_data:
             prev_close = float(nse_prev_price_data.get(pf.symbol))
             prev_nav += prev_close * pf.quantity
         else:
-            isin = symbol_to_isin.get(pf.symbol)
-            sc_code = isin_to_sc_code_map.get(isin)
+            print('getting prev data for bse')
+            sc_code = isin_to_sc_code_map.get(pf.isin)
             p = bse_prev_price_data.get(sc_code)
             if p is not None:
                 prev_close = float(p)
@@ -132,8 +129,22 @@ def get_ltp_string(symbol, ltp):
     return val
 
 
-def get_stock_data(symbol, dt):
+def get_live_price(symbol):
     nse = Nse()
+    q = nse.get_quote(symbol)
+    if q is not None:
+        ltp = q['lastPrice']
+        return float(ltp)
+    return None
+
+
+
+def get_stock_data(symbol, dt):
+    if not symbol.isalpha():
+        print('%s not a symbol' % symbol)
+        return
+    nse = Nse()
+    print('getting nse price for stock ', symbol)
     q = nse.get_quote(symbol)
     popup = Popup()
     popup.title = 'Live data for ' + symbol
@@ -198,7 +209,6 @@ def init(**kwargs):
     updated = False
     if 'updated' in kwargs:
         updated = kwargs.pop('updated')
-    print(len(product_dict))
 
     if os.path.exists('csv/pandb.csv'):
         if len(product_dict) == 0 or updated:
@@ -454,7 +464,6 @@ def get_delete_file(date_str, file_name):
         elif mm in _28_day_month:
             dd = 28  # good for 4 years
     pre_date = str(dd) + str(mm) + year
-    print(pre_date)
     return pre_date + '_' + file_name
 
 
@@ -575,7 +584,6 @@ def read_csv(fileName, **kwargs):
     """return a list of dictionaries  keyed by the header """
     df = []
     usecols = kwargs["usecols"]
-    print(fileName)
     with open(fileName, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:

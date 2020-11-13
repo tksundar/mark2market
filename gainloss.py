@@ -70,7 +70,7 @@ class GainLossScreen(BaseGrid):
             self.layout.add_widget(home_btn)
 
             self.add_widget(self.layout)
-            print('current screen index =', self.screen_index)
+
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
@@ -81,7 +81,6 @@ class GainLossScreen(BaseGrid):
     def add_table_screens(self, data):
         c_data = [data[i:i + 7] for i in range(0, len(data), 7)]
         plt = platform.system()
-        print(plt)
         for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
