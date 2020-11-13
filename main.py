@@ -73,11 +73,8 @@ class Mark2MarketApp(MDApp):
         start = time.time()
         self.updated = False
         self.processing = True
-
         self.screen_manager = ScreenManager()
-        #addMainScreen(self.screen_manager, self)
-        # self.screen_manager.current = "Main"
-        # self.current = "Main"
+        self.current = "Main"
         self.manager_open = False
         self.filePath = ""
         self.symbol = []
@@ -89,6 +86,7 @@ class Mark2MarketApp(MDApp):
             exit_manager=self.exit_manager,
             select_path=self.select_path,
         )
+
         self.file_manager.ext = ['.csv', '.CSV', '.xlsx', '.XLSX']
         self.popup = self.get_popup()
         self.no_data_popup = self.no_data_popup()
@@ -320,7 +318,6 @@ class Mark2MarketApp(MDApp):
         Builder.load_file('RootWidget.kv')
         addMainScreen(self.screen_manager, self)
         self.screen_manager.current = "Main"
-        self.current = "Main"
         return self.screen_manager
 
 
