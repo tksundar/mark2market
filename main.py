@@ -73,11 +73,11 @@ class Mark2MarketApp(MDApp):
         start = time.time()
         self.updated = False
         self.processing = True
-        Builder.load_file("RootWidget.kv")
+
         self.screen_manager = ScreenManager()
-        addMainScreen(self.screen_manager, self)
-        self.screen_manager.current = "Main"
-        self.current = "Main"
+        #addMainScreen(self.screen_manager, self)
+        # self.screen_manager.current = "Main"
+        # self.current = "Main"
         self.manager_open = False
         self.filePath = ""
         self.symbol = []
@@ -317,6 +317,304 @@ class Mark2MarketApp(MDApp):
         return True
 
     def build(self):
+        kv = """
+<MainScreen>:
+  canvas.before:
+    Color:
+      rgba: .9, .9, .9, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+  BoxLayout:
+    orientation: 'vertical'
+    size_hint: 1,1
+    pos_hint: { 'center_x': .5, 'center_y': .5 }
+    MDToolbar:
+      title: 'Portfolio Analytics'
+      right_action_items: [ [ 'close', lambda x: app.exit() ] ]
+      md_bg_color: 0.2, .6, 1, 1
+
+    FloatLayout:
+      canvas.before:
+        Color:
+          rgba: .2, .2, .2, 1
+        Rectangle:
+          pos: self.pos
+          size: self.size
+      MDSpinner:
+        id: spinner
+        size_hint: None, None
+        size: dp(46), dp(46)
+        pos_hint: { 'center_x': .5, 'center_y': .9 }
+        active: True if app.processing else False
+      MDTextButton:
+        text: 'Transaction file upload'
+        pos_hint: { 'center_x': 0.5,'center_y': 0.8 }
+        on_release: app.upload_screen()
+      MDTextButton:
+        text: 'Trade entry'
+        pos_hint: { 'center_x': 0.5,'center_y': 0.7 }
+        on_release: app.entry_screen()
+      MDTextButton:
+        text: 'Trade in markets'
+        pos_hint: { 'center_x': 0.5,'center_y': 0.6 }
+        on_release: app.trading_screen()
+      MDTextButton:
+        text: 'View Net Asset Value'
+        pos_hint: { 'center_x': 0.5,'center_y': 0.5 }
+        on_release: app.go_nav()
+      MDTextButton:
+        text: 'View  Gain Loss'
+        pos_hint: { 'center_x': 0.5,'center_y': 0.4 }
+        on_release: app.gain_loss()
+      MDTextButton:
+        text: 'View Performance  charts'
+        pos_hint: { 'center_x': 0.5,'center_y': 0.3 }
+        on_release: app.charts()
+
+<TransactionUploadScreen>:
+  canvas.before:
+    Color:
+      rgba: .9, .9, .9, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+  BoxLayout:
+    orientation: 'vertical'
+    size_hint: 1,1
+    pos_hint: { 'center_x': .5, 'center_y': .5 }
+    MDToolbar:
+      title: 'File Upload'
+      right_action_items: [ [ 'help', lambda x: app.help() ] ]
+      md_bg_color: 0.2, .6, 1, 1
+    FloatLayout:
+      canvas.before:
+        Color:
+          rgba: .2, .2, .2, 1
+        Rectangle:
+          pos: self.pos
+          size: self.size
+      MDSpinner:
+        id: spinner
+        size_hint: None, None
+        size: dp(30), dp(30)
+        pos_hint: { 'center_x': .5, 'center_y': .9 }
+        active: True if app.processing else False
+      MDRectangleFlatIconButton:
+        id: file_chooser
+        text: "Choose a transaction file"
+        icon: "folder"
+        size_hint: 0.8,0.1
+        pos_hint: { 'center_x': 0.5,'center_y': 0.8 }
+        on_release: app.file_manager_open()
+      MDRectangleFlatButton:
+        text: 'Process'
+        pos_hint: { 'center_x': 0.5,'center_y': 0.5 }
+        on_release: app.process_file(self)
+      MDIconButton:
+        icon: 'home'
+        md_bg_color: 1, 1, 1, 1
+        pos_hint: { 'center_x': 0.5,'center_y': .1 }
+        on_release: app.home()
+
+
+<TransactionEntryScreen>:
+  canvas.before:
+    Color:
+      rgba: .9, .9, .9, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+  BoxLayout:
+    orientation: 'vertical'
+    size_hint: 1,1
+    pos_hint: { 'center_x': .5, 'center_y': .5 }
+    MDToolbar:
+      title: 'Trade Entry'
+      right_action_items: [ [ 'close', lambda x: app.exit() ] ]
+      md_bg_color: 0.2, .6, 1, 1
+    FloatLayout:
+      canvas.before:
+        Color:
+          rgba: 1, 1, 1, 1
+        Rectangle:
+          pos: self.pos
+          size: self.size
+      MDSpinner:
+        id: spinner
+        size_hint: None, None
+        size: dp(15), dp(15)
+        pos_hint: { 'center_x': .5, 'center_y': .95 }
+        active: True if app.processing else False
+      MDTextField:
+        id: symbol
+        size_hint_x: 0.8
+        hint_text: 'Symbol'
+        helper_text_mode: "on_error"
+        max_text_length: 15
+        pos_hint: { 'center_x': 0.5,'center_y': .9 }
+        on_text: app.on_text()
+      MDTextField:
+        id: quantity
+        size_hint_x: 0.8
+        hint_text: 'Quantity'
+        helper_text_mode: "on_error"
+        max_text_length:6
+        pos_hint: { 'center_x': 0.5,'center_y': .8 }
+        on_text: app.on_text()
+      MDTextField:
+        id: cost
+        size_hint_x: 0.8
+        hint_text: 'Cost'
+        helper_text_mode: "on_error"
+        max_text_length: 7
+        pos_hint: { 'center_x': 0.5,'center_y': .7 }
+        on_text: app.on_text()
+      MDTextField:
+        id: side
+        size_hint_x: 0.8
+        hint_text: 'Side'
+        helper_text_mode: "on_error"
+        max_text_length: 4
+        pos_hint: { 'center_x': 0.5,'center_y': .6 }
+        on_text: app.on_text()
+      MDRectangleFlatButton:
+        text: 'Submit'
+        on_release: app.on_submit()
+        pos_hint: { 'center_x': 0.5,'center_y': .5 }
+      MDIconButton:
+        icon: 'home'
+        md_bg_color: 1, 1, 1, 1
+        pos_hint: { 'center_x': 0.5,'center_y': .1 }
+        on_release: app.home()
+
+
+<TradingScreen>:
+  canvas.before:
+    Color:
+      rgba: .9, .9, .9, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+  BoxLayout:
+    orientation: 'vertical'
+    size_hint: 1,1
+    pos_hint: { 'center_x': .5, 'center_y': .5 }
+    MDToolbar:
+      title: 'Trade'
+      right_action_items: [ [ 'close', lambda x: app.exit() ] ]
+      md_bg_color: 0.2, .6, 1, 1
+    FloatLayout:
+      canvas.before:
+        Color:
+          rgba: .2, .2, .2, 1
+        Rectangle:
+          pos: self.pos
+          size: self.size
+      MDTextButton:
+        id: hdfc
+        text: 'HDFC Securities'
+        pos_hint: { 'center_x': 0.5,'center_y': .8 }
+        on_release: app.open_url(self)
+
+      MDTextButton:
+        id: icici
+        text: 'ICICI Direct'
+        pos_hint: { 'center_x': 0.5,'center_y': .7 }
+        on_release: app.open_url(self)
+
+      MDTextButton:
+        id: motilal
+        text: 'Motilal Oswal'
+        pos_hint: { 'center_x': 0.5,'center_y': .6 }
+        on_release: app.open_url(self)
+
+      MDTextButton:
+        id: indiabulls
+        text: 'Indiabulls'
+        pos_hint: { 'center_x': 0.5,'center_y': .5 }
+        on_release: app.open_url(self)
+
+      MDIconButton:
+        icon: 'home'
+        md_bg_color: 1, 1, 1, 1
+        pos_hint: { 'center_x': 0.5,'center_y': .1 }
+        on_release: app.home()
+<PnLScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+
+<GainLossScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+
+<Analysis>:
+  BoxLayout:
+    orientation: 'vertical'
+    size_hint: 1,1
+    pos_hint: { 'center_x': .5, 'center_y': .5 }
+    MDToolbar:
+      title: 'Analytics'
+      right_action_items: [ [ 'close', lambda x: app.exit() ] ]
+      md_bg_color: 0.2, .6, 1, 1
+    FloatLayout:
+      canvas.before:
+        Color:
+          rgba: .2, .2, .2, 1
+        Rectangle:
+          pos: self.pos
+          size: self.size
+      MDSpinner:
+        id: anaytic_spinner
+        size_hint: None, None
+        size: dp(30), dp(30)
+        pos_hint: { 'center_x': .5, 'center_y': .9 }
+        active: False if app.analytics else True
+
+<NavScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+
+<GLScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+
+<SectorScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+
+<TrendScreen>:
+  canvas.before:
+    Color:
+      rgba: .2, .2, .2, 1
+    Rectangle:
+      pos: self.pos
+      size: self.size
+        """
+        Builder.load_string(kv)
+        addMainScreen(self.screen_manager, self)
+        self.screen_manager.current = "Main"
+        self.current = "Main"
         return self.screen_manager
 
 
