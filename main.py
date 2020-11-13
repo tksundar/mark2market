@@ -1,3 +1,4 @@
+import os
 import time
 
 from kivy.clock import Clock
@@ -152,7 +153,7 @@ class Mark2MarketApp(MDApp):
         return pop
 
     def go_nav(self):
-        if len(tryout.product_dict) == 0:
+        if not os.path.exists('csv/pandb.csv'):
             self.no_data_popup.open()
             return
         self.processing = True
@@ -188,7 +189,7 @@ class Mark2MarketApp(MDApp):
         self.screen_manager.current = 'Trade'
 
     def gain_loss(self):
-        if len(tryout.product_dict) == 0:
+        if not os.path.exists('csv/pandb.csv'):
             self.no_data_popup.open()
             return
         self.processing = True
@@ -208,7 +209,7 @@ class Mark2MarketApp(MDApp):
         self.processing = False
 
     def charts(self):
-        if len(tryout.product_dict) == 0:
+        if not os.path.exists('csv/pandb.csv'):
             self.no_data_popup.open()
             return
         self.processing = True
