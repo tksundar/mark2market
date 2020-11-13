@@ -9,7 +9,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager, ScreenManagerException
 from kivymd.app import MDApp
 from kivymd.toast import toast
-from kivymd.uix.button import MDIconButton
+from kivymd.uix.button import MDIconButton, MDRaisedButton
 from kivymd.uix.filemanager import MDFileManager
 
 import tryout
@@ -17,6 +17,8 @@ from PandLScreen import PnLScreen
 from analysis import Analysis
 from gainloss import GainLossScreen
 from help import HelpScreen
+
+hint_center = {'center_x': .5, 'center_y': .5}
 
 
 class MainScreen(Screen):
@@ -67,6 +69,7 @@ class Mark2MarketApp(MDApp):
     processing = BooleanProperty(defaultValue=False)
     analytics = BooleanProperty(defaultValue=True)
     stock_fetch = BooleanProperty(defaultValue=True)
+    color = (0, 0, 0, 1)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -315,11 +318,13 @@ class Mark2MarketApp(MDApp):
         return True
 
     def build(self):
-        Builder.load_file('RootWidget.kv')
-        addMainScreen(self.screen_manager, self)
-        self.screen_manager.current = "Main"
-        return self.screen_manager
-
+        # Builder.load_file('RootWidget.kv')
+        # addMainScreen(self.screen_manager, self)
+        # self.screen_manager.current = "Main"
+        # return self.screen_manager
+        btn = MDRaisedButton(text='START')
+        btn.pos_hint = hint_center
+        return btn
 
 if __name__ == '__main__':
     Mark2MarketApp().run()
