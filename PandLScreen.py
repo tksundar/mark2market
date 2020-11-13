@@ -179,9 +179,8 @@ class PnLScreen(BaseGrid):
         button.bind(on_press=self.go_home)
         button.add_widget(labl)
         self.layout.add_widget(button)
-        # self.layout.add_widget(labl)
-        # self.add_table_screens(self.pf_data)
-        self.add_data_grid(self.pf_data)
+        self.add_table_screens(self.pf_data)
+        # self.add_data_grid(self.pf_data)
         tableScreen = self.screens[0]
         print(self.screens[0])
         print(tableScreen.widget)

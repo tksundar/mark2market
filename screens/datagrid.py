@@ -57,17 +57,7 @@ class DataGrid(GridLayout):
                 self.add_widget(row)
         self.row_data = rowData
         self.col_data = colData
-        # with self.canvas.before:
-        #     Color(1, 1, 1, 1)
-        #     self.rect = Rectangle(size=self.size,
-        #                           pos=self.pos)
-        # self.bind(pos=self.update_rect, size=self.update_rect)
 
-
-    # def update_rect(self):
-    #     self.rect.pos = self.pos
-    #     self.rect.size = self.size
-#
 # class TestApp(App):
 #
 #     def build(self):
