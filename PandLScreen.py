@@ -113,7 +113,15 @@ class PnLScreen(BaseGrid):
             for item in fragment:
                 if item.nav == 0:
                     continue
-                row = [item.symbol, item.quantity, item.price, item.nav]
+                prev_nav = tryout.get_prev_nav(item)
+                p = round(abs(((item.nav - prev_nav) / prev_nav) * 100), 2)
+                if prev_nav > item.nav:
+                    nav_str = "[color=#FF0000]" + str(item.nav) + "(" + str(p) + "%)[/color]"
+                elif prev_nav < item.nav:
+                    nav_str = "[color=#00FF00]" + str(item.nav) + "(" + str(p) + "%)[/color]"
+                else:
+                    nav_str = str(item.nav)
+                row = [item.symbol, item.quantity, item.price, nav_str]
                 row_data.append(row)
                 if len(fragment) == 1:
                     row_data.append(['', '', '', ''])
@@ -130,10 +138,10 @@ class PnLScreen(BaseGrid):
                     ("Price", dp(15)),
                     ("NAV", dp(15)),
                 ] if plt == 'Linux' else [
-                    ("Symbol", dp(45)),
-                    ("Quantity", dp(45)),
-                    ("Price", dp(45)),
-                    ("NAV", dp(45)),
+                    ("Symbol", dp(30)),
+                    ("Quantity", dp(30)),
+                    ("Price", dp(30)),
+                    ("NAV", dp(30)),
                 ],
                 row_data=row_data,
             )

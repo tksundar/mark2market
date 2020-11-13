@@ -90,9 +90,9 @@ class GainLossScreen(BaseGrid):
                 gain_loss = item.gain
                 current_nav = item.nav
                 if gain_loss < 0:
-                    gain_loss = '(' + str(round(gain_loss, 2))[1:] + ')'
+                    gain_loss = "[color=#FF0000]" + str(abs(round(gain_loss,2))) + "[/color]"
                 else:
-                    gain_loss = str(round(gain_loss, 2))
+                    gain_loss = "[color=#00FF00]" + str(round(gain_loss, 2)) + "[/color]"
 
                 row = [item.symbol, cost, current_nav, gain_loss]
                 row_data.append(row)

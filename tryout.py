@@ -622,3 +622,13 @@ def open_url(broker):
         url = 'https://shubhweb.indiabulls.com/base/login'
 
     webbrowser.open(url)
+
+
+def get_prev_nav(pf: PortfolioItem):
+    prev_close = nse_prev_price_data.get(pf.symbol)
+    if prev_close:
+        return round(float(prev_close)*pf.quantity, 2)
+    sc_code = isin_to_sc_code_map.get(pf.isin)
+    prev_close = bse_prev_price_data.get(sc_code)
+    if prev_close:
+        return round(float(prev_close)*pf.quantity, 2)
