@@ -102,7 +102,7 @@ class PnLScreen(BaseGrid):
         if plt == 'Windows':
             font_size = '[size=10]'
         else:
-            font_size = '[size=15]'
+            font_size = '[size=20]'
         for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
