@@ -84,7 +84,7 @@ class GainLossScreen(BaseGrid):
         if plt == 'Windows':
             font_size = '[size=10]'
         else:
-            font_size = '[size=30]'
+            font_size = '[size=27]'
         for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
