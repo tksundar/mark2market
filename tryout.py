@@ -125,7 +125,7 @@ def get_ltp_string(symbol, ltp):
         val = '[color=FF0000]' + str(ltp) + '[/color]' + '(' + str(percent) + '%' ')'
     elif close < ltp:
         val = '[color=00FF00]' + str(ltp) + '[/color]' + '(' + str(percent) + '%' + ')'
-    return val
+    return val,close
 
 
 def get_live_price(symbol):
@@ -161,12 +161,12 @@ def get_stock_data(row_text, dt):
         high = q['dayHigh']
         high52 = q['high52']
         low52 = q['low52']
+        val, close = get_ltp_string(sym, ltp)
         c1 = Label(text='Symbol')
         c2 = Label(text=sym)
-        c3 = Label(text='ISIN')
-        c4 = Label(text=isin)
+        c3 = Label(text='Close')
+        c4 = Label(text=str(close))
         c5 = Label(text='Last Price')
-        val = get_ltp_string(sym, ltp)
         c6 = Label(text=val, markup=True)
         c7 = Label(text='Day Low')
         c8 = Label(text=str(low))
