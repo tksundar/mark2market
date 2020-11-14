@@ -139,10 +139,12 @@ def get_live_price(symbol):
 
 
 def get_stock_data(row_text, dt):
-    if row_text.isnumeric():
-        print('%s not a symbol' % row_text)
-        return
+
     sym = row_text[9:-7]
+    if not sym.isalpha():
+        print('%s not a symbol' % sym)
+        return
+
     nse = Nse()
     print('getting nse price for stock ', sym)
     q = nse.get_quote(sym)
