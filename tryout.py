@@ -138,32 +138,33 @@ def get_live_price(symbol):
 
 
 
-def get_stock_data(symbol, dt):
-    if not symbol.isalpha():
-        print('%s not a symbol' % symbol)
+def get_stock_data(row_text, dt):
+    if row_text.isnumeric():
+        print('%s not a symbol' % row_text)
         return
+    sym = row_text[9:-7]
     nse = Nse()
-    print('getting nse price for stock ', symbol)
-    q = nse.get_quote(symbol)
+    print('getting nse price for stock ', sym)
+    q = nse.get_quote(sym)
     popup = Popup()
-    popup.title = 'Live data for ' + symbol
+    popup.title = 'Live data for ' + sym
     popup.size_hint = (.7, .6)
     popup.pos_hint = {'center_x': .5, 'center_y': .5}
 
     if q is not None:
         symbol_to_isin_map = {symbol: isin for isin, symbol in nse_isin_to_symbol_map.items()}
-        isin = symbol_to_isin_map[symbol]
+        isin = symbol_to_isin_map[sym]
         ltp = q['lastPrice']
         low = q['dayLow']
         high = q['dayHigh']
         high52 = q['high52']
         low52 = q['low52']
         c1 = Label(text='Symbol')
-        c2 = Label(text=symbol)
+        c2 = Label(text=sym)
         c3 = Label(text='ISIN')
         c4 = Label(text=isin)
         c5 = Label(text='Last Price')
-        val = get_ltp_string(symbol, ltp)
+        val = get_ltp_string(sym, ltp)
         c6 = Label(text=val, markup=True)
         c7 = Label(text='Day Low')
         c8 = Label(text=str(low))
@@ -191,7 +192,7 @@ def get_stock_data(symbol, dt):
         gridlayout.add_widget(c14)
         content = gridlayout
     else:
-        content = Label(text='No data available for symbol ' + symbol)
+        content = Label(text='No data available for symbol ' + sym)
     popup.content = content
     popup.open()
     MDApp.get_running_app().stock_fetch = False
