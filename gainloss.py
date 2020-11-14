@@ -84,7 +84,7 @@ class GainLossScreen(BaseGrid):
         if plt == 'Windows':
             font_size = '[size=10]'
         else:
-            font_size = '[size=27]'
+            font_size = '[size=30]'
         for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
@@ -99,7 +99,10 @@ class GainLossScreen(BaseGrid):
                 sym_str = font_size + item.symbol + '[/size]'
                 cost_str = font_size + str(cost) + '[/size]'
                 nav_str = font_size + str(item.nav) + '[/size]'
-                row = [sym_str, cost_str, nav_str, gain_loss]
+                if plt == 'Windows':
+                    row = [sym_str, cost_str, nav_str, gain_loss]
+                else:
+                    row = [sym_str, cost_str, gain_loss]
                 row_data.append(row)
             if len(fragment) == 1:
                 row_data.append(['', '', '', ''])  # hack. MDDatatable breaks if there just one row
@@ -112,10 +115,9 @@ class GainLossScreen(BaseGrid):
                 rows_num=7,
                 check=False,
                 column_data=[
-                    ("Symbol", dp(15)),
-                    ("Cost", dp(15)),
-                    ("NAV", dp(15)),
-                    ("Gain", dp(15)),
+                    ("Symbol", dp(20)),
+                    ("Cost", dp(20)),
+                    ("Gain", dp(20)),
                 ] if plt == 'Linux' else [
                     ("Symbol", dp(45)),
                     ("Cost", dp(45)),

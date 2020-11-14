@@ -48,37 +48,37 @@ def get_col_data(columns):
     return col_array
 
 
-def get_row_data(data):
-    row_data = []
-    plt = platform.system()
-    for p in data:
-        nl = Label(text='[size=15]' + p.symbol + '[/size]', markup=True)
-        ql = Label(text='[size=15]' + str(p.quantity) + '[/size]', markup=True)
-        nav = str(p.nav)
-        price = str(p.price)
-
-        if p.symbol in tryout.nse_price_data:
-            # price = str(tryout.get_live_price(p.symbol))
-            close = float(tryout.nse_price_data.get(p.symbol))
-            pre_close = float(tryout.nse_prev_price_data.get(p.symbol))
-            clcse_nav = close * p.quantity
-            prev_nav = pre_close * p.quantity
-            percent = abs(round(((clcse_nav - prev_nav) / prev_nav) * 100, 2))
-            if close > pre_close:
-                nav = '[color=00FF00][size=15]' + nav + '[/size](' + str(percent) + '%)[/color]'
-            else:
-                nav = '[color=FF0000][size=15]' + nav + '[/size](' + str(percent) + '%)[/color]'
-            if not plt == 'Windows':
-                if p.price > close:
-                    price = '[color=00FF00][size=15]' + price + '[/size][/color]'
-                else:
-                    price = '[color=FF0000][size=15]' + price + '[/size][/color]'
-
-        pl = Label(text=price, markup=True)
-        nal = Label(text=nav, markup=True)
-        row = [nl, ql, pl, nal]
-        row_data.append(row)
-    return row_data
+# def get_row_data(data):
+#     row_data = []
+#     plt = platform.system()
+#     for p in data:
+#         nl = Label(text='[size=15]' + p.symbol + '[/size]', markup=True)
+#         ql = Label(text='[size=15]' + str(p.quantity) + '[/size]', markup=True)
+#         nav = str(p.nav)
+#         price = str(p.price)
+#
+#         if p.symbol in tryout.nse_price_data:
+#             # price = str(tryout.get_live_price(p.symbol))
+#             close = float(tryout.nse_price_data.get(p.symbol))
+#             pre_close = float(tryout.nse_prev_price_data.get(p.symbol))
+#             clcse_nav = close * p.quantity
+#             prev_nav = pre_close * p.quantity
+#             percent = abs(round(((clcse_nav - prev_nav) / prev_nav) * 100, 2))
+#             if close > pre_close:
+#                 nav = '[color=00FF00][size=15]' + nav + '[/size](' + str(percent) + '%)[/color]'
+#             else:
+#                 nav = '[color=FF0000][size=15]' + nav + '[/size](' + str(percent) + '%)[/color]'
+#             if not plt == 'Windows':
+#                 if p.price > close:
+#                     price = '[color=00FF00][size=15]' + price + '[/size][/color]'
+#                 else:
+#                     price = '[color=FF0000][size=15]' + price + '[/size][/color]'
+#
+#         pl = Label(text=price, markup=True)
+#         nal = Label(text=nav, markup=True)
+#         row = [nl, ql, pl, nal]
+#         row_data.append(row)
+#     return row_data
 
 
 class PnLScreen(BaseGrid):
@@ -102,7 +102,7 @@ class PnLScreen(BaseGrid):
         if plt == 'Windows':
             font_size = '[size=10]'
         else:
-            font_size = '[size=27]'
+            font_size = '[size=30]'
         for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
@@ -120,7 +120,11 @@ class PnLScreen(BaseGrid):
                 sym_str = font_size + item.symbol + '[/size]'
                 qty_str = font_size + str(item.quantity) + '[/size]'
                 prc_str = font_size + str(item.price) + '[/size]'
-                row = [sym_str, qty_str, prc_str, nav_str]
+                if plt == 'Windows':
+                    row = [sym_str, qty_str, prc_str, nav_str]
+                else:
+                    row = [sym_str, qty_str,nav_str]
+
                 row_data.append(row)
                 if len(fragment) == 1:
                     row_data.append(['', '', '', ''])
@@ -132,10 +136,9 @@ class PnLScreen(BaseGrid):
                 rows_num=7,
                 check=False,
                 column_data=[
-                    ("Symbol", dp(15)),
-                    ("Quantity", dp(15)),
-                    ("Price", dp(15)),
-                    ("NAV", dp(15)),
+                    ("Symbol", dp(20)),
+                    ("Quantity", dp(20)),
+                    ("NAV", dp(20)),
                 ] if plt == 'Linux' else [
                     ("Symbol", dp(45)),
                     ("Quantity", dp(45)),
