@@ -2,6 +2,7 @@
 Created by Sundar on 29-10-2020.email tksrajan@gmail.com
 """
 import platform
+
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.uix.button import Button
@@ -71,7 +72,6 @@ class GainLossScreen(BaseGrid):
 
             self.add_widget(self.layout)
 
-
     def events(self, instance, keyboard, keycode, text, modifiers):
         """Called when buttons are pressed on the mobile device."""
         if keyboard in (1001, 27):
@@ -81,6 +81,7 @@ class GainLossScreen(BaseGrid):
     def add_table_screens(self, data):
         c_data = [data[i:i + 7] for i in range(0, len(data), 7)]
         plt = platform.system()
+        font_size = '[size=10]'
         for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
@@ -88,13 +89,14 @@ class GainLossScreen(BaseGrid):
                     continue
                 cost = round(item.cost * item.quantity, 2)
                 gain_loss = item.gain
-                current_nav = item.nav
                 if gain_loss < 0:
-                    gain_loss = "[color=#FF0000]" + str(abs(round(gain_loss,2))) + "[/color]"
+                    gain_loss = "[color=#FF0000]" + font_size + str(abs(round(gain_loss, 2))) + "[/size][/color]"
                 else:
-                    gain_loss = "[color=#00FF00]" + str(round(gain_loss, 2)) + "[/color]"
-
-                row = [item.symbol, cost, current_nav, gain_loss]
+                    gain_loss = "[color=#448d08]" + font_size + str(round(gain_loss, 2)) + "[/size][/color]"
+                sym_str = font_size + item.symbol + '[/size]'
+                cost_str = font_size + str(cost) + '[/size]'
+                nav_str = font_size + str(item.nav) + '[/size]'
+                row = [sym_str, cost_str, nav_str, gain_loss]
                 row_data.append(row)
             if len(fragment) == 1:
                 row_data.append(['', '', '', ''])  # hack. MDDatatable breaks if there just one row

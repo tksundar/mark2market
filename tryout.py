@@ -17,7 +17,6 @@ from kivy.uix.popup import Popup
 from kivymd.app import MDApp
 from kivymd.uix.datatables import CellRow
 
-
 from nsetools.nse import Nse
 
 

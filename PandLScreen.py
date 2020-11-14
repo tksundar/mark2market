@@ -2,6 +2,7 @@
 Created by Sundar on 19-10-2020.email tksrajan@gmail.com
 """
 import platform
+
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.properties import ListProperty, BooleanProperty
@@ -13,7 +14,7 @@ from kivymd.uix.datatables import MDDataTable
 
 import tryout
 from base import BaseGrid, TableScreen
-from screens.datagrid import DataGrid
+
 
 sort_param = ''
 
@@ -95,18 +96,9 @@ class PnLScreen(BaseGrid):
         Window.bind(on_keyboard=self.events)
         self.add_widgets()
 
-    def add_data_grid(self, data):
-        c_data = [data[i:i + 7] for i in range(0, len(data), 7)]
-        for index, fragment in enumerate(c_data):
-            col_data = get_col_data(['Symbol', 'Quantity', 'Price', 'NAV'])
-            row_data = get_row_data(fragment)
-            data_grid = DataGrid(col_data, row_data, 120, cols=4)
-            table = TableScreen(data_grid, name='table' + str(index))
-            self.screens.append(table)
-
     def add_table_screens(self, data):
         c_data = [data[i:i + 7] for i in range(0, len(data), 7)]
-
+        font_size = '[size=10]'
         plt = platform.system()
         for index, fragment in enumerate(c_data):
             row_data = []
@@ -116,12 +108,16 @@ class PnLScreen(BaseGrid):
                 prev_nav = tryout.get_prev_nav(item)
                 p = round(abs(((item.nav - prev_nav) / prev_nav) * 100), 2)
                 if prev_nav > item.nav:
-                    nav_str = "[color=#FF0000]" + str(item.nav) + "(" + str(p) + "%)[/color]"
+                    nav_str = "[color=#FF0000]" + font_size + str(item.nav) + "(" + str(p) + "%)[/size][/color]"
                 elif prev_nav < item.nav:
-                    nav_str = "[color=#00FF00]" + str(item.nav) + "(" + str(p) + "%)[/color]"
+                    nav_str = "[color=#448d08]" + font_size + str(item.nav) + "(" + str(p) + "%)[/size][/color]"
                 else:
                     nav_str = str(item.nav)
-                row = [item.symbol, item.quantity, item.price, nav_str]
+
+                sym_str = font_size + item.symbol + '[/size]'
+                qty_str = font_size + str(item.quantity) + '[/size]'
+                prc_str = font_size + str(item.price) + '[/size]'
+                row = [sym_str, qty_str, prc_str, nav_str]
                 row_data.append(row)
                 if len(fragment) == 1:
                     row_data.append(['', '', '', ''])
@@ -138,13 +134,15 @@ class PnLScreen(BaseGrid):
                     ("Price", dp(15)),
                     ("NAV", dp(15)),
                 ] if plt == 'Linux' else [
-                    ("Symbol", dp(30)),
-                    ("Quantity", dp(30)),
-                    ("Price", dp(30)),
-                    ("NAV", dp(30)),
+                    ("Symbol", dp(45)),
+                    ("Quantity", dp(45)),
+                    ("Price", dp(45)),
+                    ("NAV", dp(45)),
                 ],
                 row_data=row_data,
+
             )
+
             table.bind(on_row_press=tryout.on_row_press)
             tableScreen = TableScreen(table, name='table' + str(index))
             self.screens.append(tableScreen)
@@ -168,7 +166,6 @@ class PnLScreen(BaseGrid):
             pf_nav += pi.nav
         self.pf_nav = round(pf_nav, 2)
         prev_nav = tryout.get_prev_pf_nav()
-        print(pf_nav, prev_nav)
         percent = round(((self.pf_nav - prev_nav) / prev_nav) * 100, 2)
         mov_str = str(percent)
         if prev_nav > pf_nav:
@@ -188,17 +185,9 @@ class PnLScreen(BaseGrid):
         button.add_widget(labl)
         self.layout.add_widget(button)
         self.add_table_screens(self.pf_data)
-        # self.add_data_grid(self.pf_data)
         tableScreen = self.screens[0]
-        print(self.screens[0])
-        print(tableScreen.widget)
-        print(tableScreen.widget.row_data)
-        print(len(tableScreen.widget.row_data))
-
         self.layout.add_widget(tableScreen)
-
         self.add_nav_buttons()
-
         home_btn = MDIconButton(icon='home',
                                 pos_hint={'center_x': 0.5, 'center_y': 0.05})
         home_btn.md_bg_color = (1, 1, 1, 1)

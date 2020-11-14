@@ -1,7 +1,6 @@
 """
 Created by Sundar on 30-10-2020.email tksrajan@gmail.com
 """
-import os
 
 import matplotlib.pyplot as plt
 import pandas as pd
