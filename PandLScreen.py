@@ -98,8 +98,11 @@ class PnLScreen(BaseGrid):
 
     def add_table_screens(self, data):
         c_data = [data[i:i + 7] for i in range(0, len(data), 7)]
-        font_size = '[size=10]'
         plt = platform.system()
+        if plt == 'Windows':
+            font_size = '[size=10]'
+        else:
+            font_size = '[size=15]'
         for index, fragment in enumerate(c_data):
             row_data = []
             for item in fragment:
