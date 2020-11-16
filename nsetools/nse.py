@@ -51,7 +51,7 @@ class Nse(AbstractBaseExchange):
         self.opener = self.nse_opener()
         self.headers = self.nse_headers()
         # URL list
-        self.get_quote_url = 'https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?'
+        self.get_quote_url = 'http://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?'
         self.stocks_csv_url = 'http://www1.nseindia.com/content/equities/EQUITY_L.csv'
         self.top_gainer_url = 'http://www1.nseindia.com/live_market/dynaContent/live_analysis/gainers/niftyGainers1.json'
         self.top_loser_url = 'http://www1.nseindia.com/live_market/dynaContent/live_analysis/losers/niftyLosers1.json'
@@ -150,6 +150,7 @@ class Nse(AbstractBaseExchange):
         code = code.upper()
         if self.is_valid_code(code):
             url = self.build_url_for_quote(code)
+            print(url)
             req = Request(url, None, self.headers)
             context = ssl.SSLContext()
             # this can raise HTTPError and URLError, but we are not handling it

@@ -117,15 +117,15 @@ def get_prev_close(symbol, ltp):
     return ltp
 
 
-def get_ltp_string(symbol, ltp):
-    close = float(nse_prev_price_data.get(symbol))
-    percent = abs(round(((ltp - close) / close) * 100, 2))
+def get_ltp_string(symbol, ltp, prevClose,percent):
+    # close = float(nse_prev_price_data.get(symbol))
+    # percent = abs(round(((ltp - close) / close) * 100, 2))
     val = str(ltp)
-    if close > ltp:
+    if prevClose > ltp:
         val = '[color=FF0000]' + str(ltp) + '[/color]' + '(' + str(percent) + '%' ')'
-    elif close < ltp:
+    elif prevClose < ltp:
         val = '[color=00FF00]' + str(ltp) + '[/color]' + '(' + str(percent) + '%' + ')'
-    return val, close
+    return val
 
 
 def get_live_price(symbol):
@@ -154,14 +154,14 @@ def get_stock_data(row_text, dt):
     popup.pos_hint = {'center_x': .5, 'center_y': .5}
 
     if q is not None:
-        # from pprint import pprint
-        # pprint(q)
         ltp = q['lastPrice']
         low = q['dayLow']
         high = q['dayHigh']
         high52 = q['high52']
         low52 = q['low52']
-        val, close = get_ltp_string(sym, ltp)
+        prevClose = q['previousClose']
+        pChange = q['pChange']
+        val, close = get_ltp_string(sym, ltp, prevClose, pChange)
         c1 = Label(text='Symbol')
         c2 = Label(text=sym)
         c3 = Label(text='Close')
