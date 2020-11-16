@@ -164,7 +164,7 @@ def get_stock_data(row_text, dt):
         val = get_ltp_string(sym, ltp, prevClose, pChange)
         c1 = Label(text='Symbol')
         c2 = Label(text=sym)
-        c3 = Label(text='Close')
+        c3 = Label(text='PrevClose')
         c4 = Label(text=str(prevClose))
         c5 = Label(text='Last Price')
         c6 = Label(text=val, markup=True)
