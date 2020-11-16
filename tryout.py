@@ -161,11 +161,11 @@ def get_stock_data(row_text, dt):
         low52 = q['low52']
         prevClose = q['previousClose']
         pChange = q['pChange']
-        val, close = get_ltp_string(sym, ltp, prevClose, pChange)
+        val = get_ltp_string(sym, ltp, prevClose, pChange)
         c1 = Label(text='Symbol')
         c2 = Label(text=sym)
         c3 = Label(text='Close')
-        c4 = Label(text=str(close))
+        c4 = Label(text=str(prevClose))
         c5 = Label(text='Last Price')
         c6 = Label(text=val, markup=True)
         c7 = Label(text='Day Low')
