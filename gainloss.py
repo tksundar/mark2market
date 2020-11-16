@@ -33,7 +33,6 @@ class GainLossScreen(BaseGrid):
             self.updated = kwargs.pop('updated')
         super().__init__(**kwargs)
         self.screen_manager = screen_manager
-        Window.bind(on_keyboard=self.events)
         self.add_widgets()
 
     def add_widgets(self):
@@ -72,11 +71,11 @@ class GainLossScreen(BaseGrid):
 
             self.add_widget(self.layout)
 
-    def events(self, instance, keyboard, keycode, text, modifiers):
-        """Called when buttons are pressed on the mobile device."""
-        if keyboard in (1001, 27):
-            self.screen_manager.current = 'Main'
-        return True
+    # def events(self, instance, keyboard, keycode, text, modifiers):
+    #     """Called when buttons are pressed on the mobile device."""
+    #     if keyboard in (1001, 27):
+    #         self.screen_manager.current = 'Main'
+    #     return True
 
     def add_table_screens(self, data):
         c_data = [data[i:i + 7] for i in range(0, len(data), 7)]

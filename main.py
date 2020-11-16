@@ -323,8 +323,10 @@ class Mark2MarketApp(MDApp):
         if keyboard in (1001, 27):
             if self.manager_open:
                 self.file_manager.back()
-            else:
+            elif self.screen_manager.current == 'Main':
                 self.exit()
+            else:
+                self.screen_manager.current = 'Main'
         return True
 
     def build(self):

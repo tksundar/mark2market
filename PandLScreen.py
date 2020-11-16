@@ -93,7 +93,6 @@ class PnLScreen(BaseGrid):
         super().__init__(**kwargs)
         self.screen_manager: ScreenManager = screen_manager
         self.name = kwargs['name']
-        Window.bind(on_keyboard=self.events)
         self.add_widgets()
 
     def add_table_screens(self, data):
@@ -152,12 +151,12 @@ class PnLScreen(BaseGrid):
             table.bind(on_row_press=tryout.on_row_press)
             tableScreen = TableScreen(table, name='table' + str(index))
             self.screens.append(tableScreen)
-
-    def events(self, instance, keyboard, keycode, text, modifiers):
-        """Called when buttons are pressed on the mobile device."""
-        if keyboard in (1001, 27):
-            self.screen_manager.current = 'Main'
-        return True
+    #
+    # def events(self, instance, keyboard, keycode, text, modifiers):
+    #     """Called when buttons are pressed on the mobile device."""
+    #     if keyboard in (1001, 27):
+    #         self.screen_manager.current = 'Main'
+    #     return True
 
     def go_home(self, instance):
         self.screen_manager.current = "Main"
