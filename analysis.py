@@ -12,14 +12,16 @@ from kivy.uix.screenmanager import Screen, ScreenManager, ScreenManagerException
 from kivymd.app import MDApp
 from kivymd.uix.button import MDIconButton, MDTextButton
 
+from collections import defaultdict
+
 import tryout
 
 
 def make_nav_plot(name):
-    labels, data, symbols = get_nav_data()
+    data, symbols = get_nav_data()
     ex = []
 
-    for index, item in enumerate(labels):
+    for index, item in enumerate(symbols):
         if index == 0:
             ex.append(0.1)
         else:
@@ -28,7 +30,7 @@ def make_nav_plot(name):
     plt.clf()
     fig, ax = plt.subplots()
     fig.set_size_inches(12, 12)
-    ax.pie(data, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90, explode=ex)
+    ax.pie(data, labels=symbols, autopct='%1.1f%%', shadow=True, startangle=90, explode=ex)
     ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
     plt.title('NAV Chart')
     plt.savefig(name, edgecolor="#04253a")
@@ -44,7 +46,7 @@ def get_nav_data():
         symbols.append(pf.symbol)
         labels.append(pf.symbol + '(' + str(index + 1) + ')')
         navs.append(pf.nav)
-    return labels, navs, symbols
+    return navs, symbols
 
 
 def get_gains_data():
@@ -90,12 +92,11 @@ def make_sectoral_plot(name):
                'EQUITAS': 'Banking', 'EXPLEOSOL': 'Computers', 'GRAUWEIL': 'Chemicals', 'SPECIALITY': 'Hotels',
                'KDDL': 'Misc'}
 
-    label, nav, symbols = get_nav_data()
+    nav, symbols = get_nav_data()
 
     for symbol in symbols:
         if not (symbol in sectors):
             sectors.update({symbol: sec_map.get(symbol)})
-    from collections import defaultdict
     grouped = defaultdict(list)
 
     for symbol, sector in sorted(sectors.items()):
@@ -125,8 +126,8 @@ def make_sectoral_plot(name):
     fig, ax = plt.subplots()
     fig.set_size_inches(12, 12)
     ax.pie(sector_data, labels=sector_labels, autopct='%1.1f%%', shadow=True, startangle=90, explode=explode)
-    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-    plt.title('Sectoral Exposure')
+    ax.axis('equal')
+    # plt.title('Sectoral Exposure')
     plt.savefig(name, edgecolor="#04253a")
 
 
@@ -135,7 +136,7 @@ def make_day_gain_loss(name):
     import numpy as np
     date, prev_date = tryout.get_date_string()
     df = pd.read_csv('nse.csv', usecols=['SYMBOL', ' PREV_CLOSE', ' CLOSE_PRICE'])
-    _, _, symbols = get_nav_data()
+    _, symbols = get_nav_data()
     up_down = {}
     symbol_isin = {symbol: isin for isin, symbol in tryout.bse_isin_to_symbol_map.items()}
 
