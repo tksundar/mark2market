@@ -4,6 +4,7 @@ import ssl
 import urllib
 import webbrowser
 from datetime import datetime
+from datetime import timedelta
 from functools import partial
 from shutil import copyfile
 from urllib.error import HTTPError
@@ -22,19 +23,23 @@ from nsetools.nse import Nse
 
 def get_date_string():
     d = datetime.now()
+    # if day is Monday
+    if d.weekday() == 0 and d.hour < 17:
+        d = d - timedelta(days=2)
+    prev_day = d - timedelta(days=1)
     dd = str(int(d.strftime('%d')))
-    prev_d = str(int(d.strftime('%d')) - 1)
+    prev_d_str = str(int(prev_day.strftime('%d')))
     mm = d.strftime('%m')
     yyyy = d.strftime('%y')
-    if d.day - 1 < 10:
-        prev_d = '0' + prev_d
+    if prev_day.day < 10:
+        prev_d_str = '0' + prev_d_str
 
     hrs = d.hour
     if 0 < hrs < 17:
-        dd = str(int(d.strftime('%d')) - 1)
-        if d.day <= 10:
+        dd = str(int(prev_day.strftime('%d')))
+        if prev_day.day <= 10:
             dd = '0' + dd
-    return dd + mm + yyyy, prev_d + mm + yyyy
+    return dd + mm + yyyy, prev_d_str + mm + yyyy
 
 
 date, _ = get_date_string()
