@@ -1,5 +1,6 @@
 import csv
 import os
+import platform
 import ssl
 import urllib
 import webbrowser
@@ -122,7 +123,7 @@ def get_prev_close(symbol, ltp):
     return ltp
 
 
-def get_ltp_string(symbol, ltp, prevClose,percent):
+def get_ltp_string(symbol, ltp, prevClose, percent):
     # close = float(nse_prev_price_data.get(symbol))
     # percent = abs(round(((ltp - close) / close) * 100, 2))
     val = str(ltp)
@@ -291,7 +292,7 @@ def make_product_dict_from_csv(**kwargs):
         if "isin" in row:
             isin = row["isin"]
         elif "name" in row:
-            name = row["name"].upper().replace('LTD', 'LIMITED').replace(' ','')
+            name = row["name"].upper().replace('LTD', 'LIMITED').replace(' ', '')
             print(name)
             isin = name_to_isin_map.get(name)
             # if isin is given under names heading
@@ -334,8 +335,22 @@ def update_portfolio_item(row, pi, **kwargs):
         update_or_create_portfolio_item(**kwargs)
 
 
+def get_rt_price(symbol):
+    nse = Nse()
+    quote = nse.get_quote(symbol)
+    ltp = None
+    if quote:
+        ltp = quote['lastPrice']
+
+    return float(ltp)
+
+
 def update_price(pi: PortfolioItem):
-    px = nse_price_data.get(pi.symbol)
+    plt = platform.system()
+    if plt == 'Windows':
+        px = nse_price_data.get(pi.symbol)
+    else:
+        px = get_rt_price(pi.symbol)
     if not (px is None):
         pi.price = float(px)
     else:
@@ -498,7 +513,7 @@ def get_nse_prices():
 def cleanup(endswith):
     print('cleaning up old files')
     file_list = [f for f in os.listdir('.') if f.endswith(endswith)]
-    ds, ds1 = get_date_string()
+    ds, _ = get_date_string()
     filename = ds + endswith
     for f in file_list:
         if f.startswith(ds):
@@ -634,8 +649,8 @@ def open_url(broker):
 def get_prev_nav(pf: PortfolioItem):
     prev_close = nse_prev_price_data.get(pf.symbol)
     if prev_close:
-        return round(float(prev_close)*pf.quantity, 2)
+        return round(float(prev_close) * pf.quantity, 2)
     sc_code = isin_to_sc_code_map.get(pf.isin)
     prev_close = bse_prev_price_data.get(sc_code)
     if prev_close:
-        return round(float(prev_close)*pf.quantity, 2)
+        return round(float(prev_close) * pf.quantity, 2)
