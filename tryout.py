@@ -345,12 +345,8 @@ def get_rt_price(symbol):
 
 
 def update_price(pi: PortfolioItem):
-    plt = platform.system()
-    if plt == 'Windows':
-        px = nse_price_data.get(pi.symbol)
-    else:
-        px = get_rt_price(pi.symbol)
-    if not (px is None):
+    px = nse_price_data.get(pi.symbol)
+    if px:
         pi.price = float(px)
     else:
         isin = pi.isin
