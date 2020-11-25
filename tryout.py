@@ -341,8 +341,7 @@ def get_rt_price(symbol):
     ltp = None
     if quote:
         ltp = quote['lastPrice']
-
-    return float(ltp)
+    return ltp
 
 
 def update_price(pi: PortfolioItem):
